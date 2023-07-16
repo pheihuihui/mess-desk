@@ -1,0 +1,3 @@
+[submodule "wasm/comrak"]
+	path = wasm/comrak
+	url = https://github.com/pheihuihui/comrak

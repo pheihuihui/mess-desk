@@ -10,11 +10,11 @@
 </head>
 
 <body class="bg-slate-300">
-    <script>
-        WebAssembly.instantiateStreaming(fetch("comrak.wasm"))
-            .then(obj => {
-                console.log(obj)
-            });
+    <script type="module">
+        import init, { markdown_to_html_default } from "./pkg/comrak.js";
+        init().then(() => {
+            window.markdownToHtml = markdown_to_html_default;
+        });
     </script>
     <div id="rootdiv"></div>
     <script src="./client.js"></script>

@@ -18,6 +18,7 @@
     "devDependencies": {
         "esbuild": "0.18.13",
         "tailwindcss": "3.3.3",
+        "@tailwindcss/typography": "0.5.9",
         "typescript": "5.1.6"
     }
 }

@@ -10,14 +10,16 @@
 </head>
 
 <body class="bg-slate-300">
-    <script type="module">
+    <script type="module" defer>
         import init, { markdown_to_html_default } from "./pkg/comrak.js";
         init().then(() => {
             window.markdownToHtml = markdown_to_html_default;
+            let script = document.createElement('script')
+            script.src = './client.js';
+            document.body.appendChild(script);
         });
     </script>
     <div id="rootdiv"></div>
-    <script src="./client.js"></script>
 </body>
 
 </html>

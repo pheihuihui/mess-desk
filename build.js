@@ -13,7 +13,9 @@ fs.copyFileSync('./resources/main.html', `${dir_client}/main.html`)
 fs.copyFileSync('./resources/client.css', `${dir_client}/client.css`)
 
 const dir_wasm_pack = './wasm/comrak/pkg'
+const dir_assets = './assets'
 fs.cpSync(dir_wasm_pack, `${dir_client}/pkg`, { recursive: true })
+fs.cpSync(dir_assets, `${dir_client}/assets`, { recursive: true })
 
 es.buildSync({
     entryPoints: ['./src/index.ts'],

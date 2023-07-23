@@ -5,7 +5,12 @@ import { PageContainer } from './PageContainer'
 import { FileSelect } from "./FileSelect";
 
 export const App: FC = () => {
-    return <FileSelect />
+    return (
+        <div>
+            <FileSelect />
+            <PageContainer />
+        </div>
+    )
 }
 
 export const _app = <App />

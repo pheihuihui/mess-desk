@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
+import { getFileDB, populateOneFile } from "../utilities/db"
 
 export const FileSelect: FC = () => {
     const [selectedFile, setSelectedFile] = useState<Blob | undefined>()
@@ -30,7 +31,10 @@ export const FileSelect: FC = () => {
                 accept="*" />
             {selectedFile && (selectedFile?.type.split('/')[0] == 'image' ? <img src={imagePreview} /> : undefined)}
             <button onClick={_ => {
-                console.log(selectedFile)
+                let fileName = selectedFile?.name
+                if (fileName && selectedFile) {
+                    populateOneFile(fileName, selectedFile)
+                }
             }}>Save</button>
         </div>
     )

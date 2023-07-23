@@ -1,24 +1,22 @@
 import React, { FC, useEffect, useState } from "react"
 
-export const ImageSelect: FC = () => {
+export const FileSelect: FC = () => {
     const [selectedFile, setSelectedFile] = useState<Blob | undefined>()
-    const [preview, setPreview] = useState<string | undefined>()
+    const [imagePreview, setImagePreview] = useState<string | undefined>()
 
     useEffect(() => {
         if (!selectedFile) {
-            setPreview(undefined)
+            setImagePreview(undefined)
             return
         }
         const objectUrl = URL.createObjectURL(selectedFile)
-        setPreview(objectUrl)
+        setImagePreview(objectUrl)
         return () => URL.revokeObjectURL(objectUrl)
     }, [selectedFile])
 
     return (
         <div className="image-select">
-            <h1 className="text-3xl font-bold underline">
-                Hello world!
-            </h1>
+            <h1 className="text-3xl font-bold underline">Select File:</h1>
             <input
                 className="border-l-yellow-400"
                 type='file'
@@ -29,10 +27,11 @@ export const ImageSelect: FC = () => {
                     }
                     setSelectedFile(ev.target.files[0])
                 }}
-                accept="image/*" />
-            {selectedFile && <img src={preview} />}
-            {/* <div>{selectedFile?.type}</div> */}
-            <button onClick={_ => { }}>Save</button>
+                accept="*" />
+            {selectedFile && (selectedFile?.type.split('/')[0] == 'image' ? <img src={imagePreview} /> : undefined)}
+            <button onClick={_ => {
+                console.log(selectedFile)
+            }}>Save</button>
         </div>
     )
 }

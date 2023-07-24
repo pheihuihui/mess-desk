@@ -35,7 +35,11 @@ export const PageContainer: FC = () => {
                 <span className="w-2 h-2 bg-white rounded-full"></span>
                 <span className="w-2 h-2 bg-white rounded-full"></span>
                 <span className="w-2 h-2 bg-white rounded-full"></span>
-                <SearchBar placeHolder="url" onChange={() => { }} onClick={() => { }} />
+                <SearchBar placeHolder="url" onChange={() => { }} onSearch={e => {
+                    let url = e.target[0].value
+                    const ifr = document.getElementById(iframeID) as HTMLIFrameElement
+                    ifr['src'] = url
+                }} />
             </div>
             <iframe className="rounded-b-xl align-middle h-[calc(100vh_-_10.75rem)]"
                 width={1280}

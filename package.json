@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prebuild:css": "tailwindcss -i ./resources/tailwind.txt -o ./resources/client.css",
+        "prebuild:css": "tailwindcss -i ./resources/tailwind.txt -o ./prebuild/client.css",
         "prebuild:wasm": "node build_wasm.js",
         "build": "npm run prebuild:css && node build.js"
     },

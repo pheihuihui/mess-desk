@@ -10,7 +10,7 @@ if (fs.existsSync(dir_client)) {
 fs.mkdirSync(dir_client, { recursive: true })
 fs.copyFileSync('./resources/favicon.ico', `${dir_client}/favicon.ico`)
 fs.copyFileSync('./resources/main.html', `${dir_client}/main.html`)
-fs.copyFileSync('./resources/client.css', `${dir_client}/client.css`)
+fs.copyFileSync('./prebuild/client.css', `${dir_client}/client.css`)
 
 const dir_wasm_pack = './wasm/comrak/pkg'
 const dir_assets = './assets'

@@ -6,4 +6,10 @@ declare global {
         markdownToHtml: (input: string) => string
     }
 
+    namespace JSX {
+        interface IntrinsicElements {
+            ElemBefore: React.ReactNode;
+        }
+    }
+    
 }

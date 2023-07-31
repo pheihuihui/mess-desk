@@ -8,7 +8,7 @@ interface ButtonProps {
 
 type ButtonColors = Record<ButtonProps['color'], string>
 
-export const Button: FC<PropsWithChildren<ButtonProps>> = (props) => {
+export const Button: FC<PropsWithChildren<ButtonProps>> = props => {
 
     const buttonColors: ButtonColors = {
         'black': 'bg-navy-700 hover:bg-navy-800 active:bg-navy-900',

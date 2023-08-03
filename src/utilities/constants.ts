@@ -1,0 +1,1 @@
+export const AZURE_SPEECH_API = 'https://eastasia.api.cognitive.microsoft.com/sts/v1.0/issuetoken'

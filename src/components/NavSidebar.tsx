@@ -27,7 +27,9 @@ export const NavSidebar: FC = () => {
                     items={[
                         { title: "Notes", itemId: "/notes" },
                         { title: "Fragments", itemId: "/fragments" },
-                        { title: "Portraits", itemId: "/portraits" }
+                        { title: "Portraits", itemId: "/portraits" },
+                        { title: "Podcasts", itemId: "/pods" },
+                        { title: "Home", itemId: "/main" }
                     ]}
                 />
 
@@ -35,11 +37,7 @@ export const NavSidebar: FC = () => {
                     <SideNavigation
                         activeItemId={location.pathname}
                         items={[
-                            {
-                                title: "Storage",
-                                itemId: "/storage",
-                                elemBefore: () => <SomeIcon />
-                            }
+                            { title: "Storage", itemId: "/storage", elemBefore: () => <SomeIcon /> }
                         ]}
                         onSelect={({ itemId }) => {
                             history(itemId);

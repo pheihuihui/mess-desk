@@ -25,11 +25,11 @@ export const NavSidebar: FC = () => {
                         history(itemId);
                     }}
                     items={[
+                        { title: "Home", itemId: "/" },
                         { title: "Notes", itemId: "/notes" },
                         { title: "Fragments", itemId: "/fragments" },
                         { title: "Portraits", itemId: "/portraits" },
-                        { title: "Podcasts", itemId: "/pods" },
-                        { title: "Home", itemId: "/main" }
+                        { title: "Podcasts", itemId: "/pods" }
                     ]}
                 />
 

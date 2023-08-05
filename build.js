@@ -9,7 +9,7 @@ if (fs.existsSync(dir_client)) {
 
 fs.mkdirSync(dir_client, { recursive: true })
 fs.copyFileSync('./resources/favicon.ico', `${dir_client}/favicon.ico`)
-fs.copyFileSync('./resources/main.html', `${dir_client}/main.html`)
+fs.copyFileSync('./resources/index.html', `${dir_client}/index.html`)
 fs.copyFileSync('./resources/404.html', `${dir_client}/404.html`)
 fs.copyFileSync('./prebuild/client.css', `${dir_client}/client.css`)
 

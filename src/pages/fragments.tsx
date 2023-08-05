@@ -1,10 +1,11 @@
 import React, { FC } from "react";
 import { DashboardLayout } from "../components/Layout";
+import { PageContainer } from "../components/PageContainer";
 
 export const FragmentsPage: FC = () => {
     return (
         <DashboardLayout>
-            <h2>Fragments Page</h2>
+            <PageContainer />
         </DashboardLayout>
     )
 }

@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren } from "react"
 
 interface ButtonProps {
     onclick: (_: any) => void
-    text: string
+    text?: string
     color: 'black' | 'blue' | 'red' | 'green' | 'purple' | 'gray'
 }
 

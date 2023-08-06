@@ -1,7 +1,7 @@
 // https://github.com/abhijithvijayan/react-minimal-side-navigation/blob/main/source/side-nav.tsx
 
 import React, { FC, useEffect, useState } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from './Icon';
+import { ChevronDownIcon, ChevronUpIcon } from '../Icon';
 
 export type NavItemProps = {
     title: string;

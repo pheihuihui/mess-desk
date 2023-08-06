@@ -1,7 +1,7 @@
 import { SideNavigation } from "./SideNavigation";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { FC, useState } from "react";
-import { SomeIcon } from "./Icon";
+import { SomeIcon } from "../Icon";
 
 export const NavSidebar: FC = () => {
     const history = useNavigate();

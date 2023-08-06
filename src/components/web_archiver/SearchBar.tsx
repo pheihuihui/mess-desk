@@ -1,5 +1,5 @@
 import React, { FC, FormEvent } from "react"
-import { RightArrow } from "./Icon"
+import { RightArrow } from "../Icon"
 
 interface SearchBarProps {
     placeHolder: string
@@ -16,13 +16,13 @@ export const SearchBar: FC<SearchBarProps> = props => {
                 props.onSearch(e);
             }}>
                 <input
-                    className="rounded-md p-1 "
+                    className="rounded-md p-1 align-middle shadow-sm m-2"
                     type='text'
-                    size={45}
+                    size={100}
                     placeholder={props.placeHolder}
                     onChange={props.onChange}
                 />
-                <button type='submit'>
+                <button type='submit' className="align-middle m-1">
                     <RightArrow />
                 </button>
             </form>

@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 import { DashboardLayout } from "../components/layout/Layout";
-import { PageThumbnail } from "../components/web_archiver/PageThumbnail";
+import { PageThumbnailsGrid } from "../components/web_archiver/PageThumbnailsGrid";
 
 export const FragmentsPage: FC = () => {
     return (
         <DashboardLayout>
-            < PageThumbnail />
+            <PageThumbnailsGrid />
         </DashboardLayout>
     )
 }

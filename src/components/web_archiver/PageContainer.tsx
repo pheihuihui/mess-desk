@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef } from "react"
 import { useWindowSize } from "../../hooks"
 import { findOneFile } from "../../utilities/db"
 import { mhtml2html } from "../../utilities/mhtml2html"
-import { SearchBar } from "./SearchBar"
+import { AddressBar } from "./AddressBar"
 import { SaveIcon, UpRightArrow } from "../Icon"
 
 export const PageContainer: FC = () => {
@@ -36,7 +36,7 @@ export const PageContainer: FC = () => {
                     <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
                     <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
                     <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
-                    <SearchBar placeHolder="url" onChange={() => { }} onSearch={e => {
+                    <AddressBar placeHolder="url" onChange={() => { }} onSearch={e => {
                         let url = e.target[0].value
                         const ifr = ifrRef.current
                         if (ifr) {

@@ -33,9 +33,7 @@ export const PageContainer: FC = () => {
         <div className="overflow-hidden shadow-2xl rounded-2xl " style={{ width: 1280, height: size.height * 0.9 }}>
             <div className="flex items-center pl-3 justify-between bg-gray-200 rounded-t-xl h-12">
                 <div className="flex h-[90%] align-middle items-center">
-                    <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
-                    <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
-                    <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
+                    {[1, 2, 3].map(_ => <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>)}
                     <AddressBar placeHolder="url" onChange={() => { }} onSearch={e => {
                         let url = e.target[0].value
                         const ifr = ifrRef.current

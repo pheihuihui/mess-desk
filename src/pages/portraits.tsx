@@ -1,10 +1,12 @@
 import React, { FC } from "react";
-import { DashboardLayout } from "../components/layout/Layout";
+import { DashboardLayout } from "../components/_layout/Layout";
+import { DetailedPortraits } from "../components/portrait/DetailedPortrait";
+import { SimplePortrait } from "../components/portrait/SimplePortrait";
 
 export const PortraitsPage: FC = () => {
     return (
         <DashboardLayout>
-            <h2>Portraits Page</h2>
+            <SimplePortrait personID="aaa" />
         </DashboardLayout>
     )
 }

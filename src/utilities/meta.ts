@@ -6,4 +6,19 @@ export namespace DBStorage {
         timestamp: number
         content: string
     }
+
+    export interface DateInfo {
+        yyyy?: number
+        mm?: number
+        dd?: number
+    }
+
+    export interface PersonInfo {
+        id: string
+        name: string
+        birth?: DateInfo
+        death?: DateInfo
+        img?: string
+        description?: string
+    }
 }

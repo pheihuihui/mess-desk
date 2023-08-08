@@ -4,6 +4,7 @@ declare global {
 
     interface Window {
         markdownToHtml: (input: string) => string
+        twttr: any
     }
 
     namespace JSX {
@@ -11,5 +12,5 @@ declare global {
             ElemBefore: React.ReactNode;
         }
     }
-    
+
 }

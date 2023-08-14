@@ -1,18 +1,15 @@
 import React, { FC, useEffect, useState } from "react"
 
-export const SimplePortrait: FC<{ personID: string }> = props => {
+interface SimplePortraitProps {
+    name: string
+    img: string
+    onImgClicked: () => void
+}
 
-    const [name, setName] = useState<string>()
-    const [img, setImg] = useState<string>()
-
-    useEffect(() => {
-        setName('J. Robert Oppenheimer')
-        setImg('./assets/oppenheimer.jpg')
-    }, [])
-
+export const SimplePortrait: FC<SimplePortraitProps> = props => {
     return (
         <div className="flex flex-col items-center pb-10">
-            <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={img} title={name} />
+            <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={props.img} title={props.name} onClick={props.onImgClicked} />
         </div>
     )
 }

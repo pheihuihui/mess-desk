@@ -1,5 +1,3 @@
-import { resolve } from "path";
-
 export function getFileDB(): Promise<IDBDatabase> {
 
 	const request = indexedDB.open('filedb');

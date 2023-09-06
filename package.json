@@ -7,9 +7,11 @@
         "prebuild:css": "tailwindcss -i ./resources/tailwind.css -o ./prebuild/client.css",
         "prebuild:wasm": "node build_wasm.js",
         "build": "npm run prebuild:css && node build.js",
+        "build:crx": "node build_crx.js",
         "serve": "node serve.js"
     },
     "dependencies": {
+        "@types/chrome": "0.0.245",
         "@types/node": "20.4.2",
         "@types/react": "18.2.15",
         "@types/react-dom": "18.2.7",

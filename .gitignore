@@ -131,3 +131,6 @@ dist
 
 # prebuild
 prebuild/
+
+# chrome extension
+dist_crx/

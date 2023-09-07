@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useRef } from 'react';
+import { useState, useEffect, useReducer, useRef, DependencyList } from 'react';
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
@@ -95,4 +95,13 @@ export function useFetch<T = unknown>(url?: string, options?: RequestInit): Stat
     }, [url])
 
     return state
+}
+
+export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | undefined) {
+    const didMountRef = useRef(false);
+
+    useEffect(() => {
+        if (didMountRef.current) fn();
+        else didMountRef.current = true;
+    }, inputs);
 }

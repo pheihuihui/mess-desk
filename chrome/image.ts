@@ -1,4 +1,4 @@
-const DESQ_NEW_IMAGE = 'http://localhost:8080/desq'
+const DESQ_NEW_IMAGE = 'http://localhost:8080/desq/#/new-image'
 
 chrome.runtime.onMessage.addListener((msg, sneder, sendResp) => {
     if (msg && msg.type == 'saving-image' && msg.src) {
@@ -12,7 +12,6 @@ chrome.runtime.onMessage.addListener((msg, sneder, sendResp) => {
             })
     }
 })
-
 
 const blobToBase64 = (blob: Blob) => {
     return new Promise((resolve, reject) => {

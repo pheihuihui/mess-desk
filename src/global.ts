@@ -9,6 +9,10 @@ declare global {
         twttr: any
     }
 
+    interface EventTarget {
+        value: any
+    }
+
     namespace JSX {
         interface IntrinsicElements {
             ElemBefore: React.ReactNode;

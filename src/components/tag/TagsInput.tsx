@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDidUpdateEffect } from "../../hooks";
 
 import { Tag } from "./Tag";
+import { TagList } from "./TagList";
 
 export interface TagsInputProps {
 	name?: string;
@@ -54,30 +55,29 @@ export const TagsInput = ({
 	}, [value]);
 
 	return (
-		<div aria-labelledby={name} className="rti--container">
-			{tags.map(tag => (
-				<Tag
-					key={tag}
-					className={classNames?.tag}
-					text={tag}
-					remove={txt => {
-						setTags(tags.filter(tag => tag != txt));
-						onRemoved && onRemoved(txt);
-					}}
-					disabled={disabled}
-				/>
-			))}
-
+		<div aria-labelledby={name} className="max-w-sm">
+			<div>
+				{tags.map(tag => (
+					<Tag
+						key={tag}
+						className={classNames?.tag}
+						text={tag}
+						remove={txt => {
+							setTags(tags.filter(tag => tag != txt));
+							onRemoved && onRemoved(txt);
+						}}
+						disabled={disabled}
+					/>
+				))}
+			</div>
 			<input
-				className=""
+				className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
 				type="text"
 				name={name}
 				placeholder={placeHolder}
 				onKeyDown={e => {
 					e.stopPropagation();
-
 					const text = e.target.value;
-
 					if (
 						!text &&
 						!disableBackspaceRemove &&
@@ -104,6 +104,7 @@ export const TagsInput = ({
 				disabled={disabled}
 				onKeyUp={onKeyUp}
 			/>
+			<TagList tags={[]} />
 		</div>
 	);
 };

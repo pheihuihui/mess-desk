@@ -7,7 +7,6 @@ interface TagProps {
 	className?: string;
 }
 
-
 export const Tag: FC<TagProps> = props => {
 	return (
 		<span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full whitespace-nowrap overflow-hidden">

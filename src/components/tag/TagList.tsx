@@ -3,36 +3,23 @@ import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 interface TagListProps {
     onEnter?: (val: string) => void
     tags: string[]
+    selected: number
 }
 
 export const TagList: FC<TagListProps> = props => {
-
-    const [selected, setSelected] = useState(0)
-    const count = props.tags.length
-    const handleUserKeyPress = useCallback((evt: KeyboardEvent) => {
-        console.log(selected)
-        if (evt.code == 'ArrowUp') {
-            setSelected(selected - 1 >= 0 ? selected - 1 : 0)
-        } else if (evt.code == 'ArrowDown') {
-            setSelected(selected + 1 <= count - 1 ? selected + 1 : count - 1)
-        }
-    }, [selected])
-    useEffect(() => {
-        document.addEventListener('keydown', handleUserKeyPress)
-        return () => {
-            document.removeEventListener('keydown', handleUserKeyPress)
-        }
-    }, [handleUserKeyPress])
-
     return (
-        <ul className="list-outside">
-            {props.tags.map((v, i) => {
-                if (i == selected) {
-                    return <li key={i} className="text-red-500">{v}</li>
-                } else {
-                    return <li key={i} className="">{v}</li>
-                }
-            })}
+        <ul className="list-outside overflow-y-scroll h-full">
+            {props.tags.map((v, i) =>
+                <li key={i}>
+                    <span className={
+                        `${i == props.selected ? 'bg-green-500' : 'bg-slate-300'} 
+                        text-black text-xs font-medium mr-2 px-2.5 py-0.5 
+                        rounded-full whitespace-nowrap overflow-hidden`
+                    }>
+                        {v}
+                    </span>
+                </li>)
+            }
         </ul>
     );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDidUpdateEffect } from "../../hooks";
 
 import { Tag } from "./Tag";
@@ -24,8 +24,6 @@ export interface TagsInputProps {
 	};
 }
 
-const defaultSeparators = ["Enter"];
-
 export const TagsInput = ({
 	name,
 	placeHolder,
@@ -42,28 +40,40 @@ export const TagsInput = ({
 	onKeyUp,
 	classNames,
 }: TagsInputProps) => {
-	const [tags, setTags] = useState<string[]>(value ?? []);
+	const [selectedTags, setSelectedTags] = useState<string[]>(value ?? [])
+	const [filteredTags, setFilteredTags] = useState<string[]>([])
+	const [index, setIndex] = useState(0)
+	const [allTags, setAllTags] = useState<string[]>([])
+	const [currentValue, setCurrentValue] = useState('')
 
 	useDidUpdateEffect(() => {
-		onChange && onChange(tags);
-	}, [tags]);
+		onChange && onChange(selectedTags);
+	}, [selectedTags]);
 
 	useDidUpdateEffect(() => {
-		if (JSON.stringify(value) !== JSON.stringify(tags)) {
-			setTags(value ?? []);
+		if (JSON.stringify(value) !== JSON.stringify(selectedTags)) {
+			setSelectedTags(value ?? []);
 		}
 	}, [value]);
 
+	useEffect(() => {
+		let savedTagsStr = localStorage.getItem('savedTags')
+		if (savedTagsStr) {
+			let arr = JSON.parse(savedTagsStr) as string[]
+			setAllTags(arr)
+		}
+	}, [])
+
 	return (
-		<div aria-labelledby={name} className="max-w-sm">
-			<div>
-				{tags.map(tag => (
+		<div aria-labelledby={name} className="w-40">
+			<div className="w-full">
+				{selectedTags.map(tag => (
 					<Tag
 						key={tag}
 						className={classNames?.tag}
 						text={tag}
 						remove={txt => {
-							setTags(tags.filter(tag => tag != txt));
+							setSelectedTags(selectedTags.filter(tag => tag != txt));
 							onRemoved && onRemoved(txt);
 						}}
 						disabled={disabled}
@@ -71,40 +81,46 @@ export const TagsInput = ({
 				))}
 			</div>
 			<input
-				className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+				className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
 				type="text"
 				name={name}
 				placeholder={placeHolder}
 				onKeyDown={e => {
-					e.stopPropagation();
-					const text = e.target.value;
-					if (
-						!text &&
-						!disableBackspaceRemove &&
-						tags.length &&
-						e.key === "Backspace"
-					) {
-						e.target.value = isEditOnRemove ? `${tags.at(-1)} ` : "";
-						setTags([...tags.slice(0, -1)]);
-					}
-
-					if (text && (separators || defaultSeparators).includes(e.key)) {
-						e.preventDefault();
-						if (beforeAddValidate && !beforeAddValidate(text, tags)) return;
-
-						if (tags.includes(text)) {
-							onExisting && onExisting(text);
-							return;
+					e.stopPropagation()
+					const count = filteredTags.length
+					if (e.code == 'ArrowUp') {
+						setIndex(index - 1 >= 0 ? index - 1 : 0)
+					} else if (e.code == 'ArrowDown') {
+						setIndex(index + 1 <= count - 1 ? index + 1 : count - 1)
+					} else if (e.code == 'Enter') {
+						let newtag = ''
+						if (filteredTags && filteredTags[index]) {
+							newtag = filteredTags[index]
+						} else {
+							newtag = currentValue
 						}
-						setTags([...tags, text]);
-						e.target.value = "";
+						let tmp = new Set([...selectedTags, newtag])
+						setSelectedTags(Array.from(tmp))
 					}
+				}}
+				onChange={e => {
+					let val = e.target.value as string
+					setCurrentValue(val)
+					if (val.length > 0) {
+						let arr = allTags.filter(t => t.toLowerCase().indexOf(val.toLowerCase()) != -1)
+						setFilteredTags(arr)
+					} else {
+						setFilteredTags([])
+					}
+					setIndex(0)
 				}}
 				onBlur={onBlur}
 				disabled={disabled}
 				onKeyUp={onKeyUp}
 			/>
-			<TagList tags={[]} />
+			<div className="w-full h-16">
+				{filteredTags.length == 0 || <TagList tags={filteredTags} selected={index} />}
+			</div>
 		</div>
 	);
 };

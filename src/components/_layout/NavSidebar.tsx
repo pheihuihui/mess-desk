@@ -29,7 +29,8 @@ export const NavSidebar: FC = () => {
                         { title: "Notes", itemId: "/notes" },
                         { title: "Fragments", itemId: "/fragments" },
                         { title: "Portraits", itemId: "/portraits" },
-                        { title: "Podcasts", itemId: "/pods" }
+                        { title: "Podcasts", itemId: "/pods" },
+                        { title: "Images", itemId: "/new-image" }
                     ]}
                 />
 

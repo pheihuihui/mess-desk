@@ -18,10 +18,6 @@ export interface TagsInputProps {
 	isEditOnRemove?: boolean;
 	beforeAddValidate?: (tag: string, existingTags: string[]) => boolean;
 	onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-	classNames?: {
-		input?: string;
-		tag?: string;
-	};
 }
 
 export const TagsInput = ({
@@ -37,8 +33,7 @@ export const TagsInput = ({
 	disabled,
 	isEditOnRemove,
 	beforeAddValidate,
-	onKeyUp,
-	classNames,
+	onKeyUp
 }: TagsInputProps) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>(value ?? [])
 	const [filteredTags, setFilteredTags] = useState<string[]>([])
@@ -65,12 +60,12 @@ export const TagsInput = ({
 	}, [])
 
 	return (
-		<div aria-labelledby={name} className="w-40">
+		<div aria-labelledby={name} className="w-full">
 			<div className="w-full">
 				{selectedTags.map(tag => (
 					<Tag
 						key={tag}
-						className={classNames?.tag}
+						className=""
 						text={tag}
 						remove={txt => {
 							setSelectedTags(selectedTags.filter(tag => tag != txt));
@@ -100,6 +95,8 @@ export const TagsInput = ({
 							newtag = currentValue
 						}
 						let tmp = new Set([...selectedTags, newtag])
+						e.target.value = ''
+						setFilteredTags([])
 						setSelectedTags(Array.from(tmp))
 					}
 				}}

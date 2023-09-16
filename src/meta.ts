@@ -21,4 +21,11 @@ export namespace DBStorage {
         img?: string
         description?: string
     }
+
+    export interface ImageInfo {
+        imageUrl: string
+        thumbnailUrl: string
+        description: string
+        tags: string[]
+    }
 }

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
-import { DBStorage } from "../../utilities/meta"
+import { DBStorage } from "../../meta"
 import { formatPeriod } from "../../utilities/utilities"
 
 export interface DetailedPortraitProps {

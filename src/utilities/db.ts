@@ -126,23 +126,56 @@ export async function populateOneFile(fileName: string, content: Blob) {
 	};
 }
 
-export async function populateOneImage(image: Blob, isThumbnail?: boolean) {
+export async function populateOneImage(image: Blob, isThumbnail?: boolean): Promise<number> {
 	const storeName: DESQ_STORE_TYPE = isThumbnail ? 'STORE_THUMBNAILS' : 'STORE_IMAGES'
 	let hash = await hashBlob(image)
 	const db = await getDesqDb(storeName)
 	const tx = db.transaction([storeName], 'readwrite')
 	const store = tx.objectStore(storeName)
-	tx.oncomplete = function () {
-		db.close()
-		console.log('db closed')
-	}
-	store.add({ image: image, hash: hash })
-	tx.commit()
-	db.close()
+	let key = store.put({ image: image, hash: hash })
+	return new Promise((resolve, reject) => {
+		key.onsuccess = _ => {
+			let index = store.index('hash')
+			let req = index.get(hash)
+			req.onsuccess = __ => resolve(req.result['id'])
+			req.onerror = __ => reject(-1)
+		}
+		key.onerror = _ => {
+			let _tx = db.transaction(storeName, 'readonly')
+			let _st = _tx.objectStore(storeName)
+			let index = _st.index('hash')
+			let req = index.get(hash)
+			req.onsuccess = __ => resolve(req.result['id'])
+			req.onerror = __ => reject(-1)
+		}
+	})
 }
 
-export async function populateOneImageInfo(image: Blob, tags: string[], description: string) {
+export async function fromHash(storeName: DESQ_STORE_TYPE, hash: string) {
+	const db = await getDesqDb(storeName)
+	const tx = db.transaction(storeName, 'readonly')
+	const store = tx.objectStore(storeName)
+	const index = store.index('hash')
+	const req = index.get(hash)
+	return new Promise((resolve, reject) => {
+		req.onsuccess = _ => resolve(req.result)
+		req.onerror = ev => console.log(ev)
+	})
+}
 
+export async function populateOneImageInfo(image: Blob, tags: string[], description: string, thumb?: Blob) {
+	let item: I_Image_Info = {} as I_Image_Info
+	item.description = description
+	item.image = await populateOneImage(image)
+	if (thumb) {
+		item.thumbnail = await populateOneImage(thumb, true)
+	}
+	item.tags = tags
+	let stname: DESQ_STORE_TYPE = 'STORE_IMAGE_INFO'
+	let db = await getDesqDb(stname)
+	let tx = db.transaction(stname, 'readwrite')
+	let st = tx.objectStore(stname)
+	st.put(item)
 }
 
 export async function findOneFile(name: string): Promise<Blob> {

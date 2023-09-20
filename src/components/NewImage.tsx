@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react"
 import { SaveIcon, EditIcon } from './Icon'
 import { TagsInput } from "./tag/TagsInput"
 import { hashBlob } from "../utilities/utilities"
-import { populateOneImage } from "../utilities/db"
+import { populateOneImage, populateOneImageInfo } from "../utilities/db"
 
 export const NewImage: FC = () => {
 
@@ -23,36 +23,43 @@ export const NewImage: FC = () => {
     }, [])
 
     async function handleCompress() {
+        let canv = canvasRef.current
+        let img = imgRef.current
+        if (canv && img) {
+            let ctx = canv.getContext('2d')
+            let imgH = img.naturalHeight
+            let imgW = img.naturalWidth
+            let srcSize = imgH * imgW
+            let targetSize = 200 * 200
+            let x = Math.sqrt(srcSize / targetSize)
+            if (x > 1) {
+                let targetH = Math.floor(imgH / x)
+                let targetW = Math.floor(imgW / x)
+                canv.height = targetH
+                canv.width = targetW
+                ctx?.drawImage(img, 0, 0, targetW, targetH)
+                let dt = canv.toDataURL()
+                setCompressedImageDataUrl(dt)
+            } else {
+                setCompressedImageDataUrl(imageDataUrl)
+            }
+        }
+    }
+
+    async function saveImage() {
         let tmp = await fetch(imageDataUrl)
         let blb = await tmp.blob()
         let hash = await hashBlob(blb)
-        populateOneImage(blb)
-        // let canv = canvasRef.current
-        // let img = imgRef.current
-        // if (canv && img) {
-        //     let ctx = canv.getContext('2d')
-        //     let imgH = img.naturalHeight
-        //     let imgW = img.naturalWidth
-        //     let srcSize = imgH * imgW
-        //     let targetSize = 200 * 200
-        //     let x = Math.sqrt(srcSize / targetSize)
-        //     if (x > 1) {
-        //         let targetH = Math.floor(imgH / x)
-        //         let targetW = Math.floor(imgW / x)
-        //         canv.height = targetH
-        //         canv.width = targetW
-        //         ctx?.drawImage(img, 0, 0, targetW, targetH)
-        //         let dt = canv.toDataURL()
-        //         setCompressedImageDataUrl(dt)
-        //     } else {
-        //         setCompressedImageDataUrl(imageDataUrl)
-        //     }
-        // }
+        await handleCompress()
+        let tmp2 = await fetch(compressedImageDataUrl)
+        let blb2 = await tmp2.blob()
+        let hash2 = await hashBlob(blb2)
+        populateOneImageInfo(blb, tags, description, blb2)
     }
 
     return (
         <div className="w-80">
-            <button onClick={handleCompress}>
+            <button onClick={saveImage}>
                 <SaveIcon />
             </button>
             <img ref={imgRef} src={imageDataUrl} className="max-h-64 max-w-5xl" />

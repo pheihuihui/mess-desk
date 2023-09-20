@@ -7,6 +7,7 @@ declare global {
         markdownToHtml: (input: string) => string
         populateOneFile: (fileName: string, content: Blob) => void
         findOneFile: (name: string) => Promise<Blob>
+        fromHash: any
         twttr: any
     }
 

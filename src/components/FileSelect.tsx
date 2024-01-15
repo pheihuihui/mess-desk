@@ -2,8 +2,8 @@ import React, { FC, useEffect, useState } from "react"
 import { getFileDB, populateOneFile } from "../utilities/db"
 
 export const FileSelect: FC = () => {
-    const [selectedFile, setSelectedFile] = useState<Blob | undefined>()
-    const [imagePreview, setImagePreview] = useState<string | undefined>()
+    const [selectedFile, setSelectedFile] = useState<Blob>()
+    const [imagePreview, setImagePreview] = useState<string>()
 
     useEffect(() => {
         if (!selectedFile) {
@@ -20,22 +20,28 @@ export const FileSelect: FC = () => {
             <h1 className="text-3xl font-bold underline">Select File:</h1>
             <input
                 className="border-l-yellow-400"
-                type='file'
-                onChange={ev => {
+                type="file"
+                onChange={(ev) => {
                     if (!ev.target.files || ev.target.files.length === 0) {
                         setSelectedFile(undefined)
                         return
                     }
                     setSelectedFile(ev.target.files[0])
                 }}
-                accept="*" />
-            {selectedFile && (selectedFile?.type.split('/')[0] == 'image' ? <img src={imagePreview} /> : undefined)}
-            <button onClick={_ => {
-                let fileName = selectedFile?.name
-                if (fileName && selectedFile) {
-                    populateOneFile(fileName, selectedFile)
-                }
-            }}>Save</button>
+                accept="*"
+            />
+            {selectedFile && (selectedFile?.type.split("/")[0] == "image" ? <img src={imagePreview} /> : undefined)}
+            <button
+                onClick={(_) => {
+                    // let fileName = selectedFile?.name
+                    let fileName = prompt("Enter file name:")
+                    if (fileName && selectedFile) {
+                        populateOneFile(fileName, selectedFile)
+                    }
+                }}
+            >
+                Save
+            </button>
         </div>
     )
 }

@@ -9,14 +9,9 @@ export const PageThumbnailsGrid: FC = () => {
                 <SearchBar />
             </div>
             <div className="grid grid-cols-5 gap-3">
-                {[
-                    'www.zhihu.com',
-                    'bilibili.com',
-                    'twitter.com',
-                    'www.typescriptlang.org',
-                    'www.reddit.com',
-                    'zh.wikipedia.org'
-                ].map((x, u) => <PageThumbnail key={u} title={x} domain={x} />)}
+                {["www.zhihu.com", "bilibili.com", "twitter.com", "www.typescriptlang.org", "www.reddit.com", "zh.wikipedia.org"].map((x, u) => (
+                    <PageThumbnail key={u} title={x} domain={x} />
+                ))}
             </div>
         </div>
     )

@@ -7,22 +7,17 @@ interface AddressBarProps {
     onSearch: (_: any) => void
 }
 
-export const AddressBar: FC<AddressBarProps> = props => {
-
+export const AddressBar: FC<AddressBarProps> = (props) => {
     return (
         <div>
-            <form onSubmit={e => {
-                e.preventDefault();
-                props.onSearch(e);
-            }}>
-                <input
-                    className="rounded-md p-1 align-middle shadow-sm m-2"
-                    type='text'
-                    size={100}
-                    placeholder={props.placeHolder}
-                    onChange={props.onChange}
-                />
-                <button type='submit' className="align-middle m-1">
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    props.onSearch(e)
+                }}
+            >
+                <input className="rounded-md p-1 align-middle shadow-sm m-2" type="text" size={100} placeholder={props.placeHolder} onChange={props.onChange} />
+                <button type="submit" className="align-middle m-1">
                     <RightArrow />
                 </button>
             </form>

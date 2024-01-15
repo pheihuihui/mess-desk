@@ -1,32 +1,31 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { SaveIcon, EditIcon } from './Icon'
+import { SaveIcon, EditIcon } from "./Icon"
 import { TagsInput } from "./tag/TagsInput"
 import { hashBlob } from "../utilities/utilities"
 import { populateOneImage, populateOneImageInfo } from "../utilities/db"
 
 export const NewImage: FC = () => {
-
-    const [description, setDescription] = useState<string>('')
+    const [description, setDescription] = useState<string>("")
     const [tags, setTags] = useState<string[]>([])
-    const [imageDataUrl, setImageDataUrl] = useState<string>('')
-    const [compressedImageDataUrl, setCompressedImageDataUrl] = useState<string>('')
+    const [imageDataUrl, setImageDataUrl] = useState<string>("")
+    const [compressedImageDataUrl, setCompressedImageDataUrl] = useState<string>("")
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
 
     useEffect(() => {
-        navigator.clipboard.readText()
-            .then(txt => {
-                if (txt.startsWith('data:image')) {
-                    setImageDataUrl(txt)
-                }
-            })
+        navigator.clipboard.readText().then((txt) => {
+            if (txt.startsWith("data:image")) {
+                setImageDataUrl(txt)
+            }
+        })
     }, [])
 
-    async function handleCompress() {
+    function handleCompress() {
         let canv = canvasRef.current
         let img = imgRef.current
         if (canv && img) {
-            let ctx = canv.getContext('2d')
+            let ctx = canv.getContext("2d")
+            ctx?.clearRect(0, 0, canv.width, canv.height)
             let imgH = img.naturalHeight
             let imgW = img.naturalWidth
             let srcSize = imgH * imgW
@@ -38,7 +37,8 @@ export const NewImage: FC = () => {
                 canv.height = targetH
                 canv.width = targetW
                 ctx?.drawImage(img, 0, 0, targetW, targetH)
-                let dt = canv.toDataURL()
+                let dt = canv.toDataURL("image/png")
+                console.log(dt)
                 setCompressedImageDataUrl(dt)
             } else {
                 setCompressedImageDataUrl(imageDataUrl)
@@ -47,13 +47,11 @@ export const NewImage: FC = () => {
     }
 
     async function saveImage() {
+        handleCompress()
         let tmp = await fetch(imageDataUrl)
         let blb = await tmp.blob()
-        let hash = await hashBlob(blb)
-        await handleCompress()
         let tmp2 = await fetch(compressedImageDataUrl)
         let blb2 = await tmp2.blob()
-        let hash2 = await hashBlob(blb2)
         populateOneImageInfo(blb, tags, description, blb2)
     }
 
@@ -63,12 +61,12 @@ export const NewImage: FC = () => {
                 <SaveIcon />
             </button>
             <img ref={imgRef} src={imageDataUrl} className="max-h-64 max-w-5xl" />
-            <canvas ref={canvasRef} className="hidden" />
+            <canvas ref={canvasRef} className="" />
             <label className="block mb-2 text-sm font-medium text-gray-900">Description:</label>
             <textarea
                 className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Write your descriptions here..."
-                onChange={e => setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
             />
             <label className="block mb-2 text-sm font-medium text-gray-900">Tags:</label>
             <TagsInput onChange={setTags} />

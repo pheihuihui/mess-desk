@@ -2,6 +2,7 @@
     "name": "desq",
     "version": "1.0.0",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "prebuild:css": "tailwindcss -i ./resources/tailwind.css -o ./prebuild/client.css",
@@ -11,20 +12,21 @@
         "serve": "node serve.js"
     },
     "dependencies": {
-        "@types/chrome": "0.0.245",
-        "@types/node": "20.5.9",
-        "@types/react": "18.2.21",
-        "@types/react-dom": "18.2.7",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "react-router": "6.15.0",
-        "react-router-dom": "6.15.0"
+        "react-router": "6.21.2",
+        "react-router-dom": "6.21.2"
     },
     "devDependencies": {
         "@tailwindcss/typography": "0.5.10",
-        "esbuild": "0.19.2",
+        "@types/chrome": "0.0.256",
+        "@types/node": "20.11.2",
+        "@types/react": "18.2.48",
+        "@types/react-dom": "18.2.18",
+        "esbuild": "0.19.11",
         "express": "4.18.2",
-        "tailwindcss": "3.3.3",
-        "typescript": "5.2.2"
+        "tailwindcss": "3.4.1",
+        "typescript": "5.3.3",
+        "prettier": "3.1.0"
     }
 }

@@ -1,6 +1,6 @@
-import React, { FC } from "react";
-import { DashboardLayout } from "../components/_layout/Layout";
-import { PodPlayer } from "../components/player/PodPlayer";
+import React, { FC } from "react"
+import { DashboardLayout } from "../components/_layout/Layout"
+import { PodPlayer } from "../components/player/PodPlayer"
 
 export const PodsPage: FC = () => {
     return (

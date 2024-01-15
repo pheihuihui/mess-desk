@@ -1,14 +1,13 @@
-export { };
+export {}
 
 declare global {
-
     interface Window {
         initDB: () => any
         markdownToHtml: (input: string) => string
-        populateOneFile: (fileName: string, content: Blob) => void
-        findOneFile: (name: string) => Promise<Blob>
-        fromHash: any
         twttr: any
+        debugging: {
+            fromHash: any
+        }
     }
 
     interface EventTarget {
@@ -17,8 +16,7 @@ declare global {
 
     namespace JSX {
         interface IntrinsicElements {
-            ElemBefore: React.ReactNode;
+            ElemBefore: React.ReactNode
         }
     }
-
 }

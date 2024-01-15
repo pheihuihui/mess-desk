@@ -1,6 +1,6 @@
-import React, { FC } from "react";
-import { DashboardLayout } from "../components/_layout/Layout";
-import { Portrait } from "../components/portrait/Portrait";
+import React, { FC } from "react"
+import { DashboardLayout } from "../components/_layout/Layout"
+import { Portrait } from "../components/portrait/Portrait"
 
 export const PortraitsPage: FC = () => {
     return (

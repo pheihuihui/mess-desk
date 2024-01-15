@@ -1,30 +1,30 @@
-import { useState, useEffect, useReducer, useRef, DependencyList } from 'react';
+import { useState, useEffect, useReducer, useRef, DependencyList } from "react"
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
         width: window.innerWidth * 0.7,
-        height: window.innerHeight * 0.9
+        height: window.innerHeight * 0.9,
     })
     const handleResize = () => {
         setWindowScale({
             width: window.innerWidth * 0.7,
-            height: window.innerHeight * 0.9
+            height: window.innerHeight * 0.9,
         })
     }
     useEffect(() => {
-        window.addEventListener('resize', handleResize)
+        window.addEventListener("resize", handleResize)
         handleResize()
-        return () => window.removeEventListener('resize', handleResize)
+        return () => window.removeEventListener("resize", handleResize)
     }, [])
     return windowScale
 }
 
-interface State<T> { data?: T, error?: Error }
+interface State<T> {
+    data?: T
+    error?: Error
+}
 type Cache<T> = { [url: string]: T }
-type Action<T> =
-    | { type: 'loading' }
-    | { type: 'fetched'; payload: T }
-    | { type: 'error'; payload: Error }
+type Action<T> = { type: "loading" } | { type: "fetched"; payload: T } | { type: "error"; payload: Error }
 
 export function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
     const cache = useRef<Cache<T>>({})
@@ -38,11 +38,11 @@ export function useFetch<T = unknown>(url?: string, options?: RequestInit): Stat
 
     const fetchReducer = (state: State<T>, action: Action<T>): State<T> => {
         switch (action.type) {
-            case 'loading':
+            case "loading":
                 return { ...initialState }
-            case 'fetched':
+            case "fetched":
                 return { ...initialState, data: action.payload }
-            case 'error':
+            case "error":
                 return { ...initialState, error: action.payload }
             default:
                 return state
@@ -57,10 +57,10 @@ export function useFetch<T = unknown>(url?: string, options?: RequestInit): Stat
         }
 
         const fetchData = async () => {
-            dispatch({ type: 'loading' })
+            dispatch({ type: "loading" })
 
             if (cache.current[url]) {
-                dispatch({ type: 'fetched', payload: cache.current[url] })
+                dispatch({ type: "fetched", payload: cache.current[url] })
                 return
             }
 
@@ -71,19 +71,19 @@ export function useFetch<T = unknown>(url?: string, options?: RequestInit): Stat
                     throw new Error(response.statusText)
                 }
 
-                const _data = (await response.json())
+                const _data = await response.json()
                 const data = JSON.parse(_data) as T
 
                 cache.current[url] = data
                 if (cancelRequest.current) {
                     return
                 }
-                dispatch({ type: 'fetched', payload: data })
+                dispatch({ type: "fetched", payload: data })
             } catch (error) {
                 if (cancelRequest.current) {
                     return
                 }
-                dispatch({ type: 'error', payload: error as Error })
+                dispatch({ type: "error", payload: error as Error })
             }
         }
 
@@ -91,17 +91,16 @@ export function useFetch<T = unknown>(url?: string, options?: RequestInit): Stat
         return () => {
             cancelRequest.current = true
         }
-
     }, [url])
 
     return state
 }
 
 export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | undefined) {
-    const didMountRef = useRef(false);
+    const didMountRef = useRef(false)
 
     useEffect(() => {
-        if (didMountRef.current) fn();
-        else didMountRef.current = true;
-    }, inputs);
+        if (didMountRef.current) fn()
+        else didMountRef.current = true
+    }, inputs)
 }

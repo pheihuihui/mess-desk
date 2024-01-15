@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Desq Web App</title>
+        <link rel="icon" type="image/ico" href="./favicon.ico" />
+        <link rel="stylesheet" href="./client.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <title>Desq Web App</title>
-    <link rel="icon" type="image/ico" href="./favicon.ico">
-    <link rel="stylesheet" href="./client.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
-<body class="bg-slate-300">
-    <script src="./client.js" async></script>
-    <script type="module" defer>
-        import init, { markdown_to_html_default } from "./pkg/comrak.js";
-        init().then(() => { window.markdownToHtml = markdown_to_html_default; });
-    </script>
-    <div id="rootdiv"></div>
-</body>
-
+    <body class="bg-slate-300">
+        <script src="./client.js" async></script>
+        <script type="module" defer>
+            import init, { markdown_to_html_default } from "./pkg/comrak.js"
+            init().then(() => {
+                window.markdownToHtml = markdown_to_html_default
+            })
+        </script>
+        <div id="rootdiv"></div>
+    </body>
 </html>

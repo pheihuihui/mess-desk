@@ -1,4 +1,4 @@
-import React, { ReactNode, FC, useRef, useEffect } from 'react';
+import React, { ReactNode, FC, useRef, useEffect } from "react"
 
 interface ReactAudioPlayerProps {
     autoPlay?: boolean
@@ -21,15 +21,14 @@ interface ReactAudioPlayerProps {
     onPlay?: (e: Event) => void
     onSeeked?: (e: Event) => void
     onVolumeChanged?: (e: Event) => void
-    preload?: '' | 'none' | 'metadata' | 'auto'
-    src?: string, // Not required b/c can use <source>
+    preload?: "" | "none" | "metadata" | "auto"
+    src?: string // Not required b/c can use <source>
     title?: string
     volume: number
 }
 
-export const PodPlayer: FC<ReactAudioPlayerProps> = props => {
-
-    const audioEl = useRef<HTMLAudioElement>(null);
+export const PodPlayer: FC<ReactAudioPlayerProps> = (props) => {
+    const audioEl = useRef<HTMLAudioElement>(null)
 
     return (
         <audio
@@ -44,5 +43,5 @@ export const PodPlayer: FC<ReactAudioPlayerProps> = props => {
             src={props.src}
             title={props.title ?? props.src}
         />
-    );
+    )
 }

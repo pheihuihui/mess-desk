@@ -48,14 +48,8 @@
     cursor: pointer;
 }
 
-.tab--1:checked ~ .indicator {
-    left: 2px;
-}
-
-.tab--2:checked ~ .indicator {
-    left: calc(130px + 2px);
-}
-
-.tab--3:checked ~ .indicator {
-    left: calc(130px * 2 + 2px);
+@for $i from 0 through 9 {
+    .tab--#{$i}:checked ~ .indicator {
+        left: calc(130px * $i + 2px);
+    }
 }

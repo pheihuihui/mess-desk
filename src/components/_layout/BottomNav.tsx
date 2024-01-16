@@ -1,23 +1,30 @@
-import React, { FC } from "react"
+import React, { FC, PropsWithChildren } from "react"
 
-export const BottomNav: FC = () => {
+interface NavItemProps {
+    index: number
+    title: string
+    itemId: string
+    elemBefore?: () => JSX.Element
+}
+
+export const BottomNavItem: FC<NavItemProps> = (props) => {
+    return (
+        <>
+            <input type="radio" name="tab" id={`tab${props.index}`} className={`tab tab--${props.index}`} />
+            <label className="tab_label" htmlFor={`tab${props.index}`}>
+                {props.elemBefore && props.elemBefore()}
+                {props.title}
+            </label>
+        </>
+    )
+}
+
+export const BottomNav: FC<{ items: NavItemProps[] }> = (props) => {
     return (
         <div className="tab-container">
-            <input type="radio" name="tab" id="tab1" className="tab tab--1" />
-            <label className="tab_label" htmlFor="tab1">
-                Profile
-            </label>
-
-            <input type="radio" name="tab" id="tab2" className="tab tab--2" />
-            <label className="tab_label" htmlFor="tab2">
-                Settings
-            </label>
-
-            <input type="radio" name="tab" id="tab3" className="tab tab--3" />
-            <label className="tab_label" htmlFor="tab3">
-                Notifications
-            </label>
-
+            {props.items.map((item) => (
+                <BottomNavItem {...item} />
+            ))}
             <div className="indicator"></div>
         </div>
     )

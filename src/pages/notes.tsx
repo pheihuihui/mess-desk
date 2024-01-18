@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { DashboardLayout } from "../components/_layout/Layout"
+import { DashboardLayout } from "../components/_layout/DashboardLayout"
 
 export const NotesPage: FC = () => {
     return (

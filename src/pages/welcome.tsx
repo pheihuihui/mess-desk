@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react"
-import { DashboardLayout } from "../components/_layout/Layout"
+import { DashboardLayout } from "../components/_layout/DashboardLayout"
 
 export const WelcomePage: FC = () => {
     const [selected, setSelected] = useState<string[]>([])

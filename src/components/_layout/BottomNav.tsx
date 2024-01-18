@@ -24,7 +24,15 @@ interface BottomNavProps {
 export const BottomNavItem: FC<NavItemProps> = (props) => {
     return (
         <>
-            <input type="radio" name="tab" id={`tab${props.index}`} className={`tab tab--${props.index}`} onClick={props.onclick} />
+            <input
+                type="radio"
+                name="tab"
+                id={`tab${props.index}`}
+                className={`tab tab--${props.index}`}
+                onClick={props.onclick}
+                checked={props.checked}
+                onChange={() => {}}
+            />
             <label className="tab_label" htmlFor={`tab${props.index}`}>
                 {props.elemBefore && props.elemBefore()}
                 {props.title}

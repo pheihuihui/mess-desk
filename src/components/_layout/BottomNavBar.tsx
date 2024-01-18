@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { HomeIcon } from "../Icon"
 import { useLocation, useNavigate } from "../../../node_modules/react-router-dom/dist/index"
 import { BottomNav } from "./BottomNav"
@@ -6,11 +6,15 @@ import { BottomNav } from "./BottomNav"
 export const BottomNavBar: FC = () => {
     const history = useNavigate()
     const location = useLocation()
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
     return (
         <BottomNav
-            activeItemId="notes"
+            onSelect={(itemId) => {
+                setTimeout(() => {
+                    history(itemId)
+                }, 200)
+            }}
+            activeItemId={location.pathname}
             items={[
                 { title: "Notes", itemId: "/notes" },
                 { title: "Fragments", itemId: "/fragments" },

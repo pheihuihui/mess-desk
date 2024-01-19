@@ -5,9 +5,8 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prebuild:css": "tailwindcss -i ./resources/tailwind.css -o ./prebuild/client.css",
         "prebuild:wasm": "node build_wasm.js",
-        "build": "npm run prebuild:css && node build.js",
+        "build": "node build.js",
         "build:crx": "node build_crx.js",
         "serve": "node serve.js"
     },
@@ -18,14 +17,12 @@
         "react-router-dom": "6.21.2"
     },
     "devDependencies": {
-        "@tailwindcss/typography": "0.5.10",
         "@types/chrome": "0.0.256",
         "@types/node": "20.11.2",
         "@types/react": "18.2.48",
         "@types/react-dom": "18.2.18",
         "esbuild": "0.19.11",
         "express": "4.18.2",
-        "tailwindcss": "3.4.1",
         "typescript": "5.3.3",
         "prettier": "3.1.0",
         "sass": "1.69.7"

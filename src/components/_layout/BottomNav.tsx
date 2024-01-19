@@ -1,18 +1,18 @@
-import React, { FC, useState } from "react"
+import React, { FC, ReactNode, useState } from "react"
 
 interface NavItemProps {
     index: number
     checked: boolean
     title: string
     itemId: string
-    elemBefore?: () => JSX.Element
+    elemBefore?: ReactNode
     onclick?: () => void
 }
 
 interface SimpleNavItemProps {
     title: string
     itemId: string
-    elemBefore?: () => JSX.Element
+    elemBefore?: ReactNode
 }
 
 interface BottomNavProps {
@@ -34,7 +34,7 @@ export const BottomNavItem: FC<NavItemProps> = (props) => {
                 onChange={() => {}}
             />
             <label className="tab_label" htmlFor={`tab${props.index}`}>
-                {props.elemBefore && props.elemBefore()}
+                {props.elemBefore}
                 {props.title}
             </label>
         </>

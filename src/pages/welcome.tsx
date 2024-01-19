@@ -1,10 +1,11 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
+import { AllTags } from "../components/tag/AllTags"
 
 export const WelcomePage: FC = () => {
     return (
         <DashboardLayout>
-            <h2>Welcome!</h2>
+            <AllTags />
         </DashboardLayout>
     )
 }

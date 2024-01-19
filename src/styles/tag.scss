@@ -1,0 +1,52 @@
+.tagging-card {
+    width: 60%;
+    height: 300px;
+    margin: 30px;
+    background: #ecf39e;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    color: #31572c;
+    border-radius: 15px;
+    box-shadow: -20px 20px 0px -5px #31572c;
+
+    .card-tags {
+        overflow: auto;
+        height: 80%;
+    }
+
+    .title {
+        font-weight: 900;
+        font-size: 1.7em;
+    }
+
+    .tag {
+        &-name {
+            display: inline-block;
+            color: #fff;
+            font-size: 1.1em;
+            background-color: #31572c;
+            padding: 6px 23px 9px;
+            border-radius: 70em;
+            margin: 8px 6px 8px 0;
+            margin-left: 0px;
+            position: relative;
+            // text-transform: lowercase;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        &-name::before {
+            left: 7px;
+        }
+
+        &-name::after {
+            right: 7px;
+        }
+
+        &-name:hover {
+            transform: scale(1.02);
+            background-color: #51572c;
+        }
+    }
+}

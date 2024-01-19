@@ -1,5 +1,6 @@
 @import "./bottom-nav.scss";
 @import "./tag.scss";
+@import "./markdown.scss";
 
 body {
     margin: 0;
@@ -27,5 +28,8 @@ body {
     &-inner {
         width: 100%;
         height: 95vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }

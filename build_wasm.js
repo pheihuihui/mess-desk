@@ -1,12 +1,24 @@
-import path from "path"
 import cp from "child_process"
-
-const __path_comrak = path.join(__dirname, "./wasm/comrak")
+import fs from "fs"
 
 const __command_build = "wasm-pack build --target web"
+// const __command_build = "wasm-pack build --target bundler"
 
-cp.exec(__command_build, { cwd: __path_comrak, shell: "powershell" }, function (err, stdout, stderr) {
+cp.exec(__command_build, { cwd: "./wasm/markdown-reader", shell: "powershell" }, function (err, stdout, stderr) {
     console.log(err)
     console.log(stdout)
     console.log(stderr)
 })
+
+const __dir_prebuild = "./prebuild"
+
+if (fs.existsSync(__dir_prebuild)) {
+    fs.rmSync(__dir_prebuild, { recursive: true })
+}
+
+fs.mkdirSync(__dir_prebuild)
+
+const dir_wasm_pack = "./wasm/markdown-reader/pkg"
+const dir_wasm_prebuild = "./prebuild"
+
+fs.cpSync(dir_wasm_pack, `${dir_wasm_prebuild}/pkg`, { recursive: true })

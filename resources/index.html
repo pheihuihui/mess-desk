@@ -11,7 +11,7 @@
     <body>
         <script src="./client.js" async></script>
         <script type="module" defer>
-            import init, { markdown_to_html_default } from "./pkg/comrak.js"
+            import init, { markdown_to_html_default } from "./pkg/markdown_reader.js"
             init().then(() => {
                 window.markdownToHtml = markdown_to_html_default
             })

@@ -18,10 +18,7 @@ fs.copyFileSync("./resources/sample.md", `${dir_client}/sample.md`)
 const styles = sass.compile("./src/styles/_index.scss")
 fs.writeFileSync(`${dir_client}/client.css`, styles.css)
 
-const dir_wasm_pack = "./wasm/markdown-reader/pkg"
-const dir_wasm_prebuild = "./prebuild"
 const dir_assets = "./assets"
-fs.cpSync(dir_wasm_pack, `${dir_wasm_prebuild}/pkg`, { recursive: true })
 fs.cpSync(dir_assets, `${dir_client}/assets`, { recursive: true })
 
 fs.cpSync(`./prebuild/pkg/${pkg_wasm}`, `${dir_client}/pkg/${pkg_wasm}`)

@@ -6,7 +6,7 @@ import { PortraitsPage } from "./portraits"
 import { WelcomePage } from "./welcome"
 import { ImagePage } from "./image"
 import { PodsPage } from "./pods"
-import { StoragePage } from "./storage"
+import { SettingsPage } from "./settings"
 
 interface TabProps {
     [itemId: string]: {
@@ -44,14 +44,14 @@ export const tabs: TabProps = {
         path: "pods",
         page: <PodsPage />,
     },
-    "/storage": {
-        text: "Storage",
-        path: "storage",
-        page: <StoragePage />,
-    },
     "/new-image": {
         text: "New Image",
         path: "new-image",
         page: <ImagePage />,
+    },
+    "/settings": {
+        text: "Settings",
+        path: "Settings",
+        page: <SettingsPage />,
     },
 }

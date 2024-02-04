@@ -1,3 +1,0 @@
-[submodule "wasm/markdown-reader"]
-	path = wasm/markdown-reader
-	url = https://github.com/pheihuihui/markdown-reader

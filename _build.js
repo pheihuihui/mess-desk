@@ -3,8 +3,6 @@ import fs from "fs"
 import * as sass from "sass"
 
 const dir_client = "./dist"
-const pkg_wasm = "markdown_reader_bg.wasm"
-const pkg_js = "markdown_reader.js"
 
 if (fs.existsSync(dir_client)) {
     fs.rmSync(dir_client, { recursive: true })
@@ -21,8 +19,10 @@ fs.writeFileSync(`${dir_client}/client.css`, styles.css)
 const dir_assets = "./assets"
 fs.cpSync(dir_assets, `${dir_client}/assets`, { recursive: true })
 
-fs.cpSync(`./prebuild/pkg/${pkg_wasm}`, `${dir_client}/pkg/${pkg_wasm}`)
-fs.cpSync(`./prebuild/pkg/${pkg_js}`, `${dir_client}/pkg/${pkg_js}`)
+let wasm_files = ["markdown_reader_bg.js", "markdown_reader_bg.wasm", "markdown_reader.js"]
+wasm_files.forEach((f) => {
+    fs.cpSync(`./wasm_prebuild/${f}`, `${dir_client}/pkg/${f}`)
+})
 
 es.buildSync({
     entryPoints: ["./src/index.ts"],

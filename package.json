@@ -5,10 +5,10 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prebuild:wasm": "node build_wasm.js",
-        "build": "node build.js",
-        "build:crx": "node build_crx.js",
-        "serve": "node serve.js"
+        "prebuild:wasm": "node _build_wasm.js",
+        "build": "node _build.js",
+        "build:crx": "node _build_crx.js",
+        "serve": "node _serve.js"
     },
     "dependencies": {
         "react": "18.2.0",

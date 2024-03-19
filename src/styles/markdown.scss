@@ -1,19 +1,85 @@
 .markdown {
     &-reader {
-        width: 80%;
-        height: 80vh;
+        width: 90%;
+        height: 90vh;
 
-        &-inner {
-            width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: stretch;
+
+        &-code {
+            width: 45%;
             height: 100%;
+            margin: auto;
+            padding: 0 1rem;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            background-color: #f5f5f5;
+            border-radius: 1rem;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            box-shadow:
+                0px 3px 8px rgba(0, 0, 0, 0.12),
+                0px 3px 1px rgba(0, 0, 0, 0.04);
+
+            textarea {
+                width: 95%;
+                height: 95%;
+                border: 1rem;
+                padding: 1rem;
+                background-color: #150901;
+                font-size: 1rem;
+                resize: none;
+                color: #2da3d6;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+
+        &-rendered {
+            width: 45%;
+            height: 100%;
+            margin: auto;
             padding: 0 1rem;
             overflow-y: scroll;
             overflow-x: hidden;
             background-color: #fff;
-            border-radius: 0.5rem;
+            border-radius: 1rem;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: stretch;
+
+            background-color: aquamarine;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
             box-shadow:
                 0px 3px 8px rgba(0, 0, 0, 0.12),
                 0px 3px 1px rgba(0, 0, 0, 0.04);
+
+            div .markdown-body {
+                width: 95%;
+                height: 95%;
+                margin: auto;
+                padding: 0 1rem;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                background-color: #fff;
+                border-radius: 1rem;
+            }
         }
     }
 }

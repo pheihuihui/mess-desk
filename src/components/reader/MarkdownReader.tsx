@@ -17,7 +17,12 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
 
     return (
         <div className="markdown-reader">
-            <div className="markdown-reader-inner" dangerouslySetInnerHTML={{ __html: innerHtml }} />
+            <div className="markdown-reader-code">
+                <textarea />
+            </div>
+            <div className="markdown-reader-rendered">
+                <div className="markdown-body" dangerouslySetInnerHTML={{ __html: innerHtml }} />
+            </div>
         </div>
     )
 }

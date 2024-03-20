@@ -5,7 +5,7 @@ import { MarkdownReader } from "../components/reader/MarkdownReader"
 export const WelcomePage: FC = () => {
     return (
         <DashboardLayout>
-            <MarkdownReader src="./sample.md" />
+            <MarkdownReader />
         </DashboardLayout>
     )
 }

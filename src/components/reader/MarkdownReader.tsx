@@ -1,24 +1,34 @@
-import React, { FC, useEffect } from "react"
+import React, { FC, useEffect, useRef } from "react"
+import { useLocalStorage } from "../../hooks"
 
-interface MarkdownReaderProps {
-    src: string
-}
-
-export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
+export const MarkdownReader: FC = () => {
     const [innerHtml, setInnerHtml] = React.useState("")
+    const [src, saveSrc] = useLocalStorage("markdownCode", "")
+    const textRef = useRef<HTMLTextAreaElement>(null)
+
     useEffect(() => {
-        fetch(props.src).then((resp) => {
-            resp.text().then((text) => {
-                let html = window.markdownToHtml(text)
-                setInnerHtml(html)
-            })
-        })
-    }, [])
+        let html = window.markdownToHtml(src)
+        setInnerHtml(html)
+        if (textRef.current) {
+            textRef.current.value = src
+            textRef.current.onkeydown = (e) => {
+                if (e.ctrlKey && e.key == "s") {
+                    e.preventDefault()
+                    saveSrc(textRef.current?.value ?? "")
+                }
+            }
+        }
+        return () => {
+            if (textRef.current) {
+                textRef.current.onkeydown = null
+            }
+        }
+    }, [src])
 
     return (
         <div className="markdown-reader">
             <div className="markdown-reader-code">
-                <textarea />
+                <textarea ref={textRef} />
             </div>
             <div className="markdown-reader-rendered">
                 <div className="markdown-body" dangerouslySetInnerHTML={{ __html: innerHtml }} />

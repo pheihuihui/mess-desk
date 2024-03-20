@@ -105,7 +105,7 @@ export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | unde
     }, inputs)
 }
 
-const SettingKeysForStringValues = ["imageApi", "imageApiKey"] as const
+const SettingKeysForStringValues = ["imageApi", "imageApiKey", "markdownCode"] as const
 export type TSettingKeysForStringValues = (typeof SettingKeysForStringValues)[number]
 
 export function useLocalStorage<K extends TSettingKeysForStringValues>(key: K, initialValue: string) {

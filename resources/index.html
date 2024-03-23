@@ -10,7 +10,8 @@
 
     <body>
         <script src="./client.js" async></script>
-        <script type="module" defer>
+        <script src="./katex.js" async></script>
+        <script type="module" async>
             import init, { markdown_to_html } from "./pkg/markdown_reader.js"
             init().then(() => {
                 window.markdownToHtml = markdown_to_html

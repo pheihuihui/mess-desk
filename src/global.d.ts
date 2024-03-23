@@ -6,6 +6,9 @@ export declare global {
         debugging: {
             fromHash: any
         }
+        katex: {
+            render: (input: string, elem: HTMLElement, params: { throwOnError: boolean }) => void
+        }
     }
 
     interface EventTarget {

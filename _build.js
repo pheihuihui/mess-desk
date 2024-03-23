@@ -11,7 +11,6 @@ if (fs.existsSync(dir_client)) {
 fs.mkdirSync(dir_client, { recursive: true })
 fs.copyFileSync("./resources/favicon.ico", `${dir_client}/favicon.ico`)
 fs.copyFileSync("./resources/index.html", `${dir_client}/index.html`)
-fs.copyFileSync("./resources/sample.md", `${dir_client}/sample.md`)
 
 const styles = sass.compile("./src/styles/_index.scss")
 fs.writeFileSync(`${dir_client}/client.css`, styles.css)
@@ -21,7 +20,12 @@ fs.cpSync(dir_assets, `${dir_client}/assets`, { recursive: true })
 
 let wasm_files = ["markdown_reader_bg.js", "markdown_reader_bg.wasm", "markdown_reader.js"]
 wasm_files.forEach((f) => {
-    fs.cpSync(`./wasm_prebuild/${f}`, `${dir_client}/pkg/${f}`)
+    fs.cpSync(`./prebuild/${f}`, `${dir_client}/pkg/${f}`)
+})
+
+let katex_files = ["katex.js"]
+katex_files.forEach((f) => {
+    fs.cpSync(`./prebuild/${f}`, `${dir_client}/${f}`)
 })
 
 es.buildSync({

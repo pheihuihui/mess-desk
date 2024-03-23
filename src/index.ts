@@ -5,7 +5,9 @@ import { findOneFile, fromHash, initDB, populateOneFile } from "./utilities/db"
 let div = document.getElementById("rootdiv") as HTMLDivElement
 
 const root = createRoot(div)
-root.render(_app)
+setTimeout(() => {
+    root.render(_app)
+}, 500)
 
 window.initDB = initDB
 window.debugging = {

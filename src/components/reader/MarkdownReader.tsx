@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { useLocalStorage } from "../../hooks"
 
 export const MarkdownReader: FC = () => {
@@ -6,6 +6,15 @@ export const MarkdownReader: FC = () => {
     const [src, saveSrc] = useLocalStorage("markdownCode", "")
     const textRef = useRef<HTMLTextAreaElement>(null)
     const elemRef = useRef<HTMLDivElement>(null)
+    const [mode, setMode] = useState<"editor" | "reader">("reader")
+
+    const markdownCodeEditor = (
+        <div className="markdown-reader-code">
+            <textarea ref={textRef} />
+        </div>
+    )
+
+    const titleColumn = <div />
 
     useEffect(() => {
         let html = window.markdownToHtml(src)
@@ -24,21 +33,31 @@ export const MarkdownReader: FC = () => {
                 textRef.current.onkeydown = null
             }
         }
-    }, [src])
+    }, [src, mode])
 
     useEffect(() => {
         if (elemRef.current) {
             elemRef.current.querySelectorAll("code.language-math").forEach((elem) => {
-                window.katex.render(elem.textContent ?? "", elem as HTMLElement, { throwOnError: false })
+                let text = elem.textContent ?? ""
+                window.katex.render(text, elem as HTMLElement, { throwOnError: false })
             })
         }
     }, [innerHtml])
 
+    useEffect(() => {
+        document.onkeydown = (e) => {
+            if (e.key == "F2") {
+                setMode(mode == "editor" ? "reader" : "editor")
+            }
+        }
+        return () => {
+            document.onkeydown = null
+        }
+    }, [mode])
+
     return (
         <div className="markdown-reader">
-            <div className="markdown-reader-code">
-                <textarea ref={textRef} />
-            </div>
+            {mode == "editor" ? markdownCodeEditor : titleColumn}
             <div className="markdown-reader-rendered">
                 <div className="markdown-body" ref={elemRef} dangerouslySetInnerHTML={{ __html: innerHtml }} />
             </div>

@@ -23,10 +23,12 @@ wasm_files.forEach((f) => {
     fs.cpSync(`./prebuild/${f}`, `${dir_client}/pkg/${f}`)
 })
 
-let katex_files = ["katex.js"]
+let katex_files = ["katex.js", "katex.css"]
 katex_files.forEach((f) => {
     fs.cpSync(`./prebuild/${f}`, `${dir_client}/${f}`)
 })
+
+fs.cpSync("./prebuild/fonts", `${dir_client}/fonts`, { recursive: true })
 
 es.buildSync({
     entryPoints: ["./src/index.ts"],

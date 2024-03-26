@@ -247,7 +247,7 @@ function DBOperations(dbName: string, version: number, currentStore: string) {
     }
 }
 
-interface IndexedDBProps {
+export interface IndexedDBProps {
     name: string
     version: number
     objectStoresMeta: ObjectStoreMeta[]

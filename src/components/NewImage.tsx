@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { SaveIcon, EditIcon } from "./Icon"
+import { SaveIcon } from "./Icon"
 import { TagsInput } from "./tag/TagsInput"
-import { hashBlob } from "../utilities/utilities"
-import { populateOneImage, populateOneImageInfo } from "../utilities/db"
+import { _blobToBase64, getImageFromClipboard, hashBlob } from "../utilities/utilities"
+import { useIndexedDB } from "../utilities/db"
 
 export const NewImage: FC = () => {
     const [description, setDescription] = useState<string>("")
@@ -11,11 +11,12 @@ export const NewImage: FC = () => {
     const [compressedImageDataUrl, setCompressedImageDataUrl] = useState<string>("")
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
+    const db = useIndexedDB("STORE_IMAGE")
 
     useEffect(() => {
-        navigator.clipboard.readText().then((txt) => {
-            if (txt.startsWith("data:image")) {
-                setImageDataUrl(txt)
+        getImageFromClipboard().then((url) => {
+            if (url) {
+                setImageDataUrl(url)
             }
         })
     }, [])
@@ -46,29 +47,35 @@ export const NewImage: FC = () => {
         }
     }
 
-    async function saveImage() {
+    async function saveImage(title: string, description: string, tags: string[]) {
         handleCompress()
         let tmp = await fetch(imageDataUrl)
         let blb = await tmp.blob()
+        let hash = await hashBlob(blb)
+        let base64 = await _blobToBase64(blb)
         let tmp2 = await fetch(compressedImageDataUrl)
         let blb2 = await tmp2.blob()
-        populateOneImageInfo(blb, tags, description, blb2)
+        let hash2 = await hashBlob(blb2)
+        let base642 = await _blobToBase64(blb2)
+        await db.add({ title: title, desctiption: description, base64: base64, hash: hash, compressed_base64: base642, compressed_hash: hash2, tags: tags })
     }
 
     return (
-        <div className="w-80">
-            <button onClick={saveImage}>
+        <div className="new-image">
+            <button
+                className="new-image-save-button"
+                onClick={(_) => {
+                    // saveImage("test", description, [])
+                    navigator.clipboard.readText().then(console.log)
+                }}
+            >
                 <SaveIcon />
             </button>
-            <img ref={imgRef} src={imageDataUrl} className="max-h-64 max-w-5xl" />
+            <img ref={imgRef} src={imageDataUrl} className="new-image-preview" />
             <canvas ref={canvasRef} className="" />
-            <label className="block mb-2 text-sm font-medium text-gray-900">Description:</label>
-            <textarea
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your descriptions here..."
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <label className="block mb-2 text-sm font-medium text-gray-900">Tags:</label>
+            <label className="">Description:</label>
+            <textarea className="" placeholder="Write your descriptions here..." onChange={(e) => setDescription(e.target.value)} />
+            <label className="">Tags:</label>
             <TagsInput onChange={setTags} />
         </div>
     )

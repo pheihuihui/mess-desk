@@ -16,4 +16,26 @@ export async function hashBlob(content: Blob): Promise<string> {
         }
     })
 }
-2
+
+export async function _blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(blob)
+        reader.onloadend = function () {
+            const base64data = reader.result as string
+            resolve(base64data)
+        }
+    })
+}
+
+export async function getImageFromClipboard() {
+    return navigator.clipboard.read().then((items) => {
+        for (let item of items) {
+            if (item.types.includes("image/png")) {
+                return item.getType("image/png").then((blob) => {
+                    return URL.createObjectURL(blob)
+                })
+            }
+        }
+    })
+}

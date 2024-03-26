@@ -1,196 +1,300 @@
-import { hashBlob } from "./utilities"
+// https://github.com/assuncaocharles/react-indexed-db
 
-const DESQ_STORES = ["STORE_IMAGES", "STORE_THUMBNAILS", "STORE_FILES", "STORE_IMAGE_INFO"] as const
-type DESQ_STORE_TYPE = (typeof DESQ_STORES)[number]
+import { useMemo } from "react"
 
-interface I_Image {
-    id?: number
-    image: Blob
-    hash: string
+interface Options {
+    storeName: string
+    dbMode: IDBTransactionMode
+    error: (e: Event) => any
+    complete: (e: Event) => any
+    abort?: any
 }
 
-interface I_Thumbnail {
-    id?: number
-    image: Blob
-    hash: string
+enum DBMode {
+    readonly = "readonly",
+    readwrite = "readwrite",
 }
 
-interface I_File {
-    id?: number
-    file: Blob
-    hash: string
+function validateStoreName(db: IDBDatabase, storeName: string) {
+    return db.objectStoreNames.contains(storeName)
 }
 
-interface I_Image_Info {
-    id?: number
-    image: number
-    thumbnail: number
-    tags: string[]
-    description: string
-}
-
-export function getFileDB(): Promise<IDBDatabase> {
-    const request = indexedDB.open("filedb")
-    let db: IDBDatabase
-
-    request.onupgradeneeded = function () {
-        const db = request.result
-        const store = db.createObjectStore("files", { keyPath: "file_name" })
-        const titleIndex = store.createIndex("by_file_name", "file_name", { unique: true })
+function validateBeforeTransaction(db: IDBDatabase, storeName: string, reject: (errorMessage: string) => void) {
+    if (!db) {
+        reject("You need to use the openDatabase function to create a database before you query it!")
     }
+    if (!validateStoreName(db, storeName)) {
+        reject(`objectStore does not exists: ${storeName}`)
+    }
+}
 
-    return new Promise((resolve, reject) => {
-        request.onsuccess = function () {
+function _createTransaction(db: IDBDatabase, options: Options): IDBTransaction {
+    const trans: IDBTransaction = db.transaction(options.storeName, options.dbMode)
+    trans.onerror = options.error
+    trans.oncomplete = options.complete
+    trans.onabort = options.abort
+    return trans
+}
+
+function optionsGenerator(type: any, storeName: any, reject: (e: Event) => void, resolve: (e?: Event) => void): Options {
+    return {
+        storeName: storeName,
+        dbMode: type,
+        error: (e: Event) => {
+            reject(e)
+        },
+        complete: () => {
+            resolve()
+        },
+        abort: (e: Event) => {
+            reject(e)
+        },
+    }
+}
+
+function createDatabaseTransaction(
+    database: IDBDatabase,
+    mode: DBMode,
+    storeName: string,
+    resolve: (e?: Event) => void,
+    reject: (e: Event) => void,
+    createTransaction: typeof _createTransaction = _createTransaction,
+    buildOptions: typeof optionsGenerator = optionsGenerator,
+) {
+    const options = buildOptions(mode, storeName, reject, resolve)
+    const transaction: IDBTransaction = createTransaction(database, options)
+    const store = transaction.objectStore(storeName)
+
+    return {
+        store,
+        transaction,
+    }
+}
+
+function createReadonlyTransaction(database: IDBDatabase, store: string, resolve: (payload?: any) => void, reject: (e: Event) => void) {
+    return createDatabaseTransaction(database, DBMode.readonly, store, resolve, reject)
+}
+
+function createReadwriteTransaction(database: IDBDatabase, store: string, resolve: (e?: any) => void, reject: (e: Event) => void) {
+    return createDatabaseTransaction(database, DBMode.readwrite, store, resolve, reject)
+}
+
+type Key = string | number | Date | ArrayBufferView | ArrayBuffer | IDBKeyRange // IDBArrayKey
+interface IndexDetails {
+    indexName: string
+    order: string
+}
+const indexedDB: IDBFactory = window.indexedDB || (<any>window).mozIndexedDB || (<any>window).webkitIndexedDB || (<any>window).msIndexedDB
+
+function openDatabase(dbName: string, version: number, upgradeCallback?: (e: Event, db: IDBDatabase) => void) {
+    return new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(dbName, version)
+        let db: IDBDatabase
+        request.onsuccess = () => {
             db = request.result
             resolve(db)
         }
-        request.onblocked = function (ev) {
-            reject("blocked")
+        request.onerror = () => {
+            reject(`IndexedDB error: ${request.error}`)
         }
-        request.onerror = function () {
-            reject("error")
+        if (typeof upgradeCallback === "function") {
+            request.onupgradeneeded = (event: Event) => {
+                upgradeCallback(event, db)
+            }
         }
     })
 }
 
-export function getDesqDb(storeName: DESQ_STORE_TYPE, version?: number): Promise<IDBDatabase> {
-    const request = indexedDB.open("DESQ_DB", version)
+function CreateObjectStore(dbName: string, version: number, storeSchemas: ObjectStoreMeta[]) {
+    const request: IDBOpenDBRequest = indexedDB.open(dbName, version)
 
-    request.onupgradeneeded = (evt) => {
-        const db = request.result
-        switch (storeName) {
-            case "STORE_FILES":
-            case "STORE_IMAGES":
-            case "STORE_THUMBNAILS": {
-                const store = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true })
-                store.createIndex("hash", "hash", { unique: true })
-                return
+    request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
+        const database: IDBDatabase = (event.target as any).result
+        storeSchemas.forEach((storeSchema: ObjectStoreMeta) => {
+            if (!database.objectStoreNames.contains(storeSchema.store)) {
+                const objectStore = database.createObjectStore(storeSchema.store, storeSchema.storeConfig)
+                storeSchema.storeSchema.forEach((schema: ObjectStoreSchema) => {
+                    objectStore.createIndex(schema.name, schema.keypath, schema.options)
+                })
             }
-            case "STORE_IMAGE_INFO": {
-                const store = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true })
-                store.createIndex("image", "image", { unique: true })
-                store.createIndex("tags", "tags", { unique: false })
-                store.createIndex("description", "description", { unique: false })
-                return
-            }
-            default: {
-                const ck: never = storeName
-                throw new Error(ck)
-            }
-        }
+        })
+        database.close()
     }
-
-    return new Promise((resolve, reject) => {
-        request.onsuccess = (_) => {
-            const db = request.result
-            resolve(db)
-        }
-        request.onblocked = (evt) => {
-            reject("blocked: " + evt.newVersion)
-        }
-        request.onerror = (_) => {
-            reject("error")
-        }
-    })
-}
-
-export function initDB() {
-    getDesqDb("STORE_FILES")
-        .then((db) => {
-            let newver = db.version + 1
-            db.close()
-            return getDesqDb("STORE_IMAGES", newver)
-        })
-        .then((db) => {
-            let newver = db.version + 1
-            db.close()
-            return getDesqDb("STORE_IMAGE_INFO", newver)
-        })
-        .then((db) => {
-            let newver = db.version + 1
-            db.close()
-            return getDesqDb("STORE_THUMBNAILS", newver)
-        })
-}
-
-export async function populateOneFile(fileName: string, content: Blob) {
-    const db = await getFileDB()
-    const tx = db.transaction("files", "readwrite")
-    const store = tx.objectStore("files")
-
-    store.put({ file_name: fileName, content: content })
-
-    tx.oncomplete = function () {
-        db.close()
+    request.onsuccess = function (e: any) {
+        e.target.result.close()
     }
 }
 
-export async function populateOneImage(image: Blob, isThumbnail?: boolean): Promise<number> {
-    const storeName: DESQ_STORE_TYPE = isThumbnail ? "STORE_THUMBNAILS" : "STORE_IMAGES"
-    let hash = await hashBlob(image)
-    const db = await getDesqDb(storeName)
-    const tx = db.transaction([storeName], "readwrite")
-    const store = tx.objectStore(storeName)
-    let key = store.put({ image: image, hash: hash })
-    return new Promise((resolve, reject) => {
-        key.onsuccess = (_) => {
-            let index = store.index("hash")
-            let req = index.get(hash)
-            req.onsuccess = (__) => resolve(req.result["id"])
-            req.onerror = (__) => reject(-1)
-        }
-        key.onerror = (_) => {
-            let _tx = db.transaction(storeName, "readonly")
-            let _st = _tx.objectStore(storeName)
-            let index = _st.index("hash")
-            let req = index.get(hash)
-            req.onsuccess = (__) => resolve(req.result["id"])
-            req.onerror = (__) => reject(-1)
-        }
-    })
-}
+function DBOperations(dbName: string, version: number, currentStore: string) {
+    // Readonly operations
+    const getAll = <T>() =>
+        new Promise<T[]>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store } = createReadonlyTransaction(db, currentStore, resolve, reject)
+                const request = store.getAll()
 
-export async function fromHash(storeName: DESQ_STORE_TYPE, hash: string) {
-    const db = await getDesqDb(storeName)
-    const tx = db.transaction(storeName, "readonly")
-    const store = tx.objectStore(storeName)
-    const index = store.index("hash")
-    const req = index.get(hash)
-    return new Promise((resolve, reject) => {
-        req.onsuccess = (_) => resolve(req.result)
-        req.onerror = (ev) => console.log(ev)
-    })
-}
+                request.onerror = (error) => reject(error)
 
-export async function populateOneImageInfo(image: Blob, tags: string[], description: string, thumb?: Blob) {
-    let item: I_Image_Info = {} as I_Image_Info
-    item.description = description
-    item.image = await populateOneImage(image)
-    if (thumb) {
-        item.thumbnail = await populateOneImage(thumb, true)
+                request.onsuccess = function ({ target: { result } }: any) {
+                    resolve(result as T[])
+                }
+            })
+        })
+
+    const getByID = <T>(id: string | number) =>
+        new Promise<T>((resolve, reject) => {
+            openDatabase(dbName, version).then((db: IDBDatabase) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store } = createReadonlyTransaction(db, currentStore, resolve, reject)
+                const request = store.get(id)
+
+                request.onsuccess = function (event: Event) {
+                    resolve((event.target as any).result as T)
+                }
+            })
+        })
+
+    const openCursor = (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => {
+        return new Promise<void>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store } = createReadonlyTransaction(db, currentStore, resolve, reject)
+                const request = store.openCursor(keyRange)
+
+                request.onsuccess = (event: Event) => {
+                    cursorCallback(event)
+                    resolve()
+                }
+            })
+        })
     }
-    item.tags = tags
-    let stname: DESQ_STORE_TYPE = "STORE_IMAGE_INFO"
-    let db = await getDesqDb(stname)
-    let tx = db.transaction(stname, "readwrite")
-    let st = tx.objectStore(stname)
-    st.put(item)
+
+    const getByIndex = (indexName: string, key: any) =>
+        new Promise<any>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store } = createReadonlyTransaction(db, currentStore, resolve, reject)
+                const index = store.index(indexName)
+                const request = index.get(key)
+
+                request.onsuccess = (event: Event) => {
+                    resolve((<IDBOpenDBRequest>event.target).result)
+                }
+            })
+        })
+
+    // Readwrite operations
+    const add = <T>(value: T, key?: any) =>
+        new Promise<number>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                const { store } = createReadwriteTransaction(db, currentStore, resolve, reject)
+                const request = store.add(value, key)
+
+                request.onsuccess = (evt: any) => {
+                    key = evt.target.result
+                    resolve(key)
+                }
+
+                request.onerror = (error) => reject(error)
+            })
+        })
+
+    const update = <T>(value: T, key?: any) =>
+        new Promise<any>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { transaction, store } = createReadwriteTransaction(db, currentStore, resolve, reject)
+
+                transaction.oncomplete = (event) => resolve(event)
+
+                store.put(value, key)
+            })
+        })
+
+    const deleteRecord = (key: Key) =>
+        new Promise<any>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store } = createReadwriteTransaction(db, currentStore, resolve, reject)
+                const request = store.delete(key)
+
+                request.onsuccess = (event) => resolve(event)
+            })
+        })
+
+    const clear = () =>
+        new Promise<void>((resolve, reject) => {
+            openDatabase(dbName, version).then((db) => {
+                validateBeforeTransaction(db, currentStore, reject)
+                const { store, transaction } = createReadwriteTransaction(db, currentStore, resolve, reject)
+
+                transaction.oncomplete = () => resolve()
+
+                store.clear()
+            })
+        })
+
+    return {
+        add,
+        getByID,
+        getAll,
+        update,
+        deleteRecord,
+        clear,
+        openCursor,
+        getByIndex,
+    }
 }
 
-export async function findOneFile(name: string): Promise<Blob> {
-    const db = await getFileDB()
-    const tx = db.transaction("files", "readonly")
-    const store = tx.objectStore("files")
-    const index = store.index("by_file_name")
-    const request = index.get(name)
-    return new Promise((resolve, reject) => {
-        request.onsuccess = function () {
-            const matching = request.result
-            if (matching != undefined) {
-                resolve(matching["content"])
-            } else {
-                reject("failed")
-            }
-        }
-    })
+interface IndexedDBProps {
+    name: string
+    version: number
+    objectStoresMeta: ObjectStoreMeta[]
+}
+
+interface ObjectStoreMeta {
+    store: string
+    storeConfig: { keyPath: string; autoIncrement: boolean; [key: string]: any }
+    storeSchema: ObjectStoreSchema[]
+}
+
+interface ObjectStoreSchema {
+    name: string
+    keypath: string
+    options: { unique: boolean; [key: string]: any }
+}
+
+interface useIndexedDB {
+    dbName: string
+    version: number
+    objectStore: string
+}
+
+const indexeddbConfiguration: { version: number; name: string } = {
+    version: 1,
+    name: "",
+}
+
+export function initDB({ name, version, objectStoresMeta }: IndexedDBProps) {
+    indexeddbConfiguration.name = name
+    indexeddbConfiguration.version = version
+    Object.freeze(indexeddbConfiguration)
+    CreateObjectStore(name, version, objectStoresMeta)
+}
+
+export function useIndexedDB(objectStore: string): {
+    add: <T = any>(value: T, key?: any) => Promise<number>
+    getByID: <T = any>(id: number | string) => Promise<T>
+    getAll: <T = any>() => Promise<T[]>
+    update: <T = any>(value: T, key?: any) => Promise<any>
+    deleteRecord: (key: Key) => Promise<any>
+    openCursor: (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => Promise<void>
+    getByIndex: (indexName: string, key: any) => Promise<any>
+    clear: () => Promise<any>
+} {
+    if (!indexeddbConfiguration.name || !indexeddbConfiguration.version) {
+        throw new Error("Please initialize the DB before the use.")
+    }
+    return useMemo(() => DBOperations(indexeddbConfiguration.name, indexeddbConfiguration.version, objectStore), [indexeddbConfiguration, objectStore])
 }

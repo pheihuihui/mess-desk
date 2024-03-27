@@ -29,13 +29,18 @@ export async function _blobToBase64(blob: Blob): Promise<string> {
 }
 
 export async function getImageFromClipboard() {
-    return navigator.clipboard.read().then((items) => {
-        for (let item of items) {
-            if (item.types.includes("image/png")) {
-                return item.getType("image/png").then((blob) => {
-                    return URL.createObjectURL(blob)
-                })
+    return navigator.clipboard
+        .read()
+        .then((items) => {
+            for (let item of items) {
+                if (item.types.includes("image/png")) {
+                    return item.getType("image/png").then((blob) => {
+                        return URL.createObjectURL(blob)
+                    })
+                }
             }
-        }
-    })
+        })
+        .catch((_) => {
+            console.log("not focused")
+        })
 }

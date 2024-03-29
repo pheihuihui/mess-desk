@@ -1,12 +1,12 @@
 import React, { ReactNode } from "react"
 import { HomeIcon } from "../components/Icon"
 import { NotesPage } from "./notes"
-import { FragmentsPage } from "./fragments"
 import { PortraitsPage } from "./portraits"
 import { WelcomePage } from "./welcome"
 import { ImagePage } from "./image"
 import { PodsPage } from "./pods"
 import { SettingsPage } from "./settings"
+import { EditorPage } from "./editor"
 
 interface TabProps {
     [itemId: string]: {
@@ -23,10 +23,10 @@ export const tabs: TabProps = {
         path: "notes",
         page: <NotesPage />,
     },
-    "/fragments": {
-        text: "Fragments",
-        path: "fragments",
-        page: <FragmentsPage />,
+    "/editor": {
+        text: "Editor",
+        path: "editor",
+        page: <EditorPage />,
     },
     "/portraits": {
         text: "Portraits",

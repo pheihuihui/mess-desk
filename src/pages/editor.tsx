@@ -1,11 +1,11 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
-import { ImageGridView } from "../components/ImageGridView"
+import { MarkdownReader } from "../components/reader/MarkdownReader"
 
-export const WelcomePage: FC = () => {
+export const EditorPage: FC = () => {
     return (
         <DashboardLayout>
-            <ImageGridView />
+            <MarkdownReader />
         </DashboardLayout>
     )
 }

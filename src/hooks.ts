@@ -1,4 +1,5 @@
 import { useState, useEffect, useReducer, useRef, DependencyList } from "react"
+import { useIndexedDB } from "./utilities/db"
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
@@ -130,4 +131,18 @@ export function useLocalStorage<K extends TSettingKeysForStringValues>(key: K, i
     }
 
     return [storedValue, setValue] as const
+}
+
+export function useImageDataUrl(id: number) {
+    const db = useIndexedDB("STORE_IMAGE")
+    const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
+    useEffect(() => {
+        db.getByID(id).then((item) => {
+            let base64 = item?.base64
+            if (base64) {
+                setImageDataUrl(base64)
+            }
+        })
+    }, [])
+    return imageDataUrl
 }

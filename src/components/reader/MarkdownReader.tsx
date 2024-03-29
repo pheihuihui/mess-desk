@@ -1,12 +1,19 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { useLocalStorage } from "../../hooks"
+import { useImageDataUrl, useLocalStorage } from "../../hooks"
+import { useIndexedDB } from "../../utilities/db"
 
 export const MarkdownReader: FC = () => {
     const [innerHtml, setInnerHtml] = React.useState("")
     const [src, saveSrc] = useLocalStorage("markdownCode", "")
     const textRef = useRef<HTMLTextAreaElement>(null)
     const elemRef = useRef<HTMLDivElement>(null)
-    const [mode, setMode] = useState<"editor" | "reader">("reader")
+    const [mode, setMode] = useState<"editor" | "reader">("editor")
+    const db = useIndexedDB("STORE_IMAGE")
+    const image_p = (
+        <p>
+            <img className="store-image" src="./loading.jpg" store-id="2" />
+        </p>
+    )
 
     const markdownCodeEditor = (
         <div className="markdown-reader-code">
@@ -40,6 +47,16 @@ export const MarkdownReader: FC = () => {
             elemRef.current.querySelectorAll("code.language-math").forEach((elem) => {
                 let text = elem.textContent ?? ""
                 window.katex.render(text, elem as HTMLElement, { throwOnError: false })
+            })
+            elemRef.current.querySelectorAll("img.store-image").forEach((elem) => {
+                let id = elem.getAttribute("store-id")
+                let num = parseInt(id ?? "0")
+                db.getByID(num).then((item) => {
+                    let base64 = item?.base64
+                    if (base64) {
+                        elem.setAttribute("src", base64)
+                    }
+                })
             })
         }
     }, [innerHtml])

@@ -1,0 +1,87 @@
+.image-editor {
+    width: 90%;
+    height: 90%;
+
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+
+    &-column {
+        &-left {
+            width: 70%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &-right {
+            width: 30%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+
+            &-button-group {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+                button {
+                    margin: 10px;
+                }
+            }
+
+            .input-group {
+                width: 100%;
+                height: 80%;
+                display: flex;
+                flex-direction: column;
+
+                input {
+                    border: none;
+                    padding: 1rem;
+                    margin: 10px;
+                    border-radius: 1rem;
+                    background: #e8e8e8;
+                    transition: 0.3s;
+                }
+
+                input:focus {
+                    outline-color: #e8e8e8;
+                    background: #e8e8e8;
+                    transition: 0.3s;
+                }
+
+                textarea {
+                    font-family: sans-serif;
+                    border: none;
+                    padding: 1rem;
+                    margin: 10px;
+                    border-radius: 1rem;
+                    background: #e8e8e8;
+                    transition: 0.3s;
+                    resize: none;
+                }
+            }
+        }
+    }
+
+    &-preview {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+
+        &-canvas {
+            width: 80%;
+            height: 40%;
+            object-fit: contain;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    }
+}

@@ -283,14 +283,15 @@ export function initDB({ name, version, objectStoresMeta }: IndexedDBProps) {
     CreateObjectStore(name, version, objectStoresMeta)
 }
 
-export function useIndexedDB(objectStore: string): {
-    add: <T = any>(value: T, key?: any) => Promise<number>
-    getByID: <T = any>(id: number | string) => Promise<T>
-    getAll: <T = any>() => Promise<T[]>
-    update: <T = any>(value: T, key?: any) => Promise<any>
+type TIndexedId = { id: string | number }
+export function _useIndexedDB<T>(objectStore: string): {
+    add: (value: T, key?: any) => Promise<number>
+    getByID: (id: number | string) => Promise<T & TIndexedId>
+    getAll: () => Promise<T[]>
+    update: (value: T & TIndexedId, key?: any) => Promise<T & TIndexedId>
     deleteRecord: (key: Key) => Promise<any>
     openCursor: (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => Promise<void>
-    getByIndex: (indexName: string, key: any) => Promise<any>
+    getByIndex: (indexName: string, key: number | string) => Promise<T & TIndexedId>
     clear: () => Promise<any>
 } {
     if (!indexeddbConfiguration.name || !indexeddbConfiguration.version) {

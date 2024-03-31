@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, getImageFromClipboard, hashBlob } from "../utilities/utilities"
-import { useIndexedDB } from "../utilities/db"
+import { useIndexedDb } from "../hooks"
 
 export const NewImage: FC = () => {
     const [description, setDescription] = useState("")
@@ -11,7 +11,7 @@ export const NewImage: FC = () => {
     const [compressedImageDataUrl, setCompressedImageDataUrl] = useState("")
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
-    const db = useIndexedDB("STORE_IMAGE")
+    const db = useIndexedDb("STORE_IMAGE")
 
     useEffect(() => {
         const url2base64 = async () => {
@@ -71,7 +71,7 @@ export const NewImage: FC = () => {
             db.update({
                 id: res.id,
                 title: title,
-                desctiption: description,
+                description: description,
                 base64: image64,
                 hash: hash,
                 base64_compressed: base642,
@@ -82,7 +82,7 @@ export const NewImage: FC = () => {
         } else {
             await db.add({
                 title: title,
-                desctiption: description,
+                description: description,
                 base64: image64,
                 hash: hash,
                 base64_compressed: base642,

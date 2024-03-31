@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { useImageDataUrl, useLocalStorage } from "../../hooks"
-import { useIndexedDB } from "../../utilities/db"
+import { useImageDataUrl, useIndexedDb, useLocalStorage } from "../../hooks"
+import { LOADING_IMAGE } from "../../utilities/constants"
 
 export const MarkdownReader: FC = () => {
     const [innerHtml, setInnerHtml] = React.useState("")
@@ -8,10 +8,10 @@ export const MarkdownReader: FC = () => {
     const textRef = useRef<HTMLTextAreaElement>(null)
     const elemRef = useRef<HTMLDivElement>(null)
     const [mode, setMode] = useState<"editor" | "reader">("editor")
-    const db = useIndexedDB("STORE_IMAGE")
+    const db = useIndexedDb("STORE_IMAGE")
     const image_p = (
         <p>
-            <img className="store-image" src="./loading.jpg" store-id="2" />
+            <img className="store-image" src={LOADING_IMAGE} store-id="2" />
         </p>
     )
 

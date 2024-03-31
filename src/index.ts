@@ -13,7 +13,7 @@ const DB_CONFIG: IndexedDBProps = {
             storeConfig: { keyPath: "id", autoIncrement: true },
             storeSchema: [
                 { name: "title", keypath: "title", options: { unique: false } },
-                { name: "desctiption", keypath: "desctiption", options: { unique: false } },
+                { name: "description", keypath: "description", options: { unique: false } },
                 { name: "base64", keypath: "base64", options: { unique: false } },
                 { name: "hash", keypath: "hash", options: { unique: true } },
                 { name: "base64_compressed", keypath: "base64_compressed", options: { unique: false } },

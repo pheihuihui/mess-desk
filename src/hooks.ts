@@ -106,10 +106,9 @@ export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | unde
     }, inputs)
 }
 
-const SettingKeysForStringValues = ["imageApi", "imageApiKey", "markdownCode"] as const
-export type TSettingKeysForStringValues = (typeof SettingKeysForStringValues)[number]
+type LocalStorageKeys = "LOCAL_STORAGE_TAGS" | "LOCAL_STORAGE_IMAGE_API_KEY"
 
-export function useLocalStorage<K extends TSettingKeysForStringValues>(key: K, initialValue: string) {
+export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue: string) {
     const [storedValue, setStoredValue] = useState<string>(() => {
         try {
             const item = window.localStorage.getItem(key)
@@ -133,6 +132,20 @@ export function useLocalStorage<K extends TSettingKeysForStringValues>(key: K, i
     return [storedValue, setValue] as const
 }
 
+export function useLocalTags() {
+    const [tagsStr, saveTagsStr] = useLocalStorage("LOCAL_STORAGE_TAGS", "[]")
+    const tagsSet = new Set(JSON.parse(tagsStr) as string[])
+    const addOneTag = (tag: string) => {
+        tagsSet.add(tag)
+        saveTagsStr(JSON.stringify(Array.from(tagsSet)))
+    }
+    const addMultipleTags = (tags: string[]) => {
+        tags.forEach((tag) => tagsSet.add(tag))
+        saveTagsStr(JSON.stringify(Array.from(tagsSet)))
+    }
+    return { tagsSet, addOneTag, addMultipleTags }
+}
+
 interface IndexedDbProps {
     STORE_IMAGE: {
         title: string
@@ -144,7 +157,7 @@ interface IndexedDbProps {
         deleted: boolean
         tags: string[]
     }
-    STORE_ARTICLE: {
+    STORE_MARKDOWN: {
         title: string
         content: string
         tags: string[]

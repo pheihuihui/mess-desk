@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { _blobToBase64, getImageFromClipboard, hashBlob } from "../utilities/utilities"
-import { useIndexedDb } from "../hooks"
+import { _blobToBase64, getImageFromClipboard, hashBlob } from "../../utilities/utilities"
+import { useIndexedDb } from "../../hooks"
 
 export const NewImage: FC = () => {
     const [description, setDescription] = useState("")

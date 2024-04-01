@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react"
-import { getFileDB, populateOneFile } from "../utilities/db"
 
 export const FileSelect: FC = () => {
     const [selectedFile, setSelectedFile] = useState<Blob>()
@@ -36,7 +35,6 @@ export const FileSelect: FC = () => {
                     // let fileName = selectedFile?.name
                     let fileName = prompt("Enter file name:")
                     if (fileName && selectedFile) {
-                        populateOneFile(fileName, selectedFile)
                     }
                 }}
             >

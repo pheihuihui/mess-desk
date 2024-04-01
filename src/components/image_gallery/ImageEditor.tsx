@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { _blobToBase64, hashBlob } from "../utilities/utilities"
-import { useIndexedDb } from "../hooks"
-import { LOADING_IMAGE } from "../utilities/constants"
+import { _blobToBase64, hashBlob } from "../../utilities/utilities"
+import { useIndexedDb } from "../../hooks"
+import { LOADING_IMAGE } from "../../utilities/constants"
 
 interface ImageEditorProps {
     imageId: number
@@ -114,6 +114,9 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
                         }}
                     >
                         Save
+                    </button>
+                    <button className="image-editor-paste-button text-button" onClick={(_) => {}}>
+                        Paste New
                     </button>
                     <button
                         className="image-editor-exit-button text-button"

@@ -1,14 +1,19 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { useImageDataUrl, useIndexedDb, useLocalStorage } from "../../hooks"
+import { useIndexedDb } from "../../hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 
-export const MarkdownReader: FC = () => {
+interface MarkdownReaderProps {
+    id: number
+}
+
+export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     const [innerHtml, setInnerHtml] = React.useState("")
-    const [src, saveSrc] = useLocalStorage("markdownCode", "")
+    const md_db = useIndexedDb("STORE_MARKDOWN")
+    const [src, setSrc] = useState("")
     const textRef = useRef<HTMLTextAreaElement>(null)
     const elemRef = useRef<HTMLDivElement>(null)
     const [mode, setMode] = useState<"editor" | "reader">("editor")
-    const db = useIndexedDb("STORE_IMAGE")
+    const image_db = useIndexedDb("STORE_IMAGE")
     const image_p = (
         <p>
             <img className="store-image" src={LOADING_IMAGE} store-id="2" />
@@ -24,6 +29,14 @@ export const MarkdownReader: FC = () => {
     const titleColumn = <div />
 
     useEffect(() => {
+        const fetchSrc = async () => {
+            let item = await md_db.getByID(props.id)
+            setSrc(item.content)
+        }
+        fetchSrc()
+    }, [])
+
+    useEffect(() => {
         let html = window.markdownToHtml(src)
         setInnerHtml(html)
         if (textRef.current) {
@@ -31,7 +44,13 @@ export const MarkdownReader: FC = () => {
             textRef.current.onkeydown = (e) => {
                 if (e.ctrlKey && e.key == "s") {
                     e.preventDefault()
-                    saveSrc(textRef.current?.value ?? "")
+                    md_db.update({
+                        id: props.id,
+                        title: "title",
+                        content: textRef.current?.value ?? "",
+                        tags: [],
+                        deleted: false,
+                    })
                 }
             }
         }
@@ -51,7 +70,7 @@ export const MarkdownReader: FC = () => {
             elemRef.current.querySelectorAll("img.store-image").forEach((elem) => {
                 let id = elem.getAttribute("store-id")
                 let num = parseInt(id ?? "0")
-                db.getByID(num).then((item) => {
+                image_db.getByID(num).then((item) => {
                     let base64 = item?.base64
                     if (base64) {
                         elem.setAttribute("src", base64)

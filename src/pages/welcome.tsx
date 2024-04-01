@@ -1,12 +1,16 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
-import { ImageGridView } from "../components/ImageGridView"
-import { ImageEditor } from "../components/ImageEditor"
+import { TagList } from "../components/tag/TagList"
 
 export const WelcomePage: FC = () => {
     return (
         <DashboardLayout>
-            <ImageEditor imageId={3} />
+            <TagList
+                tags={Array(20)
+                    .fill(0)
+                    .map((_, i) => `tag${i}`)}
+                selected={4}
+            />
         </DashboardLayout>
     )
 }

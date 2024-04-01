@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { useIndexedDB } from "../utilities/db"
+import { useIndexedDb } from "../../hooks"
 
 export const ImageGridView: FC = () => {
-    const db = useIndexedDB("STORE_IMAGE")
+    const db = useIndexedDb("STORE_IMAGE")
     const [keyword, setKeyword] = useState("")
     const [images, setImages] = useState<string[]>([])
 

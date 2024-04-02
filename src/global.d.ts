@@ -9,6 +9,15 @@ export declare global {
         katex: {
             render: (input: string, elem: HTMLElement, params: { throwOnError: boolean }) => void
         }
+        [patchKey: symbol]: any
+    }
+
+    interface History {
+        [type: string]: any
+    }
+
+    interface Event {
+        arguments: any
     }
 
     interface EventTarget {

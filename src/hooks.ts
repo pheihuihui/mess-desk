@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useRef, DependencyList } from "react"
+import { useState, useEffect, useReducer, useRef, DependencyList, useInsertionEffect, useLayoutEffect } from "react"
 import { _useIndexedDB } from "./utilities/db"
 
 export function useWindowSize() {
@@ -182,4 +182,25 @@ export function useImageDataUrl(id: number) {
         })
     }, [])
     return imageDataUrl
+}
+
+type AnyFunction = (...args: any[]) => any
+export const useEvent = <TCallback extends AnyFunction>(callback: TCallback): TCallback => {
+    const latestRef = useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any)
+    useLayoutEffect(() => {
+        latestRef.current = callback
+    }, [callback])
+
+    const stableRef = useRef<TCallback>(null as any)
+    if (!stableRef.current) {
+        stableRef.current = function (this: any) {
+            return latestRef.current.apply(this, arguments as any)
+        } as TCallback
+    }
+
+    return stableRef.current
+}
+
+function useEvent_shouldNotBeInvokedBeforeMount() {
+    throw new Error("useEvent callback should not be invoked before mount")
 }

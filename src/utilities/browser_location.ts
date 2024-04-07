@@ -35,7 +35,7 @@ const currentSearch = () => location.search
 
 export type BrowserSearchHook = (options?: { ssrSearch?: SearchString }) => SearchString
 
-export const useSearch: BrowserSearchHook = ({ ssrSearch = "" } = {}) => useLocationProperty(currentSearch, () => ssrSearch)
+export const useBrowserSearch: BrowserSearchHook = ({ ssrSearch = "" } = {}) => useLocationProperty(currentSearch, () => ssrSearch)
 
 const currentPathname = () => location.pathname
 

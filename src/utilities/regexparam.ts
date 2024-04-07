@@ -1,7 +1,8 @@
 // https://github.com/lukeed/regexparam/blob/main/src/index.js
 // With regexparam, you may turn a pathing string (eg, /users/:id) into a regular expression.
 
-export function parsePattern(input: string | RegExp, loose: boolean) {
+// @ts-ignore
+export function parsePattern(input, loose) {
     if (input instanceof RegExp) return { keys: false, pattern: input }
     var c,
         o,
@@ -34,8 +35,6 @@ export function parsePattern(input: string | RegExp, loose: boolean) {
     }
 }
 
-let RGX = /(\/|^)([:*][^/]*?)(\?)?(?=[/.]|$)/g
-
 export type RouteParams<T extends string> = T extends `${infer Prev}/*/${infer Rest}`
     ? RouteParams<Prev> & { wild: string } & RouteParams<Rest>
     : T extends `${string}:${infer P}?/${infer Rest}`
@@ -53,6 +52,7 @@ export type RouteParams<T extends string> = T extends `${infer Prev}/*/${infer R
                 : {}
 
 export function inject<T extends string>(route: T, values: RouteParams<T>) {
+    let RGX = /(\/|^)([:*][^/]*?)(\?)?(?=[/.]|$)/g
     return route.replace(RGX, (x, lead, key, optional) => {
         // @ts-ignore
         x = values[key == "*" ? key : key.substring(1)]

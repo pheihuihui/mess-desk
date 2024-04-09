@@ -18,40 +18,40 @@ interface TabProps {
 }
 
 export const tabs: TabProps = {
-    "/notes": {
+    notes: {
         text: "Notes",
-        path: "notes",
+        path: "/notes",
         page: <NotesPage />,
     },
-    "/editor": {
+    editor: {
         text: "Editor",
-        path: "editor",
+        path: "/editor",
         page: <EditorPage />,
     },
-    "/portraits": {
+    portraits: {
         text: "Portraits",
-        path: "portraits",
+        path: "/portraits",
         page: <PortraitsPage />,
     },
-    "/": {
+    home: {
         text: "",
         path: "/",
         page: <WelcomePage />,
         icon: <HomeIcon />,
     },
-    "/pods": {
+    pods: {
         text: "Pods",
-        path: "pods",
+        path: "/pods",
         page: <PodsPage />,
     },
-    "/new-image": {
+    images: {
         text: "New Image",
-        path: "new-image",
+        path: "/images",
         page: <ImagePage />,
     },
-    "/settings": {
+    settings: {
         text: "Settings",
-        path: "Settings",
+        path: "/settings",
         page: <SettingsPage />,
     },
 }

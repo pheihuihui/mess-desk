@@ -1,16 +1,16 @@
 import React, { FC } from "react"
-import { HashRouter } from "../../node_modules/react-router-dom/dist/index"
-import { Routes, Route } from "../../node_modules/react-router/dist/index"
 import { tabs } from "./_tabs"
+import { useHashLocation } from "../utilities/hash_location"
+import { Route, Router } from "../router"
 
 export const AppRoutes: FC = () => {
     return (
-        <HashRouter>
-            <Routes>
-                {Object.keys(tabs).map((t, i) => (
-                    <Route key={i} path={tabs[t].path} element={tabs[t].page} />
-                ))}
-            </Routes>
-        </HashRouter>
+        <Router hook={useHashLocation}>
+            {Object.keys(tabs).map((t, i) => (
+                <Route key={i} path={tabs[t].path}>
+                    {tabs[t].page}
+                </Route>
+            ))}
+        </Router>
     )
 }

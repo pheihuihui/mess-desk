@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useState } from "react"
 
-interface NavItemProps {
+interface NavigationItemProps {
     index: number
     checked: boolean
     title: string
@@ -9,19 +9,19 @@ interface NavItemProps {
     onclick?: () => void
 }
 
-interface SimpleNavItemProps {
+interface SimpleNavigationItemProps {
     title: string
     itemId: string
     elemBefore?: ReactNode
 }
 
-interface BottomNavProps {
-    items: SimpleNavItemProps[]
+interface BottomNavigationProps {
+    items: SimpleNavigationItemProps[]
     activeItemId: string
     onSelect?: (itemId: string) => void
 }
 
-export const BottomNavItem: FC<NavItemProps> = (props) => {
+export const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
     return (
         <>
             <input
@@ -41,13 +41,13 @@ export const BottomNavItem: FC<NavItemProps> = (props) => {
     )
 }
 
-export const BottomNav: FC<BottomNavProps> = (props) => {
+export const BottomNavigation: FC<BottomNavigationProps> = (props) => {
     const [activeItemId, setActiveItemId] = useState(props.activeItemId)
 
     return (
         <div className="tab-container">
             {props.items.map((item, index) => (
-                <BottomNavItem
+                <BottomNavigationItem
                     key={index}
                     index={index}
                     checked={item.itemId == activeItemId}

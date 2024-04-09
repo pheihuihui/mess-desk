@@ -21,5 +21,15 @@ export const DB_CONFIG: IndexedDBProps = {
                 { name: "deleted", keypath: "deleted", options: { unique: false } },
             ],
         },
+        {
+            store: "STORE_MARKDOWN",
+            storeConfig: { keyPath: "id", autoIncrement: true },
+            storeSchema: [
+                { name: "title", keypath: "title", options: { unique: false } },
+                { name: "description", keypath: "description", options: { unique: false } },
+                { name: "content", keypath: "content", options: { unique: false } },
+                { name: "deleted", keypath: "deleted", options: { unique: false } },
+            ],
+        },
     ],
 }

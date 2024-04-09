@@ -1,20 +1,29 @@
-import React, { FC } from "react"
-import { useLocation, useNavigate } from "../../../node_modules/react-router-dom/dist/index"
-import { BottomNav } from "./BottomNav"
+import React, { FC, useEffect, useState } from "react"
 import { tabs } from "../../pages/_tabs"
+import { useLocation } from "../../router"
+import { BottomNavigation } from "./BottomNavigation"
 
 export const BottomNavBar: FC = () => {
-    const history = useNavigate()
-    const location = useLocation()
+    const [location, setLocation] = useLocation()
+    const [itemId, setItemId] = useState("home")
+
+    useEffect(() => {
+        for (const t in tabs) {
+            if (tabs[t].path == location) {
+                setItemId(t)
+                break
+            }
+        }
+    }, [location])
 
     return (
-        <BottomNav
-            onSelect={(itemId) => {
+        <BottomNavigation
+            onSelect={(_itemId) => {
                 setTimeout(() => {
-                    history(itemId)
+                    setLocation(tabs[_itemId].path)
                 }, 200)
             }}
-            activeItemId={location.pathname}
+            activeItemId={itemId}
             items={Object.keys(tabs).map((t, i) => ({
                 key: i,
                 title: tabs[t].text,

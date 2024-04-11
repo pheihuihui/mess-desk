@@ -1,4 +1,6 @@
 import React, { FC, ReactNode, useState } from "react"
+import { useLocation } from "../../router"
+import { tabs } from "../../pages/_tabs"
 
 interface NavigationItemProps {
     index: number
@@ -17,7 +19,6 @@ interface SimpleNavigationItemProps {
 
 interface BottomNavigationProps {
     items: SimpleNavigationItemProps[]
-    activeItemId: string
     onSelect?: (itemId: string) => void
 }
 
@@ -42,7 +43,11 @@ export const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
 }
 
 export const BottomNavigation: FC<BottomNavigationProps> = (props) => {
-    const [activeItemId, setActiveItemId] = useState(props.activeItemId)
+    const [location, _] = useLocation()
+    const [activeItemId, setActiveItemId] = useState(() => {
+        const activeTab = props.items.find((item) => tabs[item.itemId].path == location)
+        return activeTab ? activeTab.itemId : props.items[0].itemId
+    })
 
     return (
         <div className="tab-container">

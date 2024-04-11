@@ -39,7 +39,6 @@ export const NewImage: FC = () => {
         let canv = canvasRef.current
         let img = imgRef.current
         if (canv && img) {
-            console.log(11)
             let ctx = canv.getContext("2d")
             ctx?.clearRect(0, 0, canv.width, canv.height)
             let imgH = img.naturalHeight

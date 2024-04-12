@@ -5,27 +5,22 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prebuild:wasm": "node _build_wasm.js",
-        "build": "node _build.js",
-        "build:crx": "node _build_crx.js",
-        "serve": "node _serve.js"
+        "prebuild": "node ./scripts/prebuild.js",
+        "build": "node ./scripts/build.js",
+        "serve": "node ./scripts/serve.js"
     },
     "dependencies": {
         "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "react-router": "6.21.2",
-        "react-router-dom": "6.21.2",
-        "wouter": "3.1.0"
+        "react-dom": "18.2.0"
     },
     "devDependencies": {
-        "@types/chrome": "0.0.256",
-        "@types/node": "20.11.2",
-        "@types/react": "18.2.48",
-        "@types/react-dom": "18.2.18",
-        "esbuild": "0.19.11",
-        "express": "4.18.2",
-        "typescript": "5.3.3",
-        "prettier": "3.1.0",
-        "sass": "1.69.7"
+        "@types/node": "20.12.7",
+        "@types/react": "18.2.75",
+        "@types/react-dom": "18.2.24",
+        "esbuild": "0.20.2",
+        "express": "4.19.2",
+        "typescript": "5.4.5",
+        "prettier": "3.2.5",
+        "sass": "1.74.1"
     }
 }

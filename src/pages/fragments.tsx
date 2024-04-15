@@ -1,7 +1,7 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
 import { PageThumbnailsGrid } from "../components/web_archiver/PageThumbnailsGrid"
-import { Tweet } from "../components/web_archiver/Tweet"
+import { Tweet } from "../components/Tweet"
 
 export const FragmentsPage: FC = () => {
     return (

@@ -1,12 +1,11 @@
 import React, { FC, useEffect, useRef } from "react"
-import { useWindowSize } from "../../hooks"
-import { findOneFile } from "../../utilities/db"
-import { mhtml2html } from "../../utilities/mhtml2html"
-import { AddressBar } from "./AddressBar"
-import { SaveIcon, UpRightArrow } from "../Icon"
 
-export const PageContainer: FC = () => {
-    const size = useWindowSize()
+interface PageContainerProps {
+    url: string
+    html: string
+}
+
+export const PageContainer: FC<PageContainerProps> = (props) => {
     const ifrRef = useRef<HTMLIFrameElement>(null)
 
     useEffect(() => {
@@ -16,49 +15,33 @@ export const PageContainer: FC = () => {
                 const doc = ifr.contentWindow?.document
                 if (doc) {
                     doc.open()
-                    findOneFile("Hidden-subgroup-problem.mhtml")
-                        .then((blob) => blob.text())
-                        .then(mhtml2html.convert)
-                        .then((x) => x?.window.document.documentElement.outerHTML)
-                        .then((x) => {
-                            doc.write(x!)
-                        })
-                        .then(() => doc.close())
+                    doc.write(props.html)
+                    doc.close()
                 }
             }
         }
         setIframeContent(document.body)
-    }, [])
+    }, [props])
 
     return (
-        <div className="overflow-hidden shadow-2xl rounded-2xl " style={{ width: 1280, height: size.height * 0.9 }}>
-            <div className="flex items-center pl-3 justify-between bg-gray-200 rounded-t-xl h-12">
-                <div className="flex h-[90%] align-middle items-center">
-                    {[1, 2, 3].map((_) => (
-                        <span className="w-3 h-3 p-1 m-1 bg-white rounded-full"></span>
+        <div className="page-container">
+            <div className="page-container-bar">
+                <div className="page-container-bar-address">
+                    {[1, 2, 3].map((_, i) => (
+                        <span key={i} className="page-container-bar-address-dot" />
                     ))}
-                    <AddressBar
-                        placeHolder="url"
-                        onChange={() => {}}
-                        onSearch={(e) => {
-                            let url = e.target[0].value
-                            const ifr = ifrRef.current
-                            if (ifr) {
-                                ifr.src = url
-                            }
-                        }}
-                    />
+                    <input className="page-container-bar-address-input" type="text" size={100} value={props.url} />
                 </div>
-                <div className="flex h-[90%] align-middle">
-                    <button className="align-middle">
+                {/* <div className="page-container-bar-btns">
+                    <button className="page-container-bar-btns-btn">
                         <SaveIcon />
                     </button>
-                    <button className="align-middle">
+                    <button className="page-container-bar-btns-btn">
                         <UpRightArrow />
                     </button>
-                </div>
+                </div> */}
             </div>
-            <iframe className="rounded-b-xl align-middle h-[calc(100vh_-_10.75rem)]" ref={ifrRef} style={{ width: "100%", height: "100%" }} />
+            <iframe className="page-container-iframe" ref={ifrRef} />
         </div>
     )
 }

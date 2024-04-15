@@ -7,6 +7,7 @@ import { ImagePage } from "./image"
 import { PodsPage } from "./pods"
 import { SettingsPage } from "./settings"
 import { EditorPage } from "./editor"
+import { ArchivePage } from "./archives"
 
 interface TabProps {
     [itemId: string]: {
@@ -48,6 +49,11 @@ export const tabs: TabProps = {
         text: "New Image",
         path: "/images",
         page: <ImagePage />,
+    },
+    archive: {
+        text: "New Page",
+        path: "/new-page",
+        page: <ArchivePage />,
     },
     settings: {
         text: "Settings",

@@ -47,7 +47,7 @@ export const tabs: TabProps = {
     },
     images: {
         text: "New Image",
-        path: "/images",
+        path: "/new-image",
         page: <ImagePage />,
     },
     archive: {

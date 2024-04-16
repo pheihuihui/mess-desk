@@ -1,0 +1,32 @@
+.settings-group {
+    color: #05060fc1;
+    height: 90%;
+    width: 90%;
+    label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #05060f99;
+        transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+    }
+    input {
+        width: 80%;
+        height: 44px;
+        background-color: #05060f0a;
+        border-radius: 0.5rem;
+        padding: 0 1rem;
+        border: 2px solid transparent;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        transition:
+            border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+            color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+            background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+
+        :focus :hover {
+            outline: none;
+            border-color: #05060f;
+        }
+    }
+}

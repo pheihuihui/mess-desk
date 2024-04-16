@@ -30,7 +30,7 @@ export const PageContainer: FC<PageContainerProps> = (props) => {
                     {[1, 2, 3].map((_, i) => (
                         <span key={i} className="page-container-bar-address-dot" />
                     ))}
-                    <input className="page-container-bar-address-input" type="text" size={100} value={props.url} />
+                    <input className="page-container-bar-address-input" type="text" size={100} defaultValue={props.url} />
                 </div>
                 {/* <div className="page-container-bar-btns">
                     <button className="page-container-bar-btns-btn">

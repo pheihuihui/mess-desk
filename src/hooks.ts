@@ -106,7 +106,7 @@ export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | unde
     }, inputs)
 }
 
-type LocalStorageKeys = "LOCAL_STORAGE_TAGS" | "LOCAL_STORAGE_IMAGE_API_KEY"
+type LocalStorageKeys = "LOCAL_STORAGE_TAGS" | "LOCAL_STORAGE_IMAGE_API_ADDR" | "LOCAL_STORAGE_IMAGE_API_SESSION_ID"
 
 export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue: string) {
     const [storedValue, setStoredValue] = useState<string>(() => {

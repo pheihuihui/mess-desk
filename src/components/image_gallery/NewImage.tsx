@@ -1,39 +1,27 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { _blobToBase64, getImageFromClipboard, hashBlob } from "../../utilities/utilities"
+import { _blobToBase64, hashBlob } from "../../utilities/utilities"
 import { useIndexedDb } from "../../hooks"
+import { LOADING_IMAGE } from "../../utilities/constants"
 
-export const NewImage: FC = () => {
-    const [description, setDescription] = useState("")
+interface NewImageProps {
+    onExitButtonClicked?: () => void
+}
+
+export const NewImage: FC<NewImageProps> = (props) => {
     const [title, setTitle] = useState("")
-    const [imageDataUrl, setImageDataUrl] = useState("")
-    const [image64, setImage64] = useState("")
-    const [hash, setHash] = useState("")
-    const [compressedImageDataUrl, setCompressedImageDataUrl] = useState("")
+    const [description, setDescription] = useState("")
+    const [image64, setImage64] = useState(LOADING_IMAGE)
+    const [image64Compressed, setImage64Compressed] = useState(LOADING_IMAGE)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
 
-    useEffect(() => {
-        const url2base64 = async () => {
-            let tmp = await fetch(imageDataUrl)
-            let blb = await tmp.blob()
-            let hash = await hashBlob(blb)
-            let base64 = await _blobToBase64(blb)
-            setImage64(base64)
-            setHash(hash)
-        }
-        getImageFromClipboard()
-            .then((url) => {
-                if (url) {
-                    setImageDataUrl(url)
-                }
-            })
-            .then(url2base64)
-    }, [imageDataUrl])
-
-    useEffect(() => {
-        compressImage()
-    }, [image64])
+    async function base64tohash(base: string) {
+        let tmp = await fetch(base)
+        let blb = await tmp.blob()
+        let hash = await hashBlob(blb)
+        return hash
+    }
 
     function compressImage() {
         let canv = canvasRef.current
@@ -53,65 +41,95 @@ export const NewImage: FC = () => {
                 canv.width = targetW
                 ctx?.drawImage(img, 0, 0, targetW, targetH)
                 let dt = canv.toDataURL("image/png")
-                setCompressedImageDataUrl(dt)
+                setImage64Compressed(dt)
+                base64tohash(dt).then((hash) => {
+                    setImage64Compressed(hash)
+                })
             } else {
-                setCompressedImageDataUrl(imageDataUrl)
+                setImage64Compressed(image64)
             }
         }
     }
 
-    async function saveImage(title: string, description: string, tags: string[]) {
-        let tmp2 = await fetch(compressedImageDataUrl)
-        let blb2 = await tmp2.blob()
-        let hash2 = await hashBlob(blb2)
-        let base642 = await _blobToBase64(blb2)
-        let res = await db.getByIndex("hash", hash)
-        if (res) {
-            db.update({
-                id: res.id,
-                title: title,
-                description: description,
-                base64: image64,
-                hash: hash,
-                base64_compressed: base642,
-                hash_compressed: hash2,
-                tags: tags,
-                deleted: false,
-            })
-        } else {
-            await db.add({
-                title: title,
-                description: description,
-                base64: image64,
-                hash: hash,
-                base64_compressed: base642,
-                hash_compressed: hash2,
-                tags: tags,
-                deleted: false,
-            })
-        }
-    }
+    async function saveImage(title: string, description: string, tags: string[]) {}
 
     return (
-        <div className="new-image">
-            <button
-                className="new-image-save-button"
-                onClick={(_) => {
-                    saveImage(title, description, [])
-                }}
-            >
-                Save
-            </button>
-            <img ref={imgRef} src={imageDataUrl} className="new-image-preview" />
-            <canvas ref={canvasRef} className="" />
-            <label className="new-image-title-lable">Title:</label>
-            <textarea className="new-image-title-texterea" placeholder="Write your title here..." onChange={(e) => setTitle(e.target.value)} />
-            <label className="new-image-description-lable">Description:</label>
-            <textarea
-                className="new-image-description-texterea"
-                placeholder="Write your description here..."
-                onChange={(e) => setDescription(e.target.value)}
-            />
+        <div className="image-editor">
+            <div className="image-editor-column-left">
+                <img ref={imgRef} src={image64} className="image-editor-preview" />
+            </div>
+            <div className="image-editor-column-right">
+                <div className="image-editor-column-right-button-group">
+                    <button
+                        className="image-editor-compress-button text-button"
+                        onClick={(_) => {
+                            compressImage()
+                        }}
+                    >
+                        Compress
+                    </button>
+                    <button
+                        className="image-editor-save-button text-button"
+                        onClick={(_) => {
+                            saveImage(title, description, [])
+                        }}
+                    >
+                        Save
+                    </button>
+                    <button
+                        className="image-editor-paste-button text-button"
+                        onClick={(_) => {
+                            navigator.clipboard.read().then((data) => {
+                                if (data && data[0] && data[0].types.includes("text/plain")) {
+                                    data[0]
+                                        .getType("text/plain")
+                                        .then((x) => x.text())
+                                        .then(JSON.parse)
+                                        .then((x) => {
+                                            if (x && x.contentType == "image") {
+                                                setImage64(x.data)
+                                            }
+                                        })
+                                }
+                            })
+                        }}
+                    >
+                        Paste New Image
+                    </button>
+                    <button
+                        className="image-editor-exit-button text-button"
+                        onClick={(_) => {
+                            props.onExitButtonClicked && props.onExitButtonClicked()
+                        }}
+                    >
+                        Exit
+                    </button>
+                </div>
+                <div className="input-group">
+                    <input
+                        type="text"
+                        required={true}
+                        autoComplete="off"
+                        className="input-group-title"
+                        name="title"
+                        placeholder="Image title here..."
+                        onChange={(e) => {
+                            setTitle(e.target.value)
+                        }}
+                    />
+                    <textarea
+                        autoComplete="off"
+                        className="input-group-description"
+                        name="description"
+                        placeholder="Image description here..."
+                        rows={5}
+                        onChange={(e) => {
+                            setDescription(e.target.value)
+                        }}
+                    />
+                </div>
+                <canvas ref={canvasRef} className="image-editor-preview-canvas" />
+            </div>
         </div>
     )
 }

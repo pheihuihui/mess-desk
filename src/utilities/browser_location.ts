@@ -9,7 +9,8 @@ export type BaseLocationHook = (...args: any[]) => [Path, (path: Path, ...args: 
 export type BaseSearchHook = (...args: any[]) => SearchString
 export type HookReturnValue<H extends BaseLocationHook> = ReturnType<H>
 type EmptyInterfaceWhenAnyOrNever<T> = 0 extends 1 & T ? {} : [T] extends [never] ? {} : T
-export type HookNavigationOptions<H extends BaseLocationHook> = EmptyInterfaceWhenAnyOrNever<NonNullable<Parameters<HookReturnValue<H>[1]>[1]>>
+type EmptyInterfaceWhenAnyOrNeverOrUndefined<T> = T extends undefined ? {} : EmptyInterfaceWhenAnyOrNever<T>
+export type HookNavigationOptions<H extends BaseLocationHook> = EmptyInterfaceWhenAnyOrNeverOrUndefined<NonNullable<Parameters<HookReturnValue<H>[1]>[1]>>
 
 const eventPopstate = "popstate"
 const eventPushState = "pushState"

@@ -247,7 +247,7 @@ export const Switch: FunctionComponent<SwitchProps> = ({ children, location }) =
 export const Redirect: <H extends BaseLocationHook = BrowserLocationHook>(props: RedirectProps<H>, context?: any) => null = (props) => {
     const { to, href = to } = props
     const [, navigate] = useLocation()
-    const redirect = useEvent(() => navigate(to || href, props))
+    const redirect = useEvent(() => navigate(to || href!, props))
     useLayoutEffect(() => {
         redirect()
     }, [])

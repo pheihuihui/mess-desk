@@ -108,7 +108,7 @@ export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | unde
 
 type LocalStorageKeys = "LOCAL_STORAGE_TAGS" | "LOCAL_STORAGE_IMAGE_API_ADDR" | "LOCAL_STORAGE_IMAGE_API_SESSION_ID"
 
-export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue: string) {
+export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue: string = "") {
     const [storedValue, setStoredValue] = useState<string>(() => {
         try {
             const item = window.localStorage.getItem(key)
@@ -203,4 +203,18 @@ export const useEvent = <TCallback extends AnyFunction>(callback: TCallback): TC
 
 function useEvent_shouldNotBeInvokedBeforeMount() {
     throw new Error("useEvent callback should not be invoked before mount")
+}
+
+export function usePhotoPrism() {
+    const [photoPrismAddr] = useLocalStorage("LOCAL_STORAGE_IMAGE_API_ADDR")
+    const [photoPrismSessionId] = useLocalStorage("LOCAL_STORAGE_IMAGE_API_SESSION_ID")
+    const fetch10 = () =>
+        fetch(`${photoPrismAddr}/api/v1/photos?count=10`, {
+            headers: {
+                "X-Session-Id": photoPrismSessionId,
+            },
+        })
+    return {
+        fetch10,
+    }
 }

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb } from "../../hooks"
+import { useIndexedDb, useLocalStorage, usePhotoPrism } from "../../hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 
 interface NewImageProps {
@@ -15,6 +15,8 @@ export const NewImage: FC<NewImageProps> = (props) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
+
+    useEffect(() => {}, [])
 
     async function base64tohash(base: string) {
         let tmp = await fetch(base)
@@ -39,19 +41,50 @@ export const NewImage: FC<NewImageProps> = (props) => {
                 let targetW = Math.floor(imgW / x)
                 canv.height = targetH
                 canv.width = targetW
-                ctx?.drawImage(img, 0, 0, targetW, targetH)
-                let dt = canv.toDataURL("image/png")
-                setImage64Compressed(dt)
-                base64tohash(dt).then((hash) => {
-                    setImage64Compressed(hash)
-                })
+                if (ctx) {
+                    ctx.imageSmoothingEnabled = true
+                    ctx.imageSmoothingQuality = "high"
+                    ctx.drawImage(img, 0, 0, targetW, targetH)
+                    let dt = canv.toDataURL("image/png")
+                    setImage64Compressed(dt)
+                    base64tohash(dt).then((hash) => {
+                        setImage64Compressed(hash)
+                    })
+                }
             } else {
                 setImage64Compressed(image64)
             }
         }
     }
 
-    async function saveImage(title: string, description: string, tags: string[]) {}
+    async function saveImage(title: string, description: string, tags: string[]) {
+        let base64 = image64
+        let hash = await base64tohash(base64)
+        let base64_compressed = image64Compressed
+        let hash_compressed = await base64tohash(base64_compressed)
+        let deleted = false
+        let item = {
+            title,
+            description,
+            base64,
+            hash,
+            base64_compressed,
+            hash_compressed,
+            deleted,
+            tags,
+        }
+        db.getByIndex("hash", hash).then((x) => {
+            if (x) {
+                db.update({ id: x.id, ...item })
+                    .then((item) => alert(`updated item: ${item.id}`))
+                    .catch((e) => alert(e.target?.error?.message))
+            } else {
+                db.add(item)
+                    .then((_id) => alert(`inserted item: ${_id}`))
+                    .catch((e) => alert(e.target?.error?.message))
+            }
+        })
+    }
 
     return (
         <div className="image-editor">
@@ -89,6 +122,9 @@ export const NewImage: FC<NewImageProps> = (props) => {
                                             if (x && x.contentType == "image") {
                                                 setImage64(x.data)
                                             }
+                                        })
+                                        .catch((_) => {
+                                            alert("Clipboard does not contain an image")
                                         })
                                 }
                             })

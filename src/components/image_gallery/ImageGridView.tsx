@@ -8,9 +8,22 @@ export const ImageGridView: FC = () => {
 
     useEffect(() => {
         const getImages = async () => {
-            let tmp = await db.getByIndex("title", keyword)
-            console.log(tmp)
-            setImages([tmp].map((item) => item.base64))
+            // let tmp = await db.getByIndex("title", keyword)
+            // db.getAll().then((items) => {
+            //     console.log(items)
+            // })
+            // setImages([tmp].map((item) => item.base64))
+            setImages([])
+            db.openCursor((event) => {
+                // @ts-ignore
+                let cursor = event.target.result
+                if (cursor) {
+                    if (cursor.value && cursor.value.title.includes(keyword) && keyword != "") {
+                        setImages((prev) => [...prev, cursor.value.base64_compressed])
+                    }
+                    cursor.continue()
+                }
+            })
         }
         getImages()
     }, [keyword])

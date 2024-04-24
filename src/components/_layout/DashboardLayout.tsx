@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren } from "react"
 import { BodyWrapper } from "./BodyWrapper"
-import { BottomNavBar } from "./BottomNavBar"
+import { BottomNavBar } from "./BottomNavigation"
 
 export const DashboardLayout: FC<PropsWithChildren> = (props) => {
     return (

@@ -1,14 +1,17 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb } from "../../hooks"
+import { useIndexedDb, useLocalStorage, usePhotoPrism } from "../../hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
+import { useHistoryState } from "../../utilities/browser_location"
+import { useLocation } from "../../router"
 
 interface ImageEditorProps {
-    imageId: number
     onExitButtonClicked?: () => void
+    mode: "new" | "edit"
 }
 
 export const ImageEditor: FC<ImageEditorProps> = (props) => {
+    const [location, navigate] = useLocation()
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [image64, setImage64] = useState(LOADING_IMAGE)
@@ -16,17 +19,6 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
-
-    useEffect(() => {
-        const fetch64 = async () => {
-            let item = await db.getByID(props.imageId)
-            setImage64(item.base64)
-            setTitle(item.title)
-            setDescription(item.description ?? "")
-            setImage64Compressed(item.base64_compressed ?? "")
-        }
-        fetch64()
-    }, [])
 
     async function base64tohash(base: string) {
         let tmp = await fetch(base)
@@ -51,12 +43,16 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
                 let targetW = Math.floor(imgW / x)
                 canv.height = targetH
                 canv.width = targetW
-                ctx?.drawImage(img, 0, 0, targetW, targetH)
-                let dt = canv.toDataURL("image/png")
-                setImage64Compressed(dt)
-                base64tohash(dt).then((hash) => {
-                    setImage64Compressed(hash)
-                })
+                if (ctx) {
+                    ctx.imageSmoothingEnabled = true
+                    ctx.imageSmoothingQuality = "high"
+                    ctx.drawImage(img, 0, 0, targetW, targetH)
+                    let dt = canv.toDataURL("image/png")
+                    setImage64Compressed(dt)
+                    base64tohash(dt).then((hash) => {
+                        setImage64Compressed(hash)
+                    })
+                }
             } else {
                 setImage64Compressed(image64)
             }
@@ -64,32 +60,32 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
     }
 
     async function saveImage(title: string, description: string, tags: string[]) {
-        let hash = await base64tohash(image64)
-        let res = await db.getByID(props.imageId)
-        if (res) {
-            db.update({
-                id: res.id,
-                title: title,
-                description: description,
-                base64: image64,
-                hash: hash,
-                base64_compressed: "",
-                hash_compressed: "",
-                tags: ["tag1", "tag2"],
-                deleted: false,
-            })
-        } else {
-            await db.add({
-                title: title,
-                description: description,
-                base64: image64,
-                hash: hash,
-                base64_compressed: "",
-                hash_compressed: "",
-                tags: tags,
-                deleted: false,
-            })
+        let base64 = image64
+        let hash = await base64tohash(base64)
+        let base64_compressed = image64Compressed
+        let hash_compressed = await base64tohash(base64_compressed)
+        let deleted = false
+        let item = {
+            title,
+            description,
+            base64,
+            hash,
+            base64_compressed,
+            hash_compressed,
+            deleted,
+            tags,
         }
+        db.getByIndex("hash", hash).then((x) => {
+            if (x) {
+                db.update({ id: x.id, ...item })
+                    .then((item) => alert(`updated item: ${item.id}`))
+                    .catch((e) => alert(e.target?.error?.message))
+            } else {
+                db.add(item)
+                    .then((_id) => navigate("/"))
+                    .catch((e) => alert(e.target?.error?.message))
+            }
+        })
     }
 
     return (
@@ -108,15 +104,35 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
                         Compress
                     </button>
                     <button
+                        className="image-editor-paste-button text-button"
+                        onClick={(_) => {
+                            navigator.clipboard.read().then((data) => {
+                                if (data && data[0] && data[0].types.includes("text/plain")) {
+                                    data[0]
+                                        .getType("text/plain")
+                                        .then((x) => x.text())
+                                        .then(JSON.parse)
+                                        .then((x) => {
+                                            if (x && x.contentType == "image") {
+                                                setImage64(x.data)
+                                            }
+                                        })
+                                        .catch((_) => {
+                                            alert("Clipboard does not contain an image")
+                                        })
+                                }
+                            })
+                        }}
+                    >
+                        Paste New Image
+                    </button>
+                    <button
                         className="image-editor-save-button text-button"
                         onClick={(_) => {
                             saveImage(title, description, [])
                         }}
                     >
                         Save
-                    </button>
-                    <button className="image-editor-paste-button text-button" onClick={(_) => {}}>
-                        Paste New
                     </button>
                     <button
                         className="image-editor-exit-button text-button"

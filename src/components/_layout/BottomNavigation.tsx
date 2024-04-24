@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useState } from "react"
-import { useLocation } from "../../router"
 import { tabs } from "../../pages/_tabs"
+import { useHashLocation } from "../../utilities/hash_location"
 
 interface NavigationItemProps {
     index: number
@@ -22,7 +22,7 @@ interface BottomNavigationProps {
     onSelect?: (itemId: string) => void
 }
 
-export const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
+const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
     return (
         <>
             <input
@@ -42,8 +42,8 @@ export const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
     )
 }
 
-export const BottomNavigation: FC<BottomNavigationProps> = (props) => {
-    const [location, _] = useLocation()
+const BottomNavigation: FC<BottomNavigationProps> = (props) => {
+    const [location, _] = useHashLocation()
     const [activeItemId, setActiveItemId] = useState(() => {
         const activeTab = props.items.find((item) => tabs[item.itemId].path == location)
         return activeTab ? activeTab.itemId : props.items[0].itemId
@@ -67,5 +67,25 @@ export const BottomNavigation: FC<BottomNavigationProps> = (props) => {
             ))}
             <div className="indicator"></div>
         </div>
+    )
+}
+
+export const BottomNavBar: FC = () => {
+    const [_, navigate] = useHashLocation()
+    return (
+        <BottomNavigation
+            onSelect={(_itemId) => {
+                console.log(_itemId)
+                setTimeout(() => {
+                    navigate(tabs[_itemId].path)
+                }, 200)
+            }}
+            items={Object.keys(tabs).map((t, i) => ({
+                key: i,
+                title: tabs[t].text,
+                itemId: t,
+                elemBefore: tabs[t].icon,
+            }))}
+        />
     )
 }

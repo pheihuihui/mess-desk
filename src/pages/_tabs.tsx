@@ -15,6 +15,7 @@ interface TabProps {
         page: ReactNode
         text: string
         path: string
+        nest?: boolean
     }
 }
 
@@ -36,7 +37,7 @@ export const tabs: TabProps = {
     },
     home: {
         text: "",
-        path: "/",
+        path: "/home",
         page: <WelcomePage />,
         icon: <HomeIcon />,
     },
@@ -46,9 +47,10 @@ export const tabs: TabProps = {
         page: <PodsPage />,
     },
     images: {
-        text: "New Image",
-        path: "/new-image",
+        text: "Image Editor",
+        path: "/image-editor",
         page: <ImagePage />,
+        nest: true,
     },
     archive: {
         text: "New Page",

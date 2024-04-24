@@ -1,11 +1,11 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
-import { NewImage } from "../components/image_gallery/NewImage"
+import { ImageEditor } from "../components/image_gallery/ImageEditor"
 
 export const ImagePage: FC = () => {
     return (
         <DashboardLayout>
-            <NewImage />
+            <ImageEditor mode="new" />
         </DashboardLayout>
     )
 }

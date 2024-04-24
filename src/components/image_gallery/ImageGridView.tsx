@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { useIndexedDb } from "../../hooks"
 
 export const ImageGridView: FC = () => {
@@ -8,15 +8,12 @@ export const ImageGridView: FC = () => {
 
     useEffect(() => {
         const getImages = async () => {
-            // let tmp = await db.getByIndex("title", keyword)
-            // db.getAll().then((items) => {
-            //     console.log(items)
-            // })
-            // setImages([tmp].map((item) => item.base64))
             setImages([])
             db.openCursor((event) => {
+                console.log(event)
                 // @ts-ignore
-                let cursor = event.target.result
+                let cursor = event.currentTarget.result
+                console.log(cursor)
                 if (cursor) {
                     if (cursor.value && cursor.value.title.includes(keyword) && keyword != "") {
                         setImages((prev) => [...prev, cursor.value.base64_compressed])
@@ -36,7 +33,7 @@ export const ImageGridView: FC = () => {
                 onKeyDown={(e) => {
                     if (e.key == "Enter") {
                         e.preventDefault()
-                        setKeyword(e.target.value)
+                        setKeyword(e.currentTarget.value)
                     }
                 }}
             />

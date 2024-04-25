@@ -1,17 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb, useLocalStorage, usePhotoPrism } from "../../hooks"
+import { useIndexedDb } from "../../hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
-import { useHistoryState } from "../../utilities/browser_location"
-import { useLocation } from "../../router"
+import { useHashLocation } from "../../utilities/hash_location"
+import { useRoute, useRouter } from "../../router"
 
-interface ImageEditorProps {
-    onExitButtonClicked?: () => void
-    mode: "new" | "edit"
-}
-
-export const ImageEditor: FC<ImageEditorProps> = (props) => {
-    const [location, navigate] = useLocation()
+export const ImageEditor: FC = () => {
+    const [location, navigate] = useHashLocation()
+    const [_, param] = useRoute("/:id")
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [image64, setImage64] = useState(LOADING_IMAGE)
@@ -19,6 +15,23 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
+
+    useEffect(() => {
+        let _id = param?.id
+        const _setImageDetails = async (id: number) => {
+            let item = await db.getByID(id)
+            if (item) {
+                setTitle(item.title)
+                setDescription(item.description ?? "")
+                setImage64(item.base64)
+                setImage64Compressed(item.base64_compressed ?? "")
+            }
+        }
+        if (_id) {
+            let num = parseInt(_id)
+            if (!Number.isNaN(num) && num > 0) _setImageDetails(num)
+        }
+    }, [param])
 
     async function base64tohash(base: string) {
         let tmp = await fetch(base)
@@ -50,7 +63,7 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
                     let dt = canv.toDataURL("image/png")
                     setImage64Compressed(dt)
                     base64tohash(dt).then((hash) => {
-                        setImage64Compressed(hash)
+                        setImage64Compressed("data:image/png;base64," + hash)
                     })
                 }
             } else {
@@ -134,13 +147,16 @@ export const ImageEditor: FC<ImageEditorProps> = (props) => {
                     >
                         Save
                     </button>
+                    <button className="image-editor-exit-button text-button" onClick={(_) => navigate("/home")}>
+                        Exit
+                    </button>
                     <button
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            props.onExitButtonClicked && props.onExitButtonClicked()
+                            console.log(title)
                         }}
                     >
-                        Exit
+                        Test
                     </button>
                 </div>
                 <div className="input-group">

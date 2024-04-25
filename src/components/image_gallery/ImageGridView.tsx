@@ -1,22 +1,21 @@
 import React, { FC, useEffect, useState } from "react"
 import { useIndexedDb } from "../../hooks"
+import { navigate } from "../../utilities/hash_location"
 
 export const ImageGridView: FC = () => {
     const db = useIndexedDb("STORE_IMAGE")
     const [keyword, setKeyword] = useState("")
-    const [images, setImages] = useState<string[]>([])
+    const [images, setImages] = useState<Record<string, string>>({})
 
     useEffect(() => {
         const getImages = async () => {
-            setImages([])
+            setImages({})
             db.openCursor((event) => {
-                console.log(event)
                 // @ts-ignore
                 let cursor = event.currentTarget.result
-                console.log(cursor)
                 if (cursor) {
-                    if (cursor.value && cursor.value.title.includes(keyword) && keyword != "") {
-                        setImages((prev) => [...prev, cursor.value.base64_compressed])
+                    if (cursor.value && cursor.value.title.includes(keyword)) {
+                        setImages(Object.assign(images, { [cursor.value.id]: cursor.value.base64_compressed }))
                     }
                     cursor.continue()
                 }
@@ -38,9 +37,9 @@ export const ImageGridView: FC = () => {
                 }}
             />
             <div className="image-gallery-grid-view">
-                {images.map((img, i) => (
-                    <div key={i} className="image-gallery-grid-view-cell">
-                        <img src={img} />
+                {Object.keys(images).map((id) => (
+                    <div key={id} className="image-gallery-grid-view-cell">
+                        <img src={images[id]} onClick={() => navigate(`/image-editor/${id}`)} />
                     </div>
                 ))}
             </div>

@@ -45,7 +45,7 @@ const BottomNavigationItem: FC<NavigationItemProps> = (props) => {
 const BottomNavigation: FC<BottomNavigationProps> = (props) => {
     const [location, _] = useHashLocation()
     const [activeItemId, setActiveItemId] = useState(() => {
-        const activeTab = props.items.find((item) => tabs[item.itemId].path == location)
+        const activeTab = props.items.find((item) => location.indexOf(tabs[item.itemId].path) == 0)
         return activeTab ? activeTab.itemId : props.items[0].itemId
     })
 
@@ -75,7 +75,6 @@ export const BottomNavBar: FC = () => {
     return (
         <BottomNavigation
             onSelect={(_itemId) => {
-                console.log(_itemId)
                 setTimeout(() => {
                     navigate(tabs[_itemId].path)
                 }, 200)

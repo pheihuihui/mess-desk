@@ -5,7 +5,7 @@ import { ImageEditor } from "../components/image_gallery/ImageEditor"
 export const ImagePage: FC = () => {
     return (
         <DashboardLayout>
-            <ImageEditor mode="new" />
+            <ImageEditor />
         </DashboardLayout>
     )
 }

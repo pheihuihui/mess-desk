@@ -4,7 +4,7 @@ import { navigate } from "../../utilities/hash_location"
 
 export const ImageGridView: FC = () => {
     const db = useIndexedDb("STORE_IMAGE")
-    const [keyword, setKeyword] = useState("")
+    const [keyword, setKeyword] = useState(" ")
     const [images, setImages] = useState<Record<string, string>>({})
 
     useEffect(() => {

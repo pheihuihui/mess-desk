@@ -6,7 +6,7 @@ import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 
 export const ImageEditor: FC = () => {
-    const [imageId, setImageId] = useState(0)
+    const [imageId, setImageId] = useState(-1)
     const [location, navigate] = useHashLocation()
     const [_, param] = useRoute("/:id")
     const [title, setTitle] = useState("")
@@ -30,9 +30,8 @@ export const ImageEditor: FC = () => {
     useEffect(() => {
         let _id = param?.id
         let num = parseInt(_id ?? "")
-        if (!Number.isNaN(num) && num > 0) {
+        if (!Number.isNaN(num) && num >= 0) {
             setImageId(num)
-            console.log(num)
             setImageDetails(num)
         }
     }, [location])

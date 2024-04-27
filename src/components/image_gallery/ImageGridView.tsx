@@ -4,20 +4,24 @@ import { navigate } from "../../utilities/hash_location"
 
 export const ImageGridView: FC = () => {
     const db = useIndexedDb("STORE_IMAGE")
-    const [keyword, setKeyword] = useState(" ")
+    const [keyword, setKeyword] = useState("")
     const [images, setImages] = useState<Record<string, string>>({})
 
     useEffect(() => {
         const getImages = async () => {
             setImages({})
+            let count = 0
             db.openCursor((event) => {
                 // @ts-ignore
                 let cursor = event.currentTarget.result
                 if (cursor) {
                     if (cursor.value && cursor.value.title.includes(keyword)) {
-                        setImages(Object.assign(images, { [cursor.value.id]: cursor.value.base64_compressed }))
+                        setImages((prev) => ({ ...prev, [cursor.value.id]: cursor.value.base64_compressed }))
                     }
-                    cursor.continue()
+                    if (count < 9) {
+                        count += 1
+                        cursor.continue()
+                    }
                 }
             })
         }

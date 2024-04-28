@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { useIndexedDb } from "../../hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
+import { MarkdownEditor } from "./MarkdownEditor"
 
 interface MarkdownReaderProps {
     id: number
@@ -10,7 +11,6 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     const [innerHtml, setInnerHtml] = React.useState("")
     const md_db = useIndexedDb("STORE_MARKDOWN")
     const [src, setSrc] = useState("")
-    const textRef = useRef<HTMLTextAreaElement>(null)
     const elemRef = useRef<HTMLDivElement>(null)
     const [mode, setMode] = useState<"editor" | "reader">("editor")
     const image_db = useIndexedDb("STORE_IMAGE")
@@ -19,14 +19,6 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
             <img className="store-image" src={LOADING_IMAGE} store-id="2" />
         </p>
     )
-
-    const markdownCodeEditor = (
-        <div className="markdown-reader-code">
-            <textarea ref={textRef} />
-        </div>
-    )
-
-    const titleColumn = <div />
 
     useEffect(() => {
         const fetchSrc = async () => {
@@ -39,26 +31,6 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     useEffect(() => {
         let html = window.markdownToHtml(src)
         setInnerHtml(html)
-        if (textRef.current) {
-            textRef.current.value = src
-            textRef.current.onkeydown = (e) => {
-                if (e.ctrlKey && e.key == "s") {
-                    e.preventDefault()
-                    md_db.update({
-                        id: props.id,
-                        title: "title",
-                        content: textRef.current?.value ?? "",
-                        tags: [],
-                        deleted: false,
-                    })
-                }
-            }
-        }
-        return () => {
-            if (textRef.current) {
-                textRef.current.onkeydown = null
-            }
-        }
     }, [src, mode])
 
     useEffect(() => {
@@ -91,9 +63,29 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
         }
     }, [mode])
 
+    const titleColumn = <div />
+    const editor = (
+        <MarkdownEditor
+            initialText={src}
+            onEdited={(txt) => {
+                setSrc(txt)
+            }}
+            onSaved={(txt) => {
+                console.log(src)
+                md_db.update({
+                    id: props.id,
+                    title: "title",
+                    content: txt,
+                    tags: [],
+                    deleted: false,
+                })
+            }}
+        />
+    )
+
     return (
         <div className="markdown-reader">
-            {mode == "editor" ? markdownCodeEditor : titleColumn}
+            {mode == "editor" ? editor : titleColumn}
             <div className="markdown-reader-rendered">
                 <div className="markdown-body" ref={elemRef} dangerouslySetInnerHTML={{ __html: innerHtml }} />
             </div>

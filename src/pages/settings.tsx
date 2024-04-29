@@ -1,6 +1,6 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
-import { useLocalStorage } from "../hooks"
+import { useLocalStorage } from "../utilities/hooks"
 
 interface SettingItemProps {
     label: string

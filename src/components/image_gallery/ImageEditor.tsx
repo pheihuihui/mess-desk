@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb } from "../../hooks"
+import { useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"

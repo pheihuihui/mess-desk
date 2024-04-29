@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { useIndexedDb } from "../../hooks"
+import { useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { MarkdownEditor } from "./MarkdownEditor"
 

@@ -1,11 +1,11 @@
 import React, { FC } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
-import { MarkdownReader } from "../components/reader/MarkdownReader"
+import { DetailedPortrait } from "../components/portrait/DetailedPortrait"
 
 export const WelcomePage: FC = () => {
     return (
         <DashboardLayout>
-            <MarkdownReader id={10} />
+            <DetailedPortrait />
         </DashboardLayout>
     )
 }

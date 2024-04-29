@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useDidUpdateEffect } from "../../hooks"
+import { useDidUpdateEffect } from "../../utilities/hooks"
 
 import { Tag } from "./Tag"
 import { TagList } from "./TagList"

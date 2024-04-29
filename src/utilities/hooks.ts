@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, DependencyList, useInsertionEffect, useLayoutEffect } from "react"
-import { _useIndexedDB } from "./utilities/db"
+import { _useIndexedDB } from "./db"
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
@@ -160,6 +160,15 @@ interface IndexedDbProps {
     STORE_MARKDOWN: {
         title: string
         content: string
+        tags: string[]
+        deleted: boolean
+    }
+    STORE_PERSON: {
+        name: string
+        description: string
+        birth: `${number}/${number}/${number}` | "unknown"
+        death: `${number}/${number}/${number}` | "unknown" | "not yet"
+        imgId: number
         tags: string[]
         deleted: boolean
     }

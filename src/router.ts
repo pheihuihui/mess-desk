@@ -34,7 +34,7 @@ import {
 
 import { RouteParams, parsePattern } from "./utilities/regexparam"
 import { absolutePath, relativePath, stripQm, unescape } from "./utilities/path"
-import { useEvent } from "./hooks"
+import { useEvent } from "./utilities/hooks"
 
 export type Parser = (route: Path) => { pattern: RegExp; keys: string[] }
 

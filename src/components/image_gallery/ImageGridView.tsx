@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
-import { useIndexedDb } from "../../hooks"
+import { useIndexedDb } from "../../utilities/hooks"
 import { navigate } from "../../utilities/hash_location"
 
 export const ImageGridView: FC = () => {

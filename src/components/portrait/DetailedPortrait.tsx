@@ -4,18 +4,31 @@ import { useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
+import { SimpleDialog } from "../SimpleDialog"
+import { ImageEditor } from "../image_gallery/ImageEditor"
+import { ImageGridView } from "../image_gallery/ImageGridView"
 
 export const DetailedPortrait: FC = () => {
-    const [location, navigate] = useHashLocation()
+    const [_location, navigate] = useHashLocation()
     const [_, param] = useRoute("/:id")
     const [name, setName] = useState("")
+    const [selectedImageId, setSelectedImageId] = useState(-1)
     const [description, setDescription] = useState("")
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
+    const dialogRef = useRef<HTMLDialogElement>(null)
     const db_person = useIndexedDb("STORE_PERSON")
     const db_image = useIndexedDb("STORE_IMAGE")
 
-    useEffect(() => {}, [location])
+    useEffect(() => {
+        const setImage = async () => {
+            let image = await db_image.getByID(selectedImageId)
+            if (image && imgRef.current) {
+                imgRef.current.src = image.base64 ?? ""
+            }
+        }
+        setImage()
+    }, [selectedImageId])
 
     async function savePersonDetails(name: string, description: string, tags: string[], imageId: number) {
         let person = await db_person.getByID(imageId)
@@ -36,7 +49,15 @@ export const DetailedPortrait: FC = () => {
                     <button className="image-editor-compress-button text-button" onClick={(_) => {}}>
                         Edit
                     </button>
-                    <button className="image-editor-paste-button text-button" onClick={(_) => {}}>
+                    <button
+                        className="image-editor-paste-button text-button"
+                        onClick={(_) => {
+                            let dialog = dialogRef.current
+                            if (dialog) {
+                                dialog.showModal()
+                            }
+                        }}
+                    >
                         Select Image
                     </button>
                     <button className="image-editor-save-button text-button" onClick={(_) => {}}>
@@ -74,6 +95,15 @@ export const DetailedPortrait: FC = () => {
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>
+            <SimpleDialog ref={dialogRef}>
+                <ImageGridView
+                    onImageSelected={(str) => {
+                        let num = parseInt(str)
+                        setSelectedImageId(num)
+                        dialogRef.current?.close()
+                    }}
+                />
+            </SimpleDialog>
         </div>
     )
 }

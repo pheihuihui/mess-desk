@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useRef, DependencyList, useInsertionEffect, useLayoutEffect } from "react"
+import { useState, useEffect, useReducer, useRef, DependencyList, useLayoutEffect } from "react"
 import { _useIndexedDB } from "./db"
 
 export function useWindowSize() {

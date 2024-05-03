@@ -1,0 +1,12 @@
+.person-date {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &-input {
+        width: 40%;
+        &:disabled {
+            background-color: darkgray !important;
+        }
+    }
+}

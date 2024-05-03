@@ -1,12 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64 } from "../../utilities/utilities"
-import { useIndexedDb } from "../../utilities/hooks"
+import { TPersonDate, useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { SimpleDialog } from "../SimpleDialog"
-import { ImageEditor } from "../image_gallery/ImageEditor"
 import { ImageGridView } from "../image_gallery/ImageGridView"
+import { StyledCheckbox } from "../StyledCheckbox"
+import { Dropdown } from "../Dropdown"
 
 export const DetailedPortrait: FC = () => {
     const [_location, navigate] = useHashLocation()
@@ -19,6 +20,10 @@ export const DetailedPortrait: FC = () => {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const db_person = useIndexedDb("STORE_PERSON")
     const db_image = useIndexedDb("STORE_IMAGE")
+    const [bornOn, setBornOn] = useState("")
+    const [diedOn, setDiedOn] = useState("")
+    const allPersonType = ["real", "avatar", "fictional"]
+    const [personType, setPersonType] = useState(allPersonType[0])
 
     useEffect(() => {
         const setImage = async () => {
@@ -47,7 +52,7 @@ export const DetailedPortrait: FC = () => {
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
                     <button className="image-editor-compress-button text-button" onClick={(_) => {}}>
-                        Edit
+                        Edit Profile Image
                     </button>
                     <button
                         className="image-editor-paste-button text-button"
@@ -63,7 +68,12 @@ export const DetailedPortrait: FC = () => {
                     <button className="image-editor-save-button text-button" onClick={(_) => {}}>
                         Save
                     </button>
-                    <button className="image-editor-exit-button text-button" onClick={(_) => navigate("/home")}>
+                    <button
+                        className="image-editor-exit-button text-button"
+                        onClick={(_) => {
+                            console.log(personType)
+                        }}
+                    >
                         Exit
                     </button>
                 </div>
@@ -75,7 +85,7 @@ export const DetailedPortrait: FC = () => {
                         autoComplete="off"
                         className="input-group-title"
                         name="title"
-                        placeholder="Image title here..."
+                        placeholder="Person name here..."
                         onChange={(e) => {
                             setName(e.currentTarget.value)
                         }}
@@ -85,13 +95,16 @@ export const DetailedPortrait: FC = () => {
                         autoComplete="off"
                         className="input-group-description"
                         name="description"
-                        placeholder="Image description here..."
+                        placeholder="Person description here..."
                         rows={5}
                         onChange={(e) => {
                             let val = e.currentTarget.value
                             setDescription(val)
                         }}
                     />
+                    <PersonDate placeholder="Born on..." name="bornOn" onEdit={setBornOn} />
+                    <PersonDate placeholder="Died on..." name="diedOn" onEdit={setDiedOn} />
+                    <Dropdown options={allPersonType} onSelected={setPersonType} />
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>
@@ -104,6 +117,66 @@ export const DetailedPortrait: FC = () => {
                     }}
                 />
             </SimpleDialog>
+        </div>
+    )
+}
+
+interface PersonDateProps {
+    placeholder: string
+    name: string
+    onEdit: (date: TPersonDate) => void
+}
+
+const PersonDate: FC<PersonDateProps> = (props) => {
+    const [date, setDate] = useState("")
+    const [unknown, setUnknown] = useState(false)
+    const [notYet, setNotYet] = useState(false)
+
+    function getDate(): TPersonDate {
+        if (unknown) {
+            return "unknown"
+        } else if (notYet) {
+            return "not yet"
+        } else {
+            // @ts-ignore
+            return date
+        }
+    }
+
+    useEffect(() => {
+        props.onEdit(getDate())
+    }, [date, unknown, notYet])
+
+    return (
+        <div className="person-date">
+            <input
+                type="text"
+                required={true}
+                disabled={unknown || notYet}
+                autoComplete="off"
+                className="person-date-input"
+                name={props.name}
+                placeholder={props.placeholder}
+                onChange={(e) => {
+                    setDate(e.currentTarget.value)
+                }}
+            />
+            <StyledCheckbox
+                label="unknown"
+                checked={unknown}
+                onChange={(b) => {
+                    setUnknown(b)
+                    setNotYet(false)
+                }}
+            />
+            <StyledCheckbox
+                label="not yet"
+                checked={notYet}
+                onChange={(b) => {
+                    setNotYet(b)
+                    setUnknown(false)
+                }}
+            />
         </div>
     )
 }

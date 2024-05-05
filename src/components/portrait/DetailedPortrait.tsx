@@ -8,6 +8,7 @@ import { SimpleDialog } from "../SimpleDialog"
 import { ImageGridView } from "../image_gallery/ImageGridView"
 import { StyledCheckbox } from "../StyledCheckbox"
 import { Dropdown } from "../Dropdown"
+import { Circle } from "../Circle"
 
 export const DetailedPortrait: FC = () => {
     const [_location, navigate] = useHashLocation()
@@ -22,6 +23,9 @@ export const DetailedPortrait: FC = () => {
     const db_image = useIndexedDb("STORE_IMAGE")
     const [bornOn, setBornOn] = useState("")
     const [diedOn, setDiedOn] = useState("")
+    const [headX, setHeadX] = useState(0)
+    const [headY, setHeadY] = useState(0)
+    const [headD, setHeadD] = useState(0)
     const allPersonType = ["real", "avatar", "fictional"]
     const [personType, setPersonType] = useState(allPersonType[0])
 
@@ -47,7 +51,16 @@ export const DetailedPortrait: FC = () => {
     return (
         <div className="image-editor">
             <div className="image-editor-column-left">
-                <img ref={imgRef} src={LOADING_IMAGE} className="image-editor-preview" />
+                <div className="image-editor-portrait">
+                    <img ref={imgRef} src={LOADING_IMAGE} />
+                    <Circle
+                        onMoveAndResize={(x, y, d) => {
+                            setHeadD(d)
+                            setHeadX(x)
+                            setHeadY(y)
+                        }}
+                    />
+                </div>
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
@@ -71,7 +84,7 @@ export const DetailedPortrait: FC = () => {
                     <button
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(personType)
+                            console.log(headD, headX, headY)
                         }}
                     >
                         Exit

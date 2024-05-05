@@ -84,4 +84,15 @@
             margin-bottom: 10px;
         }
     }
+
+    .image-editor-portrait {
+        width: 50rem;
+        height: 50rem;
+        position: relative;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: scale-down;
+        }
+    }
 }

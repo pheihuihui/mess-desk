@@ -6,7 +6,6 @@ const ItemTypes = { TAG: "tag" }
 
 export interface Tag {
     id: string
-    className: string
     [key: string]: string
 }
 
@@ -29,8 +28,6 @@ export const SingleTag = (props: TagProps) => {
     const { readOnly = false, tag, classNames, index, labelField = "text" } = props
 
     const label = props.tag[props.labelField]
-    const { className = "" } = tag
-    /* istanbul ignore next */
     const opacity = 1
     return (
         <span

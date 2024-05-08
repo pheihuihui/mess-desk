@@ -4,24 +4,15 @@ import { Suggestions } from "./Suggestions"
 import { SingleTag, Tag } from "./SingleTag"
 
 import { buildRegExpFromDelimiters, getKeyCodeFromSeparator, uniq } from "../../utilities/utilities"
-
-//Constants
 import { TAG_KEYS, TAG_DEFAULT_CLASSNAMES, TAG_INPUT_FIELD_POSITIONS, TAG_ERRORS } from "../../utilities/constants"
 import { ReactTagsWrapperProps } from "./Tag"
-
-/**
- * Props for the ReactTags component.
- */
 
 type ReactTagsProps = ReactTagsWrapperProps & {
     placeholder: string
     labelField: string
     suggestions: Array<Tag>
-    delimiters: Array<number>
     separators: Array<string>
-    autofocus: boolean
     autoFocus: boolean
-    inline: boolean
     inputFieldPosition: "inline" | "top" | "bottom"
     allowDeleteFromEmptyInput: boolean
     allowAdditionFromPaste: boolean
@@ -30,35 +21,28 @@ type ReactTagsProps = ReactTagsWrapperProps & {
     allowUnique: boolean
     allowDragDrop: boolean
     tags: Array<Tag>
-    inputProps: { [key: string]: string }
     editable: boolean
     clearAll: boolean
 }
 
 export const ReactTags = (props: ReactTagsProps) => {
     const {
-        autofocus,
         autoFocus,
         readOnly,
         labelField,
         allowDeleteFromEmptyInput,
         allowAdditionFromPaste,
-        allowDragDrop,
         minQueryLength,
         shouldRenderSuggestions,
         removeComponent,
         autocomplete,
-        inline,
         maxTags,
         allowUnique,
         editable,
         placeholder,
-        delimiters,
         separators,
         tags,
         inputFieldPosition,
-        inputProps,
-        classNames,
         maxLength,
         inputValue,
         clearAll,
@@ -76,29 +60,6 @@ export const ReactTags = (props: ReactTagsProps) => {
     const reactTagsRef = createRef<HTMLDivElement>()
     const textInput = useRef<HTMLInputElement | null>(null)
     const tagInput = useRef<HTMLInputElement | null>(null)
-
-    useEffect(() => {
-        if (delimiters.length) {
-            console.warn(
-                "[Deprecation] The delimiters prop is deprecated and will be removed in v7.x.x, please use separators instead. If you have any concerns regarding this, please share your thoughts in https://github.com/react-tags/react-tags/issues/960",
-            )
-        }
-    }, [])
-
-    useEffect(() => {
-        if (!inline) {
-            console.warn("[Deprecation] The inline attribute is deprecated and will be removed in v7.x.x, please use inputFieldPosition instead.")
-        }
-    }, [inline])
-
-    useEffect(() => {
-        if (autofocus === false) {
-            console.warn("[Deprecated] autofocus prop will be removed in 7.x so please migrate to autoFocus prop.")
-        }
-        if (autofocus && autoFocus && !readOnly) {
-            resetAndFocusInput()
-        }
-    }, [autoFocus, autoFocus, readOnly])
 
     useEffect(() => {
         updateSuggestions()
@@ -234,10 +195,7 @@ export const ReactTags = (props: ReactTagsProps) => {
             setCurrentEditIndex(-1)
         }
 
-        // When one of the terminating keys is pressed, add current query to the tags.
-        // If no text is typed in so far, ignore the action - so we don't end up with a terminating
-        // character typed in.
-        if ((separators.indexOf(event.key) !== -1 || delimiters.indexOf(event.keyCode) !== -1) && !event.shiftKey) {
+        if (separators.indexOf(event.key) !== -1 && !event.shiftKey) {
             if (event.keyCode !== TAG_KEYS.TAB || query !== "") {
                 event.preventDefault()
             }
@@ -254,20 +212,16 @@ export const ReactTags = (props: ReactTagsProps) => {
                 addTag(selectedQuery)
             }
         }
-        // If the backspace key is pressed and the query is empty, delete the last tag if
-        // allowDeleteFromEmptyInput is true or if the input field is inline
         if (event.key === "Backspace" && query === "" && (allowDeleteFromEmptyInput || inputFieldPosition === TAG_INPUT_FIELD_POSITIONS.INLINE)) {
             handleDelete(tags.length - 1, event)
         }
 
-        // up arrow
         if (event.keyCode === TAG_KEYS.UP_ARROW) {
             event.preventDefault()
             setSelectedIndex(selectedIndex <= 0 ? suggestions.length - 1 : selectedIndex - 1)
             setSelectionMode(true)
         }
 
-        // down arrow
         if (event.keyCode === TAG_KEYS.DOWN_ARROW) {
             event.preventDefault()
             setSelectionMode(true)
@@ -302,7 +256,7 @@ export const ReactTags = (props: ReactTagsProps) => {
         const maxTextLength = Math.min(maxLength, clipboardText.length)
         const pastedText = clipboardData.getData("text").substr(0, maxTextLength)
 
-        let keycodes = delimiters
+        let keycodes: number[] = []
         if (separators.length) {
             keycodes = []
             separators.forEach((separator) => {
@@ -315,7 +269,6 @@ export const ReactTags = (props: ReactTagsProps) => {
             })
         }
 
-        // Used to determine how the pasted content is split.
         const delimiterRegExp = buildRegExpFromDelimiters(keycodes)
         const tags = pastedText.split(delimiterRegExp).map((tag) => tag.trim())
 
@@ -345,7 +298,6 @@ export const ReactTags = (props: ReactTagsProps) => {
 
         const existingKeys = tags.map((tag: Tag) => tag.id.toLowerCase())
 
-        // Return if tag has been already added
         if (allowUnique && existingKeys.indexOf(tag.id.trim().toLowerCase()) >= 0) {
             return
         }
@@ -359,11 +311,9 @@ export const ReactTags = (props: ReactTagsProps) => {
             }
         }
 
-        // call method to add
         if (currentEditIndex !== -1 && props.onTagUpdate) props.onTagUpdate(currentEditIndex, tag)
         else props?.handleAddition?.(tag)
 
-        // reset the state
         setQuery("")
         setSelectionMode(false)
         setSelectedIndex(-1)
@@ -390,16 +340,13 @@ export const ReactTags = (props: ReactTagsProps) => {
     }
 
     const moveTag = (dragIndex: number, hoverIndex: number) => {
-        // locate tags
         const dragTag = tags[dragIndex]
 
-        // call handler with the index of the dragged tag
-        // and the tag that is hovered
         props?.handleDrag?.(dragTag, dragIndex, hoverIndex)
     }
 
     const getTagItems = () => {
-        const allClassNames = { ...TAG_DEFAULT_CLASSNAMES, ...props.classNames }
+        const allClassNames = { ...TAG_DEFAULT_CLASSNAMES }
 
         return tags.map((tag, index) => {
             return (
@@ -438,16 +385,15 @@ export const ReactTags = (props: ReactTagsProps) => {
     }
 
     const tagItems = getTagItems()
-    const allClassNames = { ...TAG_DEFAULT_CLASSNAMES, ...classNames }
+    const allClassNames = { ...TAG_DEFAULT_CLASSNAMES }
 
     const { name: inputName, id: inputId } = props
 
-    const position = !inline ? TAG_INPUT_FIELD_POSITIONS.BOTTOM : inputFieldPosition
+    const position = TAG_INPUT_FIELD_POSITIONS.BOTTOM
 
     const tagsComponent = !readOnly ? (
         <div className={allClassNames.tagInput}>
             <input
-                {...inputProps}
                 ref={(input) => {
                     textInput.current = input
                 }}

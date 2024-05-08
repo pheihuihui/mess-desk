@@ -1,6 +1,6 @@
 // https://github.com/react-tags/react-tags
 
-import { ReactNode } from "react"
+import { FC, ReactNode } from "react"
 import { Tag } from "./SingleTag"
 import { TAG_DEFAULT_LABEL_FIELD, TAG_DEFAULT_PLACEHOLDER, TAG_KEYS, TAG_SEPARATORS } from "../../utilities/constants"
 import { ReactTags } from "./ReactTags"
@@ -20,18 +20,10 @@ export interface ReactTagsWrapperProps {
      */
     suggestions?: Array<Tag>
     /**
-     * Array of key codes that will trigger a tag addition.
-     */
-    delimiters?: Array<number>
-    /**
      * Array of characters that will trigger a tag addition.
      * This should match the event.key property of the keydown event.
      */
     separators?: Array<string>
-    /**
-     * Whether the input field should automatically focus on mount.
-     */
-    autofocus?: boolean
     /**
      * Whether the input field should automatically focus on mount.
      */
@@ -40,11 +32,6 @@ export interface ReactTagsWrapperProps {
      * Whether the input field should be read-only.
      */
     readOnly?: boolean
-    /**
-     * Whether the input field should be displayed inline.
-     * TODO: Remove in v7.x.x
-     */
-    inline?: boolean
     /**
      * Position of the input field relative to the tags.
      */
@@ -114,21 +101,6 @@ export interface ReactTagsWrapperProps {
      */
     autocomplete?: boolean | number
     /**
-     * CSS class names for the component.
-     */
-    classNames?: {
-        root: string
-        rootFocused: string
-        selected: string
-        selectedTag: string
-        selectedTagName: string
-        search: string
-        searchInput: string
-        suggestions: string
-        suggestionActive: string
-        suggestionDisabled: string
-    }
-    /**
      * Name attribute for the input field.
      */
     name?: string
@@ -178,18 +150,13 @@ export interface ReactTagsWrapperProps {
     onClearAll?: () => void
 }
 
-const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
+export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
     const {
         placeholder = TAG_DEFAULT_PLACEHOLDER,
         labelField = TAG_DEFAULT_LABEL_FIELD,
         suggestions = [],
-        // Set delimeters to empty array if separators is provided
-        delimiters = props.separators?.length ? [] : [...TAG_KEYS.ENTER, TAG_KEYS.TAB],
-        // Set separators to empty array if delimiters is provided
-        separators = props.delimiters?.length ? [] : [TAG_SEPARATORS.ENTER, TAG_SEPARATORS.TAB],
-        autofocus = true,
+        separators = [TAG_SEPARATORS.ENTER, TAG_SEPARATORS.TAB],
         autoFocus = true,
-        inline = true, // TODO= Remove in v7.x.x
         inputFieldPosition = "inline",
         allowDeleteFromEmptyInput = false,
         allowAdditionFromPaste = true,
@@ -204,7 +171,6 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
         handleDelete,
         handleAddition,
         onTagUpdate,
-        handleDrag,
         handleFilterSuggestions,
         handleTagClick,
         handleInputChange,
@@ -214,7 +180,6 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
         shouldRenderSuggestions,
         removeComponent,
         onClearAll,
-        classNames,
         name,
         id,
         maxLength,
@@ -228,11 +193,8 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
             placeholder={placeholder}
             labelField={labelField}
             suggestions={suggestions}
-            delimiters={delimiters}
             separators={separators}
-            autofocus={autofocus}
             autoFocus={autoFocus}
-            inline={inline}
             inputFieldPosition={inputFieldPosition}
             allowDeleteFromEmptyInput={allowDeleteFromEmptyInput}
             allowAdditionFromPaste={allowAdditionFromPaste}
@@ -247,7 +209,6 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
             handleDelete={handleDelete}
             handleAddition={handleAddition}
             onTagUpdate={onTagUpdate}
-            handleDrag={handleDrag}
             handleFilterSuggestions={handleFilterSuggestions}
             handleTagClick={handleTagClick}
             handleInputChange={handleInputChange}
@@ -257,7 +218,6 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
             shouldRenderSuggestions={shouldRenderSuggestions}
             removeComponent={removeComponent}
             onClearAll={onClearAll}
-            classNames={classNames}
             name={name}
             id={id}
             maxLength={maxLength}
@@ -267,6 +227,3 @@ const ReactTagsWrapper = (props: ReactTagsWrapperProps) => {
         />
     )
 }
-export const WithContext = ({ ...props }: ReactTagsWrapperProps) => <ReactTagsWrapper {...props} />
-
-export { ReactTagsWrapper as WithOutContext }

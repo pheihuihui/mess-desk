@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { HomeIcon } from "../components/Icon"
+import { HomeIcon } from "../components/others/Icon"
 import { NotesPage } from "./notes"
 import { PortraitsPage } from "./portraits"
 import { WelcomePage } from "./welcome"

@@ -4,11 +4,11 @@ import { TPersonDate, useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
-import { SimpleDialog } from "../SimpleDialog"
+import { SimpleDialog } from "../others/SimpleDialog"
 import { ImageGridView } from "../image_gallery/ImageGridView"
-import { StyledCheckbox } from "../StyledCheckbox"
-import { Dropdown } from "../Dropdown"
-import { Circle } from "../Circle"
+import { StyledCheckbox } from "../others/StyledCheckbox"
+import { Dropdown } from "../others/Dropdown"
+import { Circle } from "../others/Circle"
 
 export const DetailedPortrait: FC = () => {
     const [_location, navigate] = useHashLocation()

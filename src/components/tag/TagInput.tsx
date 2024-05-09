@@ -1,13 +1,13 @@
-import React, { useEffect, createRef, useRef, useState, Fragment } from "react"
+import React, { useEffect, createRef, useRef, useState, Fragment, FC } from "react"
 import { ClearAllTags } from "./ClearAllTags"
 import { Suggestions } from "./Suggestions"
 import { SingleTag, Tag } from "./SingleTag"
 
 import { buildRegExpFromDelimiters, getKeyCodeFromSeparator, uniq } from "../../utilities/utilities"
-import { TAG_KEYS, TAG_DEFAULT_CLASSNAMES, TAG_INPUT_FIELD_POSITIONS, TAG_ERRORS } from "../../utilities/constants"
-import { ReactTagsWrapperProps } from "./Tag"
+import { TAG_KEYS, TAG_INPUT_FIELD_POSITIONS, TAG_ERRORS, TAGGING_CLASSNAMES } from "../../utilities/constants"
+import { ReactTagsWrapperProps } from "./_index"
 
-type ReactTagsProps = ReactTagsWrapperProps & {
+type TagInputProps = ReactTagsWrapperProps & {
     placeholder: string
     labelField: string
     suggestions: Array<Tag>
@@ -16,7 +16,6 @@ type ReactTagsProps = ReactTagsWrapperProps & {
     inputFieldPosition: "inline" | "top" | "bottom"
     allowDeleteFromEmptyInput: boolean
     allowAdditionFromPaste: boolean
-    autocomplete: boolean | number
     readOnly: boolean
     allowUnique: boolean
     allowDragDrop: boolean
@@ -25,7 +24,7 @@ type ReactTagsProps = ReactTagsWrapperProps & {
     clearAll: boolean
 }
 
-export const ReactTags = (props: ReactTagsProps) => {
+export const TagInput: FC<TagInputProps> = (props) => {
     const {
         autoFocus,
         readOnly,
@@ -35,7 +34,6 @@ export const ReactTags = (props: ReactTagsProps) => {
         minQueryLength,
         shouldRenderSuggestions,
         removeComponent,
-        autocomplete,
         maxTags,
         allowUnique,
         editable,
@@ -65,22 +63,17 @@ export const ReactTags = (props: ReactTagsProps) => {
         updateSuggestions()
     }, [query, props.suggestions])
 
-    // Filter suggestions based on the query and existing tags
     const filteredSuggestions = (query: string) => {
         let updatedSuggestions = props.suggestions.slice()
 
-        // If unique tags are allowed, filter out suggestions that are already in the tags array
         if (allowUnique) {
             const existingTags = tags.map((tag) => tag.id.trim().toLowerCase())
             updatedSuggestions = updatedSuggestions.filter((suggestion) => !existingTags.includes(suggestion.id.toLowerCase()))
         }
-        // If a custom filter function is provided, use it to filter the suggestions
         if (props.handleFilterSuggestions) {
             return props.handleFilterSuggestions(query, updatedSuggestions)
         }
 
-        // Separate exact matches and partial matches and return them concatenated
-        // so that exact matches are always displayed first followed by partial
         const exactSuggestions = updatedSuggestions.filter((item) => getQueryIndex(query, item) === 0)
         const partialSuggestions = updatedSuggestions.filter((item) => getQueryIndex(query, item) > 0)
 
@@ -104,8 +97,6 @@ export const ReactTags = (props: ReactTagsProps) => {
         event.preventDefault()
         event.stopPropagation()
         const currentTags = tags.slice()
-        // Early exit from the function if the array
-        // is already empty
         if (currentTags.length === 0) {
             return
         }
@@ -123,12 +114,12 @@ export const ReactTags = (props: ReactTagsProps) => {
 
         if (index === 0 && tags.length > 1) {
             ariaLiveStatus = `Tag at index ${index} with value ${tags[index].id} deleted. Tag at index 0 with value ${tags[1].id} focussed. Press backspace to remove`
-            tagRemoveButtons[0].focus()
+            tagRemoveButtons[0]?.focus()
         } else if (index > 0) {
             ariaLiveStatus = `Tag at index ${index} with value ${tags[index].id} deleted. Tag at index ${index - 1} with value ${
                 tags[index - 1].id
             } focussed. Press backspace to remove`
-            tagRemoveButtons[index - 1].focus()
+            tagRemoveButtons[index - 1]?.focus()
         } else {
             ariaLiveStatus = `Tag at index ${index} with value ${tags[index].id} deleted. Input focussed. Press enter to add a new tag`
             textInput.current?.focus()
@@ -206,14 +197,29 @@ export const ReactTags = (props: ReactTagsProps) => {
                     : {
                           id: query.trim(),
                           [labelField]: query.trim(),
-                          className: "",
                       }
             if (Object.keys(selectedQuery)) {
                 addTag(selectedQuery)
             }
         }
+
+        if (event.key === "Enter" && query.trim() !== "") {
+            event.preventDefault()
+            event.stopPropagation()
+            const selectedQuery =
+                selectionMode && selectedIndex !== -1
+                    ? suggestions[selectedIndex]
+                    : {
+                          id: query.trim(),
+                          [labelField]: query.trim(),
+                      }
+            if (Object.keys(selectedQuery)) {
+                addTag(selectedQuery)
+            }
+        }
+
         if (event.key === "Backspace" && query === "" && (allowDeleteFromEmptyInput || inputFieldPosition === TAG_INPUT_FIELD_POSITIONS.INLINE)) {
-            handleDelete(tags.length - 1, event)
+            // handleDelete(tags.length - 1, event)
         }
 
         if (event.keyCode === TAG_KEYS.UP_ARROW) {
@@ -277,7 +283,6 @@ export const ReactTags = (props: ReactTagsProps) => {
             addTag({
                 id: tag.trim(),
                 [labelField]: tag.trim(),
-                className: "",
             }),
         )
     }
@@ -300,15 +305,6 @@ export const ReactTags = (props: ReactTagsProps) => {
 
         if (allowUnique && existingKeys.indexOf(tag.id.trim().toLowerCase()) >= 0) {
             return
-        }
-        if (autocomplete) {
-            const possibleMatches = filteredSuggestions(tag[labelField])
-            console.warn(
-                "[Deprecation] The autocomplete prop will be removed in 7.x to simplify the integration and make it more intutive. If you have any concerns regarding this, please share your thoughts in https://github.com/react-tags/react-tags/issues/949",
-            )
-            if ((autocomplete === 1 && possibleMatches.length === 1) || (autocomplete === true && possibleMatches.length)) {
-                tag = possibleMatches[0]
-            }
         }
 
         if (currentEditIndex !== -1 && props.onTagUpdate) props.onTagUpdate(currentEditIndex, tag)
@@ -346,13 +342,11 @@ export const ReactTags = (props: ReactTagsProps) => {
     }
 
     const getTagItems = () => {
-        const allClassNames = { ...TAG_DEFAULT_CLASSNAMES }
-
         return tags.map((tag, index) => {
             return (
                 <Fragment key={index}>
                     {currentEditIndex === index ? (
-                        <div className={allClassNames.editTagInput}>
+                        <div className={TAGGING_CLASSNAMES.EDITTAG_INPUT}>
                             <input
                                 ref={(input: HTMLInputElement) => {
                                     tagInput.current = input
@@ -362,7 +356,7 @@ export const ReactTags = (props: ReactTagsProps) => {
                                 onChange={handleChange}
                                 onKeyDown={handleKeyDown}
                                 onBlur={handleBlur}
-                                className={allClassNames.editTagInputField}
+                                className={TAGGING_CLASSNAMES.EDITTAG_INPUT_FIELD}
                                 onPaste={handlePaste}
                                 data-testid="tag-edit"
                             />
@@ -376,7 +370,6 @@ export const ReactTags = (props: ReactTagsProps) => {
                             removeComponent={removeComponent}
                             onTagClicked={(event: React.MouseEvent<HTMLSpanElement> | React.TouchEvent<HTMLSpanElement>) => handleTagClick(index, tag, event)}
                             readOnly={readOnly}
-                            classNames={allClassNames}
                         />
                     )}
                 </Fragment>
@@ -385,19 +378,18 @@ export const ReactTags = (props: ReactTagsProps) => {
     }
 
     const tagItems = getTagItems()
-    const allClassNames = { ...TAG_DEFAULT_CLASSNAMES }
 
     const { name: inputName, id: inputId } = props
 
     const position = TAG_INPUT_FIELD_POSITIONS.BOTTOM
 
     const tagsComponent = !readOnly ? (
-        <div className={allClassNames.tagInput}>
+        <div className={TAGGING_CLASSNAMES.TAG_INPUT}>
             <input
                 ref={(input) => {
                     textInput.current = input
                 }}
-                className={allClassNames.tagInputField}
+                className={TAGGING_CLASSNAMES.TAG_INPUT_FIELD}
                 type="text"
                 placeholder={placeholder}
                 aria-label={placeholder}
@@ -424,10 +416,9 @@ export const ReactTags = (props: ReactTagsProps) => {
                 minQueryLength={minQueryLength}
                 shouldRenderSuggestions={shouldRenderSuggestions}
                 isFocused={isFocused}
-                classNames={allClassNames}
                 renderSuggestion={props.renderSuggestion}
             />
-            {clearAll && tags.length > 0 && <ClearAllTags classNames={allClassNames} onClick={handleClearAll} />}
+            {clearAll && tags.length > 0 && <ClearAllTags onClick={handleClearAll} />}
             {error && (
                 <div data-testid="error" className="ReactTags__error">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="24" width="24" fill="#e03131">
@@ -458,7 +449,7 @@ export const ReactTags = (props: ReactTagsProps) => {
                 {ariaLiveStatus}
             </p>
             {position === TAG_INPUT_FIELD_POSITIONS.TOP && tagsComponent}
-            <div className={allClassNames.selected}>
+            <div className={TAGGING_CLASSNAMES.SELECTED}>
                 {tagItems}
                 {position === TAG_INPUT_FIELD_POSITIONS.INLINE && tagsComponent}
             </div>

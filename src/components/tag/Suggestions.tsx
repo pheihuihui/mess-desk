@@ -1,7 +1,8 @@
-import { ReactNode, createRef, memo, useEffect } from "react"
+import { FC, ReactNode, createRef, memo, useEffect } from "react"
 import { Tag } from "./SingleTag"
 import React from "react"
 import { _escape, isEqual } from "../../utilities/utilities"
+import { TAGGING_CLASSNAMES } from "../../utilities/constants"
 
 const maybeScrollSuggestionIntoView = (suggestionEl: HTMLElement, suggestionsContainer: HTMLElement) => {
     const containerHeight = suggestionsContainer.offsetHeight
@@ -53,13 +54,6 @@ interface SuggestionsProps {
      */
     handleHover: (index: number) => void
     /**
-     * CSS class names to apply to the suggestions container and active suggestion.
-     */
-    classNames: {
-        suggestions: string
-        activeSuggestion: string
-    }
-    /**
      * Optional function to determine whether to render suggestions.
      * @param {string} query - The current query string.
      * @returns {boolean} - Whether to render suggestions.
@@ -78,15 +72,15 @@ interface SuggestionsProps {
     minQueryLength?: number
 }
 
-const SuggestionsComp = (props: SuggestionsProps) => {
+const SuggestionsComp: FC<SuggestionsProps> = (props) => {
     const suggestionsContainerRef = createRef<HTMLDivElement>()
-    const { labelField, minQueryLength, isFocused, classNames, selectedIndex, query } = props
+    const { labelField, minQueryLength, isFocused, selectedIndex, query } = props
 
     useEffect(() => {
         if (!suggestionsContainerRef.current) {
             return
         }
-        const activeSuggestion = suggestionsContainerRef.current.querySelector(`.${classNames.activeSuggestion}`) as HTMLElement
+        const activeSuggestion = suggestionsContainerRef.current.querySelector(`.${TAGGING_CLASSNAMES.ACTIVE_SUGGESTION}`) as HTMLElement
 
         if (activeSuggestion) {
             maybeScrollSuggestionIntoView(activeSuggestion, suggestionsContainerRef.current)
@@ -119,7 +113,7 @@ const SuggestionsComp = (props: SuggestionsProps) => {
                 onMouseDown={props.handleClick.bind(null, index)}
                 onTouchStart={props.handleClick.bind(null, index)}
                 onMouseOver={props.handleHover.bind(null, index)}
-                className={index === props.selectedIndex ? props.classNames.activeSuggestion : ""}
+                className={index === props.selectedIndex ? TAGGING_CLASSNAMES.ACTIVE_SUGGESTION : ""}
             >
                 {renderSuggestion(tag, props.query)}
             </li>
@@ -132,7 +126,7 @@ const SuggestionsComp = (props: SuggestionsProps) => {
     }
 
     return (
-        <div ref={suggestionsContainerRef} className={classNames.suggestions} data-testid="suggestions">
+        <div ref={suggestionsContainerRef} className={TAGGING_CLASSNAMES.SUGGESTIONS} data-testid="suggestions">
             <ul> {suggestions} </ul>
         </div>
     )

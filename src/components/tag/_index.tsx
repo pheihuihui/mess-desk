@@ -3,7 +3,7 @@
 import { FC, ReactNode } from "react"
 import { Tag } from "./SingleTag"
 import { TAG_DEFAULT_LABEL_FIELD, TAG_DEFAULT_PLACEHOLDER, TAG_KEYS, TAG_SEPARATORS } from "../../utilities/constants"
-import { ReactTags } from "./ReactTags"
+import { TagInput } from "./TagInput"
 import React from "react"
 
 export interface ReactTagsWrapperProps {
@@ -97,10 +97,6 @@ export interface ReactTagsWrapperProps {
      */
     removeComponent?: React.ComponentType<any>
     /**
-     * Whether to enable autocomplete when typing for suggestions
-     */
-    autocomplete?: boolean | number
-    /**
      * Name attribute for the input field.
      */
     name?: string
@@ -160,7 +156,6 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
         inputFieldPosition = "inline",
         allowDeleteFromEmptyInput = false,
         allowAdditionFromPaste = true,
-        autocomplete = false,
         readOnly = false,
         allowUnique = true,
         allowDragDrop = true,
@@ -189,7 +184,7 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
     } = props
 
     return (
-        <ReactTags
+        <TagInput
             placeholder={placeholder}
             labelField={labelField}
             suggestions={suggestions}
@@ -198,7 +193,6 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
             inputFieldPosition={inputFieldPosition}
             allowDeleteFromEmptyInput={allowDeleteFromEmptyInput}
             allowAdditionFromPaste={allowAdditionFromPaste}
-            autocomplete={autocomplete}
             readOnly={readOnly}
             allowUnique={allowUnique}
             allowDragDrop={allowDragDrop}

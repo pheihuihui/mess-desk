@@ -1,13 +1,9 @@
-import React from "react"
+import React, { FC } from "react"
+import { TAGGING_CLASSNAMES } from "../../utilities/constants"
 
-export const ClearAllTags = (props: {
-    classNames: {
-        clearAll: string
-    }
-    onClick: () => void
-}) => {
+export const ClearAllTags: FC<{ onClick: () => void }> = (props) => {
     return (
-        <button className={props.classNames.clearAll} onClick={props.onClick}>
+        <button className={TAGGING_CLASSNAMES.CLEAR_ALL} onClick={props.onClick}>
             Clear all
         </button>
     )

@@ -213,7 +213,7 @@ export const Link: <H extends BaseLocationHook = BrowserLocationHook>(props: Lin
         }
     })
 
-    const href = router.hrefs(_href[0] === "~" ? _href.slice(1) : router.base + _href, router)
+    const href = router.hrefs(_href && _href[0] === "~" ? _href.slice(1) : router.base + _href, router)
 
     return asChild && isValidElement(children)
         ? cloneElement(children, { onClick, href })

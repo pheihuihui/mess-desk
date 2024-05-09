@@ -68,18 +68,18 @@ export const TAG_DEFAULT_PLACEHOLDER = "Press enter to add new tag"
 
 export const TAG_DEFAULT_LABEL_FIELD = "text"
 
-export const TAG_DEFAULT_CLASSNAMES = {
-    tags: "ReactTags__tags",
-    tagInput: "ReactTags__tagInput",
-    tagInputField: "ReactTags__tagInputField",
-    selected: "ReactTags__selected",
-    tag: "ReactTags__tag",
-    remove: "ReactTags__remove",
-    suggestions: "ReactTags__suggestions",
-    activeSuggestion: "ReactTags__activeSuggestion",
-    editTagInput: "ReactTags__editTagInput",
-    editTagInputField: "ReactTags__editTagInputField",
-    clearAll: "ReactTags__clearAll",
+export const TAGGING_CLASSNAMES = {
+    TAGS: "tagging-tags",
+    TAG_INPUT: "tagging-tag-input",
+    TAG_INPUT_FIELD: "tagging-tag-input-field",
+    SELECTED: "tagging-selected",
+    TAG: "tagging-tag",
+    REMOVE: "tagging-remove",
+    SUGGESTIONS: "tagging-suggestions",
+    ACTIVE_SUGGESTION: "tagging-suggestion-active",
+    EDITTAG_INPUT: "tagging-edit-tag-input",
+    EDITTAG_INPUT_FIELD: "tagging-edit-tag-input-field",
+    CLEAR_ALL: "tagging-clear-all",
 }
 
 export const TAG_INPUT_FIELD_POSITIONS = {

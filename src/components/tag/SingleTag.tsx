@@ -1,38 +1,33 @@
-import React, { useRef } from "react"
+import React, { FC, useRef } from "react"
 
-import { RemoveComponent } from "./RemoveComponent"
-
-const ItemTypes = { TAG: "tag" }
+import { TagRemovement } from "./TagRemovement"
+import { TAGGING_CLASSNAMES } from "../../utilities/constants"
 
 export interface Tag {
     id: string
     [key: string]: string
 }
 
-export interface TagProps {
+export interface SingleTagProps {
     labelField: string
     onDelete: (event: React.MouseEvent<HTMLSpanElement> | React.KeyboardEvent<HTMLSpanElement>) => void
     tag: Tag
     removeComponent?: React.ComponentType<any>
     onTagClicked: (event: React.MouseEvent<HTMLSpanElement> | React.TouchEvent<HTMLSpanElement>) => void
-    classNames: {
-        tag: string
-        remove: string
-    }
     readOnly: boolean
     index: number
 }
 
-export const SingleTag = (props: TagProps) => {
+export const SingleTag: FC<SingleTagProps> = (props) => {
     const tagRef = useRef(null)
-    const { readOnly = false, tag, classNames, index, labelField = "text" } = props
+    const { readOnly = false, tag, index, labelField = "text" } = props
 
     const label = props.tag[props.labelField]
     const opacity = 1
     return (
         <span
             ref={tagRef}
-            className=""
+            className={TAGGING_CLASSNAMES.TAG}
             style={{
                 opacity,
                 cursor: "auto",
@@ -42,14 +37,7 @@ export const SingleTag = (props: TagProps) => {
             onTouchStart={props.onTagClicked}
         >
             {label}
-            <RemoveComponent
-                tag={props.tag}
-                className={classNames.remove}
-                removeComponent={props.removeComponent}
-                onRemove={props.onDelete}
-                readOnly={readOnly}
-                index={index}
-            />
+            <TagRemovement tag={props.tag} removeComponent={props.removeComponent} onRemove={props.onDelete} readOnly={readOnly} index={index} />
         </span>
     )
 }

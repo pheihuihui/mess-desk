@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react"
 import { DashboardLayout } from "../components/_layout/DashboardLayout"
 import { Tag } from "../components/tag/SingleTag"
-import { TagInputWithDefaultProps } from "../components/tag/Tag"
+import { TagInputWithDefaultProps } from "../components/tag/_index"
 
 export const WelcomePage: FC = () => {
     const [tags, setTags] = useState<Tag[]>([
@@ -28,11 +28,7 @@ export const WelcomePage: FC = () => {
                 suggestions={suggestions}
                 handleDelete={handleDelete}
                 handleAddition={handleAddition}
-                handleTagClick={(_) => {
-                    alert("tag clicked")
-                }}
                 inputFieldPosition="inline"
-                autocomplete={false}
                 editable
                 maxTags={15}
                 allowAdditionFromPaste

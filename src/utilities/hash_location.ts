@@ -26,10 +26,6 @@ export const navigate: <S = any>(to: Path, options?: { state: S }) => void = (to
     history.replaceState(state, "", location.pathname + location.search + (location.hash = `#/${to.replace(/^#?\/?/, "")}`))
 }
 
-export const useHashLocation: (options?: { ssrPath?: Path }) => [Path, typeof navigate] = ({ ssrPath = "/" } = {}) => [
-    useSyncExternalStore(subscribeToHashUpdates, currentHashLocation, () => ssrPath),
-    navigate,
-]
+export const useHashLocation = () => [useSyncExternalStore(subscribeToHashUpdates, currentHashLocation, () => "/"), navigate] as [Path, typeof navigate]
 
-// @ts-ignore
-useHashLocation.hrefs = (href) => "#" + href
+useHashLocation.hrefs = (href: string) => "#" + href

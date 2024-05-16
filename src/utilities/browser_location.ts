@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react"
 
 export type Path = string
 export type SearchString = string
-export type BaseLocationHook = (...args: any[]) => [Path, (path: Path, ...args: any[]) => any]
+export type BaseLocationHook = { (...args: any[]): [Path, (path: Path, ...args: any[]) => any]; hrefs: (x: string) => string }
 
 export type BaseSearchHook = (...args: any[]) => SearchString
 export type HookReturnValue<H extends BaseLocationHook> = ReturnType<H>
@@ -29,29 +29,28 @@ const subscribeToLocationUpdates = (callback: EventListener) => {
     }
 }
 type Primitive = string | number | bigint | boolean | null | undefined | symbol
-export const useLocationProperty: <S extends Primitive>(fn: () => S, ssrFn?: () => S) => S = (fn, ssrFn) =>
-    useSyncExternalStore(subscribeToLocationUpdates, fn, ssrFn)
+export const useLocationProperty: <S extends Primitive>(fn: () => S) => S = (fn) => useSyncExternalStore(subscribeToLocationUpdates, fn, undefined)
 
 const currentSearch = () => location.search
 
-export type BrowserSearchHook = (options?: { ssrSearch?: SearchString }) => SearchString
+export type BrowserSearchHook = () => SearchString
 
-export const useBrowserSearch: BrowserSearchHook = ({ ssrSearch = "" } = {}) => useLocationProperty(currentSearch, () => ssrSearch)
+export const useBrowserSearch: BrowserSearchHook = () => useLocationProperty(currentSearch)
 
 const currentPathname = () => location.pathname
 
-export const usePathname: (options?: { ssrPath?: Path }) => Path = ({ ssrPath } = {}) =>
-    useLocationProperty(currentPathname, ssrPath ? () => ssrPath : currentPathname)
+export const usePathname = () => useLocationProperty(currentPathname)
 
 const currentHistoryState = () => history.state
-export const useHistoryState = () => useLocationProperty(currentHistoryState, () => null)
+export const useHistoryState = () => useLocationProperty(currentHistoryState)
 
 export const navigate: <S = any>(to: string | URL, options?: { replace?: boolean; state?: S }) => void = (to, { replace = false, state = null } = {}) =>
     history[replace ? eventReplaceState : eventPushState](state, "", to)
 
-export type BrowserLocationHook = (options?: { ssrPath?: Path }) => [Path, typeof navigate]
+export type BrowserLocationHook = { (): [Path, typeof navigate]; hrefs: (x: string) => string }
 
-export const useBrowserLocation: BrowserLocationHook = (opts = {}) => [usePathname(opts), navigate]
+export const useBrowserLocation: BrowserLocationHook = () => [usePathname(), navigate]
+useBrowserLocation.hrefs = (x: string) => x
 
 const patchKey = Symbol.for("simple-router-patch")
 

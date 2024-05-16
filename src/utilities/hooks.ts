@@ -1,5 +1,6 @@
-import { useState, useEffect, useReducer, useRef, DependencyList, useLayoutEffect } from "react"
+import { useState, useEffect, useReducer, useRef, DependencyList, useLayoutEffect, MutableRefObject, useInsertionEffect } from "react"
 import { _useIndexedDB } from "./db"
+import { BaseLocationHook, BrowserLocationHook, HookReturnValue } from "./browser_location"
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
@@ -199,25 +200,13 @@ export function useImageDataUrl(id: number) {
     return imageDataUrl
 }
 
-type AnyFunction = (...args: any[]) => any
-export const useEvent = <TCallback extends AnyFunction>(callback: TCallback): TCallback => {
-    const latestRef = useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any)
-    useLayoutEffect(() => {
-        latestRef.current = callback
-    }, [callback])
-
-    const stableRef = useRef<TCallback>(null as any)
-    if (!stableRef.current) {
-        stableRef.current = function (this: any) {
-            return latestRef.current.apply(this, arguments as any)
-        } as TCallback
-    }
-
-    return stableRef.current
-}
-
-function useEvent_shouldNotBeInvokedBeforeMount() {
-    throw new Error("useEvent callback should not be invoked before mount")
+// https://github.com/facebook/react/pull/25881#issuecomment-1356244360
+export const useEvent = (fn: Function) => {
+    const ref = useRef([fn, (...args: any) => ref[0](...args)]).current
+    useInsertionEffect(() => {
+        ref[0] = fn
+    })
+    return ref[1]
 }
 
 export function usePhotoPrism() {

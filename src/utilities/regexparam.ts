@@ -1,14 +1,15 @@
 // https://github.com/lukeed/regexparam/blob/main/src/index.js
 // With regexparam, you may turn a pathing string (eg, /users/:id) into a regular expression.
 
-// @ts-ignore
-export function parsePattern(input, loose) {
+import { Path } from "./browser_location"
+
+export function parsePattern(input: Path | RegExp, loose?: boolean) {
     if (input instanceof RegExp) return { keys: false, pattern: input }
     var c,
         o,
         tmp,
         ext,
-        keys = [],
+        keys: string[] = [],
         pattern = "",
         arr = input.split("/")
     arr[0] || arr.shift()

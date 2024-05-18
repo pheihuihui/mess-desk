@@ -1,6 +1,5 @@
-import { useState, useEffect, useReducer, useRef, DependencyList, useLayoutEffect, MutableRefObject, useInsertionEffect } from "react"
+import { useState, useEffect, useReducer, useRef, DependencyList, useInsertionEffect } from "react"
 import { _useIndexedDB } from "./db"
-import { BaseLocationHook, BrowserLocationHook, HookReturnValue } from "./browser_location"
 
 export function useWindowSize() {
     const [windowScale, setWindowScale] = useState({
@@ -201,8 +200,9 @@ export function useImageDataUrl(id: number) {
 }
 
 // https://github.com/facebook/react/pull/25881#issuecomment-1356244360
-export const useEvent = (fn: Function) => {
-    const ref = useRef([fn, (...args: any) => ref[0](...args)]).current
+type AnyFunction = (...args: any) => any
+export const useEvent = (fn: AnyFunction) => {
+    const ref: [AnyFunction, AnyFunction] = useRef<[AnyFunction, AnyFunction]>([fn, (...args: any) => ref[0](...args)]).current
     useInsertionEffect(() => {
         ref[0] = fn
     })

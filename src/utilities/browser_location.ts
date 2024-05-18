@@ -12,6 +12,8 @@ type EmptyInterfaceWhenAnyOrNever<T> = 0 extends 1 & T ? {} : [T] extends [never
 type EmptyInterfaceWhenAnyOrNeverOrUndefined<T> = T extends undefined ? {} : EmptyInterfaceWhenAnyOrNever<T>
 export type HookNavigationOptions<H extends BaseLocationHook> = EmptyInterfaceWhenAnyOrNeverOrUndefined<NonNullable<Parameters<HookReturnValue<H>[1]>[1]>>
 
+export type AnyFunction = (...args: any) => any
+
 const eventPopstate = "popstate"
 const eventPushState = "pushState"
 const eventReplaceState = "replaceState"

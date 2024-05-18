@@ -1,8 +1,5 @@
 import { useSyncExternalStore } from "react"
-
-import { Path } from "./browser_location"
-
-type AnyFunction = (...args: any[]) => any
+import { AnyFunction, Path } from "./browser_location"
 
 const listeners = {
     v: [] as AnyFunction[],

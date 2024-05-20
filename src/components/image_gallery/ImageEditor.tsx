@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb } from "../../utilities/hooks"
+import { useIndexedDb, useLocalTags } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
+import { TagInputWithDefaultProps } from "../tag/_index"
 
 export const ImageEditor: FC = () => {
     const [imageId, setImageId] = useState(-1)
@@ -16,6 +17,9 @@ export const ImageEditor: FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
+    const [tags, setTags] = useState<string[]>([])
+    const [initialTags, setInitialTags] = useState<string[]>([])
+    const localTagging = useLocalTags()
 
     async function setImageDetails(id: number) {
         let item = await db.getByID(id)
@@ -24,6 +28,7 @@ export const ImageEditor: FC = () => {
             setDescription(item.description ?? "")
             setImage64(item.base64)
             setImage64Compressed(item.base64_compressed ?? "")
+            setInitialTags(item.tags)
         }
     }
 
@@ -143,7 +148,8 @@ export const ImageEditor: FC = () => {
                     <button
                         className="image-editor-save-button text-button"
                         onClick={(_) => {
-                            saveImage(title, description, [])
+                            localTagging.addMultipleTags(tags)
+                            saveImage(title, description, tags)
                         }}
                     >
                         Save
@@ -152,10 +158,11 @@ export const ImageEditor: FC = () => {
                         Exit
                     </button>
                     {/* <button
+                        hidden={true}
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(title)
-                            console.log(description)
+                            console.log(initialTags)
+                            console.log(tags)
                         }}
                     >
                         Test
@@ -184,6 +191,14 @@ export const ImageEditor: FC = () => {
                         onChange={(e) => {
                             let val = e.currentTarget.value
                             setDescription(val)
+                        }}
+                    />
+                    <TagInputWithDefaultProps
+                        tags={initialTags.map((t) => {
+                            return { id: t, text: t }
+                        })}
+                        onTagsUpdated={(arr) => {
+                            setTags(arr.map((t) => t.id))
                         }}
                     />
                 </div>

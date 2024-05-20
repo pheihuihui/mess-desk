@@ -1,10 +1,10 @@
 // https://github.com/react-tags/react-tags
 
-import { FC, ReactNode } from "react"
+import React, { FC, ReactNode, useEffect, useState } from "react"
 import { Tag } from "./SingleTag"
-import { TAG_DEFAULT_LABEL_FIELD, TAG_DEFAULT_PLACEHOLDER, TAG_KEYS, TAG_SEPARATORS } from "../../utilities/constants"
+import { TAG_DEFAULT_LABEL_FIELD, TAG_DEFAULT_PLACEHOLDER, TAG_SEPARATORS } from "../../utilities/constants"
 import { TagInput } from "./TagInput"
-import React from "react"
+import { useLocalTags } from "../../utilities/hooks"
 
 export interface ReactTagsWrapperProps {
     /**
@@ -144,6 +144,10 @@ export interface ReactTagsWrapperProps {
      * Handler for clearing all the tags.
      */
     onClearAll?: () => void
+    /**
+     * Handler for saving tags to local storage.
+     */
+    onTagsUpdated?: (tags: Array<Tag>) => void
 }
 
 export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
@@ -159,7 +163,7 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
         readOnly = false,
         allowUnique = true,
         allowDragDrop = true,
-        tags = [],
+        tags,
         inputProps = {},
         editable = false,
         clearAll = false,
@@ -183,11 +187,43 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
         renderSuggestion,
     } = props
 
+    const [selectedTags, setSelectedTags] = useState<Tag[]>(tags ?? [])
+    const localTags = useLocalTags()
+    const [suggestedTags, setSuggestedTags] = useState<Tag[]>(
+        Array.from(localTags.tagsSet).map((tag) => ({
+            id: tag,
+            text: tag,
+        })),
+    )
+
+    const _handleDelete = (i: number) => {
+        setSelectedTags(selectedTags.filter((_tag, index) => index != i))
+    }
+
+    const _handleAddition = (tag: Tag) => {
+        setSelectedTags((prevTags) => {
+            if (prevTags.map((t) => t.id).findIndex((x) => x == tag.id) !== -1) {
+                return prevTags
+            }
+            return [...prevTags, tag]
+        })
+    }
+
+    useEffect(() => {
+        props.onTagsUpdated?.(selectedTags)
+    }, [selectedTags])
+
+    useEffect(() => {
+        if (selectedTags.length == 0 && tags?.length && tags.length > 0) {
+            setSelectedTags(tags ?? [])
+        }
+    }, [tags])
+
     return (
         <TagInput
             placeholder={placeholder}
             labelField={labelField}
-            suggestions={suggestions}
+            suggestions={suggestedTags}
             separators={separators}
             autoFocus={autoFocus}
             inputFieldPosition={inputFieldPosition}
@@ -196,12 +232,12 @@ export const TagInputWithDefaultProps: FC<ReactTagsWrapperProps> = (props) => {
             readOnly={readOnly}
             allowUnique={allowUnique}
             allowDragDrop={allowDragDrop}
-            tags={tags}
+            tags={selectedTags}
             inputProps={inputProps}
             editable={editable}
             clearAll={clearAll}
-            handleDelete={handleDelete}
-            handleAddition={handleAddition}
+            handleDelete={_handleDelete}
+            handleAddition={_handleAddition}
             onTagUpdate={onTagUpdate}
             handleFilterSuggestions={handleFilterSuggestions}
             handleTagClick={handleTagClick}

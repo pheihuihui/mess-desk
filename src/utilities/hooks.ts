@@ -106,9 +106,13 @@ export function useDidUpdateEffect(fn: () => void, inputs: DependencyList | unde
     }, inputs)
 }
 
-type LocalStorageKeys = "LOCAL_STORAGE_TAGS" | "LOCAL_STORAGE_IMAGE_API_ADDR" | "LOCAL_STORAGE_IMAGE_API_SESSION_ID"
+interface LocalStorageContent {
+    LOCAL_STORAGE_TAGS: string[]
+    LOCAL_STORAGE_IMAGE_API_ADDR: string
+    LOCAL_STORAGE_IMAGE_API_SESSION_ID: string
+}
 
-export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue: string = "") {
+export function useLocalStorage<K extends keyof LocalStorageContent>(key: K, initialValue: string = "") {
     const [storedValue, setStoredValue] = useState<string>(() => {
         try {
             const item = window.localStorage.getItem(key)
@@ -118,7 +122,6 @@ export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue
             return initialValue
         }
     })
-
     const setValue = (value: string | ((val: string) => string)) => {
         try {
             const valueToStore = value instanceof Function ? value(storedValue) : value
@@ -129,19 +132,22 @@ export function useLocalStorage<K extends LocalStorageKeys>(key: K, initialValue
         }
     }
 
-    return [storedValue, setValue] as const
+    return [
+        storedValue as LocalStorageContent[K],
+        setValue as (value: LocalStorageContent[K] | ((val: LocalStorageContent[K]) => LocalStorageContent[K])) => void,
+    ] as const
 }
 
 export function useLocalTags() {
     const [tagsStr, saveTagsStr] = useLocalStorage("LOCAL_STORAGE_TAGS", "[]")
-    const tagsSet = new Set(JSON.parse(tagsStr) as string[])
+    const tagsSet = new Set(tagsStr)
     const addOneTag = (tag: string) => {
         tagsSet.add(tag)
-        saveTagsStr(JSON.stringify(Array.from(tagsSet)))
+        saveTagsStr(Array.from(tagsSet))
     }
     const addMultipleTags = (tags: string[]) => {
         tags.forEach((tag) => tagsSet.add(tag))
-        saveTagsStr(JSON.stringify(Array.from(tagsSet)))
+        saveTagsStr(Array.from(tagsSet))
     }
     return { tagsSet, addOneTag, addMultipleTags }
 }

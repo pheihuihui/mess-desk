@@ -1,5 +1,3 @@
-// // @ts-nocheck
-
 import {
     AnchorHTMLAttributes,
     FC,
@@ -35,7 +33,6 @@ import { RouteParams, parsePattern } from "./utilities/regexparam"
 import { absolutePath, relativePath, stripQm, unescape } from "./utilities/path"
 import { useEvent } from "./utilities/hooks"
 
-// export type Parser = (route: Path) => { pattern: RegExp; keys: string[] }
 export type Parser = typeof parsePattern
 
 export type HrefsFormatter = (href: string, router: RouterObject) => string

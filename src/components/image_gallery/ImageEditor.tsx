@@ -1,10 +1,11 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, createContext, useContext, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
 import { useIndexedDb, useLocalTags } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { TagInputWithDefaultProps } from "../tag/_index"
+import { Circle } from "../others/Circle"
 
 export const ImageEditor: FC = () => {
     const [imageId, setImageId] = useState(-1)
@@ -20,6 +21,11 @@ export const ImageEditor: FC = () => {
     const [tags, setTags] = useState<string[]>([])
     const [initialTags, setInitialTags] = useState<string[]>([])
     const localTagging = useLocalTags()
+    const [headX, setHeadX] = useState(100)
+    const [headY, setHeadY] = useState(100)
+    const [headD, setHeadD] = useState(200)
+    const [hiddenCircle, setHiddenCircle] = useState(true)
+    const [dragged, setDragged] = useState(false)
 
     async function setImageDetails(id: number) {
         let item = await db.getByID(id)
@@ -29,6 +35,9 @@ export const ImageEditor: FC = () => {
             setImage64(item.base64)
             setImage64Compressed(item.base64_compressed ?? "")
             setInitialTags(item.tags)
+            setHeadX(item.headPosition[0] ?? 100)
+            setHeadY(item.headPosition[1] ?? 100)
+            setHeadD(item.headPosition[2] ?? 200)
         }
     }
 
@@ -77,7 +86,7 @@ export const ImageEditor: FC = () => {
         }
     }
 
-    async function saveImage(title: string, description: string, tags: string[]) {
+    async function saveImage(title: string, description: string, tags: string[], headPosition: [number, number, number]) {
         let base64 = image64
         let hash = await base64tohash(base64)
         let hash_compressed = await base64tohash(image64Compressed)
@@ -92,6 +101,7 @@ export const ImageEditor: FC = () => {
             tags: tags,
             base64_compressed: image64Compressed,
             id: imageId,
+            headPosition: headPosition,
         }
         db.getByIndex("hash", hash).then((x) => {
             if (x) {
@@ -111,9 +121,30 @@ export const ImageEditor: FC = () => {
         <div className="image-editor">
             <div className="image-editor-column-left">
                 <img ref={imgRef} src={image64} className="image-editor-preview" />
+                <Circle
+                    onMoveAndResize={(x, y, d) => {
+                        if (x != 100 || y != 100 || d != 200) {
+                            setHeadX(x)
+                            setHeadY(y)
+                            setHeadD(d)
+                        }
+                    }}
+                    hidden={hiddenCircle}
+                    headX={headX}
+                    headY={headY}
+                    headD={headD}
+                />
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
+                    <button
+                        className="text-button"
+                        onClick={(_) => {
+                            setHiddenCircle(!hiddenCircle)
+                        }}
+                    >
+                        {hiddenCircle ? "Set Avatar" : "Finish Setting Avatar"}
+                    </button>
                     <button
                         className="image-editor-compress-button text-button"
                         onClick={(_) => {
@@ -149,7 +180,7 @@ export const ImageEditor: FC = () => {
                         className="image-editor-save-button text-button"
                         onClick={(_) => {
                             localTagging.addMultipleTags(tags)
-                            saveImage(title, description, tags)
+                            saveImage(title, description, tags, [headX, headY, headD])
                         }}
                     >
                         Save
@@ -161,8 +192,7 @@ export const ImageEditor: FC = () => {
                         hidden={true}
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(initialTags)
-                            console.log(tags)
+                            console.log(headX, headY, headD)
                         }}
                     >
                         Test

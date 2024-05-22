@@ -1,19 +1,30 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useRef, useState } from "react"
 
 interface CircleProps {
     onMoveAndResize: (x: number, y: number, r: number) => void
+    hidden?: boolean
+    headX?: number
+    headY?: number
+    headD?: number
 }
 
 export const Circle: FC<CircleProps> = (props) => {
     const [initialX, setInitialX] = useState(0)
     const [initialY, setInitialY] = useState(0)
+    const [dragging, setDragging] = useState(false)
+    const divRef = useRef<HTMLDivElement>(null)
     const [x, setX] = useState(100)
     const [y, setY] = useState(100)
     const [d, setD] = useState(200)
-    const [dragging, setDragging] = useState(false)
-    const divRef = useRef<HTMLDivElement>(null)
+    const [initiated, setInitiated] = useState(false)
 
     useEffect(() => {
+        if (props.headX && props.headY && props.headD && !initiated && props.headX != 100 && props.headY != 100 && props.headD != 200) {
+            setX(props.headX)
+            setY(props.headY)
+            setD(props.headD)
+            setInitiated(true)
+        }
         const handleMouseMove = (event: MouseEvent) => {
             if (dragging) {
                 event.stopPropagation()
@@ -41,6 +52,8 @@ export const Circle: FC<CircleProps> = (props) => {
             event.stopPropagation()
             event.preventDefault()
             setD(d - event.deltaY / 10)
+            setX(x + event.deltaY / 20)
+            setY(y + event.deltaY / 20)
         }
 
         divRef.current?.addEventListener("wheel", handdleMouseScroll)
@@ -58,5 +71,6 @@ export const Circle: FC<CircleProps> = (props) => {
         }
     }, [dragging, d, props])
 
-    return <div ref={divRef} className="circle" style={{ left: `${x}px`, top: `${y}px`, width: `${d}px`, height: `${d}px` }} />
+    const DIV = <div ref={divRef} className="circle" style={{ left: `${x}px`, top: `${y}px`, width: `${d}px`, height: `${d}px` }} />
+    return props.hidden ? null : DIV
 }

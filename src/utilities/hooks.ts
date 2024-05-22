@@ -164,6 +164,7 @@ interface IndexedDbProps {
         hash_compressed?: string
         deleted: boolean
         tags: string[]
+        headPosition: [number, number, number]
     }
     STORE_MARKDOWN: {
         title: string

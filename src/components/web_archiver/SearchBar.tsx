@@ -4,7 +4,7 @@ export const SearchBar: FC = () => {
     return (
         <div>
             <form onSubmit={(e) => {}}>
-                <input className="rounded-md p-1 align-middle shadow-sm m-2" type="text" size={100} />
+                <input id="search-bar-input" className="rounded-md p-1 align-middle shadow-sm m-2" type="text" size={100} />
             </form>
         </div>
     )

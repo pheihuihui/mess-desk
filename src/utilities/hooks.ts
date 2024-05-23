@@ -110,9 +110,10 @@ interface LocalStorageContent {
     LOCAL_STORAGE_TAGS: string[]
     LOCAL_STORAGE_IMAGE_API_ADDR: string
     LOCAL_STORAGE_IMAGE_API_SESSION_ID: string
+    LOCAL_STORAGE_BACKGROUND_ID: number
 }
 
-export function useLocalStorage<K extends keyof LocalStorageContent>(key: K, initialValue: string = "") {
+export function useLocalStorage<K extends keyof LocalStorageContent>(key: K, initialValue: LocalStorageContent[K]) {
     const [storedValue, setStoredValue] = useState<string>(() => {
         try {
             const item = window.localStorage.getItem(key)
@@ -139,7 +140,7 @@ export function useLocalStorage<K extends keyof LocalStorageContent>(key: K, ini
 }
 
 export function useLocalTags() {
-    const [tagsStr, saveTagsStr] = useLocalStorage("LOCAL_STORAGE_TAGS", "[]")
+    const [tagsStr, saveTagsStr] = useLocalStorage("LOCAL_STORAGE_TAGS", [])
     const tagsSet = new Set(tagsStr)
     const addOneTag = (tag: string) => {
         tagsSet.add(tag)
@@ -216,16 +217,23 @@ export const useEvent = (fn: AnyFunction) => {
     return ref[1]
 }
 
-export function usePhotoPrism() {
-    const [photoPrismAddr] = useLocalStorage("LOCAL_STORAGE_IMAGE_API_ADDR")
-    const [photoPrismSessionId] = useLocalStorage("LOCAL_STORAGE_IMAGE_API_SESSION_ID")
-    const fetch10 = () =>
-        fetch(`${photoPrismAddr}/api/v1/photos?count=10`, {
-            headers: {
-                "X-Session-Id": photoPrismSessionId,
-            },
-        })
-    return {
-        fetch10,
-    }
+export function useBackgroundImage() {
+    const [backgroundId, setBackgroundId] = useLocalStorage("LOCAL_STORAGE_BACKGROUND_ID", -1)
+    const db = useIndexedDb("STORE_IMAGE")
+    const [backgroundImage, setBackgroundImage] = useState<string | undefined>(undefined)
+    useEffect(() => {
+        const _image = async () => {
+            if (backgroundId == -1) {
+                return
+            } else {
+                let item = await db.getByID(backgroundId)
+                let base64 = item?.base64
+                if (base64) {
+                    setBackgroundImage(base64)
+                }
+            }
+        }
+        _image()
+    }, [backgroundId])
+    return [backgroundImage, setBackgroundId] as const
 }

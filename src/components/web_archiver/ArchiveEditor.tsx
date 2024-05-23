@@ -53,6 +53,7 @@ export const ArchiveEditor: FC = () => {
                 </div>
                 <div className="input-group">
                     <input
+                        id="archiver-title-input"
                         type="text"
                         required={true}
                         autoComplete="off"

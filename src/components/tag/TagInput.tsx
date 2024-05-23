@@ -348,6 +348,7 @@ export const TagInput: FC<TagInputProps> = (props) => {
                     {currentEditIndex === index ? (
                         <div className={TAGGING_CLASSNAMES.EDITTAG_INPUT}>
                             <input
+                                id="tag-edit-input"
                                 ref={(input: HTMLInputElement) => {
                                     tagInput.current = input
                                 }}

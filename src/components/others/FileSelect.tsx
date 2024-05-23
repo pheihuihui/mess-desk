@@ -18,6 +18,7 @@ export const FileSelect: FC = () => {
         <div className="image-select">
             <h1 className="text-3xl font-bold underline">Select File:</h1>
             <input
+                id="file-select-input"
                 className="border-l-yellow-400"
                 type="file"
                 onChange={(ev) => {

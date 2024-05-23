@@ -10,7 +10,7 @@ interface StyledCheckboxProps {
 export const StyledCheckbox: FC<StyledCheckboxProps> = ({ checked, onChange, label }) => {
     return (
         <label className="styled-checkbox">
-            <input type="checkbox" checked={checked} onChange={(e) => onChange(e.currentTarget.checked)} />
+            <input id="checkbox-input" type="checkbox" checked={checked} onChange={(e) => onChange(e.currentTarget.checked)} />
             <div className="checkmark"></div>
             <span>&nbsp;&nbsp;{label}</span>
         </label>

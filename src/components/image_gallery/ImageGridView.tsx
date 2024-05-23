@@ -35,6 +35,7 @@ export const ImageGridView: FC<ImageGridViewProps> = (props) => {
     return (
         <div className="image-gallery">
             <input
+                id="image-gallery-input"
                 type="text"
                 className="image-gallery-input"
                 onKeyDown={(e) => {

@@ -1,6 +1,6 @@
-import React, { FC, createContext, useContext, useEffect, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
-import { useIndexedDb, useLocalTags } from "../../utilities/hooks"
+import { useBackgroundImage, useIndexedDb, useLocalStorage, useLocalTags } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
@@ -25,7 +25,7 @@ export const ImageEditor: FC = () => {
     const [headY, setHeadY] = useState(100)
     const [headD, setHeadD] = useState(200)
     const [hiddenCircle, setHiddenCircle] = useState(true)
-    const [dragged, setDragged] = useState(false)
+    const [backgroundImage, setBackgroundId] = useBackgroundImage()
 
     async function setImageDetails(id: number) {
         let item = await db.getByID(id)
@@ -110,6 +110,8 @@ export const ImageEditor: FC = () => {
                     .then((item) => console.log(item))
                     .catch((e) => alert(e.target?.error?.message))
             } else {
+                // @ts-ignore
+                delete item["id"]
                 db.add(item)
                     .then((_id) => navigate("/"))
                     .catch((e) => alert(e.target?.error?.message))
@@ -118,7 +120,7 @@ export const ImageEditor: FC = () => {
     }
 
     return (
-        <div className="image-editor">
+        <div className="image-editor acrylic">
             <div className="image-editor-column-left">
                 <img ref={imgRef} src={image64} className="image-editor-preview" />
                 <Circle
@@ -185,18 +187,26 @@ export const ImageEditor: FC = () => {
                     >
                         Save
                     </button>
+                    <button
+                        className="text-button"
+                        onClick={(_) => {
+                            setBackgroundId(imageId)
+                        }}
+                    >
+                        Set as background
+                    </button>
                     <button className="image-editor-exit-button text-button" onClick={(_) => navigate("/home")}>
                         Exit
                     </button>
-                    {/* <button
+                    <button
                         hidden={true}
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(headX, headY, headD)
+                            console.log(backgroundImage)
                         }}
                     >
                         Test
-                    </button> */}
+                    </button>
                 </div>
                 <div className="input-group">
                     <input
@@ -224,6 +234,7 @@ export const ImageEditor: FC = () => {
                         }}
                     />
                     <TagInputWithDefaultProps
+                        id="image-tagging"
                         tags={initialTags.map((t) => {
                             return { id: t, text: t }
                         })}

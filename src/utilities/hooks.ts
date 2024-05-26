@@ -111,6 +111,7 @@ interface LocalStorageContent {
     LOCAL_STORAGE_IMAGE_API_ADDR: string
     LOCAL_STORAGE_IMAGE_API_SESSION_ID: string
     LOCAL_STORAGE_BACKGROUND_ID: number
+    LOCAL_STORAGE_BACKGROUND_IMAGE_URL: string
 }
 
 export function useLocalStorage<K extends keyof LocalStorageContent>(key: K, initialValue: LocalStorageContent[K]) {
@@ -207,7 +208,6 @@ export function useImageDataUrl(id: number) {
     return imageDataUrl
 }
 
-// https://github.com/facebook/react/pull/25881#issuecomment-1356244360
 type AnyFunction = (...args: any) => any
 export const useEvent = (fn: AnyFunction) => {
     const ref: [AnyFunction, AnyFunction] = useRef<[AnyFunction, AnyFunction]>([fn, (...args: any) => ref[0](...args)]).current

@@ -9,8 +9,8 @@ interface SettingItemProps {
 }
 const SettingItem: FC<SettingItemProps> = (props) => {
     return (
-        <>
-            <label className="label">{props.label}</label>
+        <label className="label">
+            {props.label}
             <input
                 autoComplete="off"
                 name={props.label}
@@ -20,7 +20,7 @@ const SettingItem: FC<SettingItemProps> = (props) => {
                 onChange={(e) => props.onChange(e.target.value)}
                 defaultValue={props.content}
             />
-        </>
+        </label>
     )
 }
 

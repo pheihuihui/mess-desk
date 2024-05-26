@@ -50,6 +50,14 @@ export const ImageEditor: FC = () => {
         }
     }, [location])
 
+    useEffect(() => {
+        if (canvasRef.current) {
+            let canv = canvasRef.current
+            let dt = canv.toDataURL("image/png")
+            setImage64Compressed(dt)
+        }
+    }, [canvasRef])
+
     async function base64tohash(base: string) {
         let tmp = await fetch(base)
         let blb = await tmp.blob()
@@ -57,31 +65,36 @@ export const ImageEditor: FC = () => {
         return hash
     }
 
+    // https://stackoverflow.com/questions/17861447/html5-canvas-drawimage-how-to-apply-antialiasing/17862644#17862644
     function compressImage() {
         let canv = canvasRef.current
         let img = imgRef.current
         if (canv && img) {
+            let preCanvas = document.createElement("canvas")
+            let preCtx = preCanvas.getContext("2d")
+            preCanvas.width = img.naturalWidth
+            preCanvas.height = img.naturalHeight
+
+            const steps = (img.naturalWidth / canv.width) >> 1
+            if (preCtx) {
+                preCtx.filter = `blur(${steps}px)`
+                preCtx.drawImage(img, 0, 0)
+            }
+
             let ctx = canv.getContext("2d")
-            ctx?.clearRect(0, 0, canv.width, canv.height)
-            let imgH = img.naturalHeight
-            let imgW = img.naturalWidth
-            let srcSize = imgH * imgW
-            let targetSize = 200 * 200
-            let x = Math.sqrt(srcSize / targetSize)
-            if (x > 1) {
-                let targetH = Math.floor(imgH / x)
-                let targetW = Math.floor(imgW / x)
-                canv.height = targetH
-                canv.width = targetW
-                if (ctx) {
-                    ctx.imageSmoothingEnabled = true
-                    ctx.imageSmoothingQuality = "high"
-                    ctx.drawImage(img, 0, 0, targetW, targetH)
-                    let dt = canv.toDataURL("image/jpeg", 1)
-                    setImage64Compressed(dt)
+            if (ctx) {
+                let ratio = img.naturalWidth / img.naturalHeight
+                let _w = canv.width
+                let _h = canv.width
+                if (ratio < 1) {
+                    _w = _h * ratio
+                } else {
+                    _h = _w / ratio
                 }
-            } else {
-                setImage64Compressed(image64)
+                canv.width = _w
+                canv.height = _h
+                ctx.clearRect(0, 0, _w, _h)
+                ctx.drawImage(preCanvas, 0, 0, preCanvas.width, preCanvas.height, 0, 0, _w, _h)
             }
         }
     }

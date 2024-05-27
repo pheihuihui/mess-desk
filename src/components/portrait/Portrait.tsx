@@ -1,4 +1,5 @@
 import React, { FC } from "react"
+import { DetailedPortrait } from "./DetailedPortrait"
 
 interface PortraitProps {
     personID: string
@@ -6,5 +7,5 @@ interface PortraitProps {
 }
 
 export const Portrait: FC<PortraitProps> = (props) => {
-    return <div />
+    return props.mode == "detailed" ? <DetailedPortrait personID={props.personID} /> : <div />
 }

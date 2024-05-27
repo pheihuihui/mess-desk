@@ -10,7 +10,11 @@ import { StyledCheckbox } from "../others/StyledCheckbox"
 import { Dropdown } from "../others/Dropdown"
 import { Circle } from "../others/Circle"
 
-export const DetailedPortrait: FC = () => {
+interface DetailedPortraitProps {
+    personID: string
+}
+
+export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
     const [_location, navigate] = useHashLocation()
     const [_, param] = useRoute("/:id")
     const [name, setName] = useState("")
@@ -23,9 +27,10 @@ export const DetailedPortrait: FC = () => {
     const db_image = useIndexedDb("STORE_IMAGE")
     const [bornOn, setBornOn] = useState("")
     const [diedOn, setDiedOn] = useState("")
-    const [headX, setHeadX] = useState(0)
-    const [headY, setHeadY] = useState(0)
-    const [headD, setHeadD] = useState(0)
+    const [headX, setHeadX] = useState(100)
+    const [headY, setHeadY] = useState(100)
+    const [headD, setHeadD] = useState(200)
+    const [hiddenCircle, setHiddenCircle] = useState(true)
     const allPersonType = ["real", "avatar", "fictional"]
     const [personType, setPersonType] = useState(allPersonType[0])
 
@@ -39,33 +44,45 @@ export const DetailedPortrait: FC = () => {
         setImage()
     }, [selectedImageId])
 
-    async function savePersonDetails(name: string, description: string, tags: string[], imageId: number) {
+    async function savePersonDetails(name: string, description: string, tags: string[], imageId: number, headPosition: [number, number, number]) {
         let person = await db_person.getByID(imageId)
         if (person) {
             person.name = name
             person.description = description
+            person.headPosition = headPosition
             await db_person.update(person)
         }
     }
 
     return (
-        <div className="image-editor">
+        <div className="image-editor acrylic">
             <div className="image-editor-column-left">
                 <div className="image-editor-portrait">
                     <img ref={imgRef} src={LOADING_IMAGE} />
                     <Circle
                         onMoveAndResize={(x, y, d) => {
-                            setHeadD(d)
-                            setHeadX(x)
-                            setHeadY(y)
+                            if (x != 100 || y != 100 || d != 200) {
+                                setHeadX(x)
+                                setHeadY(y)
+                                setHeadD(d)
+                            }
                         }}
+                        hidden={hiddenCircle}
+                        headX={headX}
+                        headY={headY}
+                        headD={headD}
                     />
                 </div>
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
-                    <button className="image-editor-compress-button text-button" onClick={(_) => {}}>
-                        Edit Profile Image
+                    <button
+                        className="image-editor-compress-button text-button"
+                        onClick={(_) => {
+                            setHiddenCircle(!hiddenCircle)
+                        }}
+                    >
+                        {hiddenCircle ? "Set Avatar" : "Finish Setting Avatar"}
                     </button>
                     <button
                         className="image-editor-paste-button text-button"

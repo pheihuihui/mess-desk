@@ -21,10 +21,6 @@ export const ImageEditor: FC = () => {
     const [tags, setTags] = useState<string[]>([])
     const [initialTags, setInitialTags] = useState<string[]>([])
     const localTagging = useLocalTags()
-    const [headX, setHeadX] = useState(100)
-    const [headY, setHeadY] = useState(100)
-    const [headD, setHeadD] = useState(200)
-    const [hiddenCircle, setHiddenCircle] = useState(true)
     const [backgroundImage, setBackgroundId] = useBackgroundImage()
 
     async function setImageDetails(id: number) {
@@ -35,9 +31,6 @@ export const ImageEditor: FC = () => {
             setImage64(item.base64)
             setImage64Compressed(item.base64_compressed ?? "")
             setInitialTags(item.tags)
-            setHeadX(item.headPosition[0] ?? 100)
-            setHeadY(item.headPosition[1] ?? 100)
-            setHeadD(item.headPosition[2] ?? 200)
         }
     }
 
@@ -99,7 +92,7 @@ export const ImageEditor: FC = () => {
         }
     }
 
-    async function saveImage(title: string, description: string, tags: string[], headPosition: [number, number, number]) {
+    async function saveImage(title: string, description: string, tags: string[]) {
         let base64 = image64
         let hash = await base64tohash(base64)
         let hash_compressed = await base64tohash(image64Compressed)
@@ -114,7 +107,6 @@ export const ImageEditor: FC = () => {
             tags: tags,
             base64_compressed: image64Compressed,
             id: imageId,
-            headPosition: headPosition,
         }
         db.getByIndex("hash", hash).then((x) => {
             if (x) {
@@ -136,30 +128,9 @@ export const ImageEditor: FC = () => {
         <div className="image-editor acrylic">
             <div className="image-editor-column-left">
                 <img ref={imgRef} src={image64} className="image-editor-preview" />
-                <Circle
-                    onMoveAndResize={(x, y, d) => {
-                        if (x != 100 || y != 100 || d != 200) {
-                            setHeadX(x)
-                            setHeadY(y)
-                            setHeadD(d)
-                        }
-                    }}
-                    hidden={hiddenCircle}
-                    headX={headX}
-                    headY={headY}
-                    headD={headD}
-                />
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
-                    <button
-                        className="text-button"
-                        onClick={(_) => {
-                            setHiddenCircle(!hiddenCircle)
-                        }}
-                    >
-                        {hiddenCircle ? "Set Avatar" : "Finish Setting Avatar"}
-                    </button>
                     <button
                         className="image-editor-compress-button text-button"
                         onClick={(_) => {
@@ -195,7 +166,7 @@ export const ImageEditor: FC = () => {
                         className="image-editor-save-button text-button"
                         onClick={(_) => {
                             localTagging.addMultipleTags(tags)
-                            saveImage(title, description, tags, [headX, headY, headD])
+                            saveImage(title, description, tags)
                         }}
                     >
                         Save

@@ -166,7 +166,6 @@ interface IndexedDbProps {
         hash_compressed?: string
         deleted: boolean
         tags: string[]
-        headPosition: [number, number, number]
     }
     STORE_MARKDOWN: {
         title: string
@@ -186,6 +185,7 @@ interface IndexedDbProps {
         headWidth: number
         tags: string[]
         deleted: boolean
+        headPosition: [number, number, number]
     }
 }
 

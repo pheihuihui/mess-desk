@@ -154,7 +154,7 @@ export function useLocalTags() {
     return { tagsSet, addOneTag, addMultipleTags }
 }
 
-export type TPersonDate = `${number}/${number}/${number}` | "unknown" | "not yet"
+// export type TPersonDate = `${number}/${number}/${number}` | "unknown" | "not yet"
 
 interface IndexedDbProps {
     STORE_IMAGE: {
@@ -176,13 +176,10 @@ interface IndexedDbProps {
     STORE_PERSON: {
         name: string
         description: string
-        birth: TPersonDate
-        death: TPersonDate
+        birth: string
+        death: string
         imgId: number
         type: "real" | "fictional" | "avatar"
-        headX: number
-        headY: number
-        headWidth: number
         tags: string[]
         deleted: boolean
         headPosition: [number, number, number]

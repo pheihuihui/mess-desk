@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64 } from "../../utilities/utilities"
-import { TPersonDate, useIndexedDb } from "../../utilities/hooks"
+import { useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
@@ -31,8 +31,9 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
     const [headY, setHeadY] = useState(100)
     const [headD, setHeadD] = useState(200)
     const [hiddenCircle, setHiddenCircle] = useState(true)
-    const allPersonType = ["real", "avatar", "fictional"]
-    const [personType, setPersonType] = useState(allPersonType[0])
+    const allPersonTypes = ["real", "avatar", "fictional"] as const
+    type PersonType = (typeof allPersonTypes)[number]
+    const [personType, setPersonType] = useState<PersonType>(allPersonTypes[0])
 
     useEffect(() => {
         const setImage = async () => {
@@ -45,13 +46,24 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
     }, [selectedImageId])
 
     async function savePersonDetails(name: string, description: string, tags: string[], imageId: number, headPosition: [number, number, number]) {
-        let person = await db_person.getByID(imageId)
-        if (person) {
-            person.name = name
-            person.description = description
-            person.headPosition = headPosition
-            await db_person.update(person)
-        }
+        // let person = await db_person.getByID(imageId)
+        // if (person) {
+        //     person.name = name
+        //     person.description = description
+        //     person.headPosition = headPosition
+        //     await db_person.update(person)
+        // }
+        let person = await db_person.add({
+            name: name,
+            description: description,
+            tags: tags,
+            imgId: imageId,
+            headPosition: headPosition,
+            birth: bornOn,
+            death: diedOn,
+            type: personType,
+            deleted: false,
+        })
     }
 
     return (
@@ -95,7 +107,12 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
                     >
                         Select Image
                     </button>
-                    <button className="image-editor-save-button text-button" onClick={(_) => {}}>
+                    <button
+                        className="image-editor-save-button text-button"
+                        onClick={(_) => {
+                            savePersonDetails(name, description, [], selectedImageId, [headX, headY, headD])
+                        }}
+                    >
                         Save
                     </button>
                     <button
@@ -134,7 +151,12 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
                     />
                     <PersonDate placeholder="Born on..." name="bornOn" onEdit={setBornOn} />
                     <PersonDate placeholder="Died on..." name="diedOn" onEdit={setDiedOn} />
-                    <Dropdown options={allPersonType} onSelected={setPersonType} />
+                    <Dropdown
+                        options={Array.from(allPersonTypes)}
+                        onSelected={(x) => {
+                            setPersonType(x as PersonType)
+                        }}
+                    />
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>
@@ -154,7 +176,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
 interface PersonDateProps {
     placeholder: string
     name: string
-    onEdit: (date: TPersonDate) => void
+    onEdit: (date: string) => void
 }
 
 const PersonDate: FC<PersonDateProps> = (props) => {
@@ -162,7 +184,7 @@ const PersonDate: FC<PersonDateProps> = (props) => {
     const [unknown, setUnknown] = useState(false)
     const [notYet, setNotYet] = useState(false)
 
-    function getDate(): TPersonDate {
+    function getDate(): string {
         if (unknown) {
             return "unknown"
         } else if (notYet) {

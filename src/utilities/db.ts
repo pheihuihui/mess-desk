@@ -114,6 +114,7 @@ function CreateObjectStore(dbName: string, version: number, storeSchemas: Object
             if (!database.objectStoreNames.contains(storeSchema.store)) {
                 const objectStore = database.createObjectStore(storeSchema.store, storeSchema.storeConfig)
                 storeSchema.storeSchema.forEach((schema: ObjectStoreSchema) => {
+                    console.log(schema)
                     objectStore.createIndex(schema.name, schema.keypath, schema.options)
                 })
             }

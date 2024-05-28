@@ -4,7 +4,7 @@ export const SITES = [".wikipedia.org", ".zhihu.com", ".reddit.com", "other"] as
 export const LOADING_IMAGE = "./loading.jpg"
 export const DB_CONFIG: IndexedDBProps = {
     name: "DesqDB",
-    version: 1,
+    version: 2,
     objectStoresMeta: [
         {
             store: "STORE_IMAGE",

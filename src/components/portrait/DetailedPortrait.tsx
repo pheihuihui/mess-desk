@@ -54,6 +54,33 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
     }
 
     useEffect(() => {
+        let canvas = faceCanvasRef.current
+        if (canvas && imgRef.current) {
+            let _w = imgRef.current.naturalWidth
+            let _h = imgRef.current.naturalHeight
+            let _dw = 0
+            let _dh = 0
+            let scale = 1
+            if (_w > _h) {
+                scale = _w / 800
+                _dh = ((800 - _h / scale) / 2) * scale
+            } else {
+                scale = _h / 800
+                _dw = ((800 - _w / scale) / 2) * scale
+            }
+            let ctx = canvas.getContext("2d")
+            if (ctx) {
+                canvas.width = 100
+                canvas.height = 100
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                ctx.drawImage(imgRef.current, headX * scale - _dw, headY * scale - _dh, headD * scale, headD * scale, 0, 0, canvas.width, canvas.height)
+                let data = canvas.toDataURL("image/png")
+                setFace(data)
+            }
+        }
+    }, [headX, headY, headD])
+
+    useEffect(() => {
         const setImage = async () => {
             let image = await db_image.getByID(selectedImageId)
             if (image && imgRef.current) {
@@ -73,39 +100,30 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
     }, [location])
 
     async function savePersonDetails(name: string, description: string, tags: string[], imageId: number, headPosition: [number, number, number]) {
+        let _person = {
+            id: personId,
+            name: name,
+            description: description,
+            tags: tags,
+            imgId: imageId,
+            headPosition: headPosition,
+            birth: bornOn,
+            death: diedOn,
+            type: personType,
+            deleted: false,
+        }
+        let person = _person
+        if (hiddenCircle == false && face != "") {
+            person = Object.assign(person, { face: face })
+        }
         if (personId > 0) {
-            db_person.update({
-                id: personId,
-                name: name,
-                description: description,
-                tags: tags,
-                imgId: imageId,
-                face: "",
-                headPosition: headPosition,
-                birth: bornOn,
-                death: diedOn,
-                type: personType,
-                deleted: false,
-            })
+            db_person.update(person)
         } else if (personId == -1) {
-            db_person
-                .add({
-                    name: name,
-                    description: description,
-                    tags: tags,
-                    imgId: imageId,
-                    face: "",
-                    headPosition: headPosition,
-                    birth: bornOn,
-                    death: diedOn,
-                    type: personType,
-                    deleted: false,
-                })
-                .then((x) => {
-                    if (x) {
-                        navigate(`/${x}`)
-                    }
-                })
+            db_person.add(person).then((x) => {
+                if (x) {
+                    navigate(`/${x}`)
+                }
+            })
         }
     }
 
@@ -116,7 +134,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                     <img ref={imgRef} src={LOADING_IMAGE} />
                     <Circle
                         onMoveAndResize={(x, y, d) => {
-                            if (x != 100 || y != 100 || d != 200) {
+                            if (!(x == 100 && y == 100 && d == 200)) {
                                 setHeadX(x)
                                 setHeadY(y)
                                 setHeadD(d)
@@ -161,7 +179,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                     <button
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(headD, headX, headY)
+                            // console.log(headD, headX, headY)
                         }}
                     >
                         Exit

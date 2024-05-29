@@ -179,7 +179,7 @@ interface IndexedDbProps {
         birth: string
         death: string
         imgId: number
-        face: string
+        face?: string
         type: "real" | "fictional" | "avatar"
         tags: string[]
         deleted: boolean

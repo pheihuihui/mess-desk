@@ -34,6 +34,7 @@ export const tabs: TabProps = {
         text: "Portraits",
         path: "/portraits",
         page: <PortraitsPage />,
+        nest: true,
     },
     home: {
         text: "",

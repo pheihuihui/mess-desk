@@ -11,7 +11,7 @@ export const BodyWrapper: FC<PropsWithChildren> = (props) => {
     const [image, _] = useBackgroundImage()
     return (
         <div className="app-div">
-            <BackgroundImage dataUrl={image} />
+            {/* <BackgroundImage dataUrl={image} /> */}
             <main className="app-main">{props.children}</main>
         </div>
     )

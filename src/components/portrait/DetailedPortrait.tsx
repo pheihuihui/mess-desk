@@ -11,16 +11,18 @@ import { Dropdown } from "../others/Dropdown"
 import { Circle } from "../others/Circle"
 
 interface DetailedPortraitProps {
-    personID: string
+    personID?: string
 }
 
-export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
+export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
+    const [personId, setPersonId] = useState(-1)
     const [_location, navigate] = useHashLocation()
     const [_, param] = useRoute("/:id")
     const [name, setName] = useState("")
     const [selectedImageId, setSelectedImageId] = useState(-1)
+    const [face, setFace] = useState("")
     const [description, setDescription] = useState("")
-    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const faceCanvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const db_person = useIndexedDb("STORE_PERSON")
@@ -35,6 +37,22 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
     type PersonType = (typeof allPersonTypes)[number]
     const [personType, setPersonType] = useState<PersonType>(allPersonTypes[0])
 
+    function setPersonDetails(id: number) {
+        db_person.getByID(id).then((person) => {
+            if (person) {
+                setName(person.name)
+                setDescription(person.description)
+                setBornOn(person.birth)
+                setDiedOn(person.death)
+                setPersonType(person.type)
+                setSelectedImageId(person.imgId)
+                setHeadX(person.headPosition[0] ?? 100)
+                setHeadY(person.headPosition[1] ?? 100)
+                setHeadD(person.headPosition[2] ?? 200)
+            }
+        })
+    }
+
     useEffect(() => {
         const setImage = async () => {
             let image = await db_image.getByID(selectedImageId)
@@ -45,25 +63,50 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
         setImage()
     }, [selectedImageId])
 
+    useEffect(() => {
+        let _id = param?.id
+        let num = parseInt(_id ?? "")
+        if (!Number.isNaN(num) && num >= 0) {
+            setPersonId(num)
+            setPersonDetails(num)
+        }
+    }, [location])
+
     async function savePersonDetails(name: string, description: string, tags: string[], imageId: number, headPosition: [number, number, number]) {
-        // let person = await db_person.getByID(imageId)
-        // if (person) {
-        //     person.name = name
-        //     person.description = description
-        //     person.headPosition = headPosition
-        //     await db_person.update(person)
-        // }
-        let person = await db_person.add({
-            name: name,
-            description: description,
-            tags: tags,
-            imgId: imageId,
-            headPosition: headPosition,
-            birth: bornOn,
-            death: diedOn,
-            type: personType,
-            deleted: false,
-        })
+        if (personId > 0) {
+            db_person.update({
+                id: personId,
+                name: name,
+                description: description,
+                tags: tags,
+                imgId: imageId,
+                face: "",
+                headPosition: headPosition,
+                birth: bornOn,
+                death: diedOn,
+                type: personType,
+                deleted: false,
+            })
+        } else if (personId == -1) {
+            db_person
+                .add({
+                    name: name,
+                    description: description,
+                    tags: tags,
+                    imgId: imageId,
+                    face: "",
+                    headPosition: headPosition,
+                    birth: bornOn,
+                    death: diedOn,
+                    type: personType,
+                    deleted: false,
+                })
+                .then((x) => {
+                    if (x) {
+                        navigate(`/${x}`)
+                    }
+                })
+        }
     }
 
     return (
@@ -149,8 +192,8 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
                             setDescription(val)
                         }}
                     />
-                    <PersonDate placeholder="Born on..." name="bornOn" onEdit={setBornOn} />
-                    <PersonDate placeholder="Died on..." name="diedOn" onEdit={setDiedOn} />
+                    <PersonDate placeholder="Born on..." name="bornOn" onEdit={setBornOn} initialDate={bornOn} />
+                    <PersonDate placeholder="Died on..." name="diedOn" onEdit={setDiedOn} initialDate={diedOn} />
                     <Dropdown
                         options={Array.from(allPersonTypes)}
                         onSelected={(x) => {
@@ -158,7 +201,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = () => {
                         }}
                     />
                 </div>
-                <canvas ref={canvasRef} className="image-editor-preview-canvas" />
+                <canvas ref={faceCanvasRef} className="face-preview-canvas" />
             </div>
             <SimpleDialog ref={dialogRef}>
                 <ImageGridView
@@ -177,6 +220,7 @@ interface PersonDateProps {
     placeholder: string
     name: string
     onEdit: (date: string) => void
+    initialDate?: string
 }
 
 const PersonDate: FC<PersonDateProps> = (props) => {
@@ -199,9 +243,22 @@ const PersonDate: FC<PersonDateProps> = (props) => {
         props.onEdit(getDate())
     }, [date, unknown, notYet])
 
+    useEffect(() => {
+        if (props.initialDate) {
+            if (props.initialDate == "unknown") {
+                setUnknown(true)
+            } else if (props.initialDate == "not yet") {
+                setNotYet(true)
+            } else {
+                setDate(props.initialDate)
+            }
+        }
+    }, [props.initialDate])
+
     return (
         <div className="person-date">
             <input
+                defaultValue={props.initialDate == "unknown" || props.initialDate == "not yet" ? "/" : props.initialDate}
                 type="text"
                 required={true}
                 disabled={unknown || notYet}

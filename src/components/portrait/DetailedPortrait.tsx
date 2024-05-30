@@ -11,7 +11,7 @@ import { Dropdown } from "../others/Dropdown"
 import { Circle } from "../others/Circle"
 
 interface DetailedPortraitProps {
-    personID?: string
+    personID?: number
 }
 
 export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
@@ -119,9 +119,11 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
         if (personId > 0) {
             db_person.update(person)
         } else if (personId == -1) {
+            // @ts-ignore
+            delete person["id"]
             db_person.add(person).then((x) => {
                 if (x) {
-                    navigate(`/${x}`)
+                    console.log("saved person with id: " + x)
                 }
             })
         }
@@ -179,7 +181,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                     <button
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            // console.log(headD, headX, headY)
+                            navigate("/portraits")
                         }}
                     >
                         Exit

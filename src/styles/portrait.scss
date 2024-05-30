@@ -1,0 +1,16 @@
+.small-portrait-img {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    padding: 10px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.portrait-board {
+    display: flex;
+    width: 80%;
+    height: 80%;
+    border-radius: 25px;
+}

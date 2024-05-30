@@ -1,11 +1,9 @@
 import React, { FC } from "react"
 import { DetailedPortrait } from "./DetailedPortrait"
+import { PortraitBoard } from "./PortraitBoard"
+import { useRoute } from "../../router"
 
-interface PortraitProps {
-    personID: string
-    mode: "small" | "medium" | "detailed"
-}
-
-export const Portrait: FC<PortraitProps> = (props) => {
-    return props.mode == "detailed" ? <DetailedPortrait personID={props.personID} /> : <div />
+export const Portrait: FC = () => {
+    const [_, param] = useRoute("/:id")
+    return param?.id ? <DetailedPortrait personID={parseInt(param.id)} /> : <PortraitBoard />
 }

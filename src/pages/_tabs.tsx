@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { HomeIcon } from "../components/others/Icon"
+import { IconCollection } from "../components/others/Icon"
 import { NotesPage } from "./notes"
 import { PortraitsPage } from "./portraits"
 import { WelcomePage } from "./welcome"
@@ -40,7 +40,7 @@ export const tabs: TabProps = {
         text: "",
         path: "/home",
         page: <WelcomePage />,
-        icon: <HomeIcon />,
+        icon: <IconCollection.HomeIcon />,
     },
     pods: {
         text: "Pods",

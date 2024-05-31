@@ -22,7 +22,7 @@ export const SmallPortrait: FC<SmallPortraitProps> = (props) => {
         })
     }, [])
     return (
-        <div>
+        <div className="portrait-cell">
             <img
                 className="small-portrait-img"
                 src={face ?? PORTRAIT_MISSING_IMAGE}

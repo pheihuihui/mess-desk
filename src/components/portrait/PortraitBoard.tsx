@@ -1,6 +1,8 @@
 import React, { FC, useEffect, useState } from "react"
 import { useIndexedDb } from "../../utilities/hooks"
 import { SmallPortrait } from "./SmallPortrait"
+import { ButtonCollection } from "../others/Button"
+import { navigate } from "../../utilities/hash_location"
 
 interface PortraitBoardProps {
     columnCount?: number
@@ -27,6 +29,9 @@ export const PortraitBoard: FC<PortraitBoardProps> = (props) => {
             {personsArr.map((id) => (
                 <SmallPortrait key={id} id={id} />
             ))}
+            <div className="portrait-cell" onClick={(_) => navigate("/portraits/new")}>
+                {<ButtonCollection.AddButton />}
+            </div>
         </div>
     )
 }

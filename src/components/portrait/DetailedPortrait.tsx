@@ -100,7 +100,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
     }, [location])
 
     async function savePersonDetails(name: string, description: string, tags: string[], imageId: number, headPosition: [number, number, number]) {
-        let _person = {
+        let person = {
             id: personId,
             name: name,
             description: description,
@@ -112,12 +112,22 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             type: personType,
             deleted: false,
         }
-        let person = _person
+
         if (hiddenCircle == false && face != "") {
             person = Object.assign(person, { face: face })
         }
         if (personId > 0) {
-            db_person.update(person)
+            db_person
+                .getByID(personId)
+                .then((x) => {
+                    if (x) {
+                        person = Object.assign(x, person)
+                        db_person.update(person)
+                    }
+                })
+                .then(() => {
+                    console.log("updated person with id: " + personId)
+                })
         } else if (personId == -1) {
             // @ts-ignore
             delete person["id"]

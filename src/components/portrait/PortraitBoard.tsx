@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react"
 import { useIndexedDb } from "../../utilities/hooks"
 import { SmallPortrait } from "./SmallPortrait"
-import { ButtonCollection } from "../others/Button"
+import { ButtonCollection } from "../utilities/Buttons"
 import { navigate } from "../../utilities/hash_location"
 
 interface PortraitBoardProps {

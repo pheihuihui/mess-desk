@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { IconCollection } from "../components/others/Icon"
+import { IconCollection } from "../components/utilities/Icons"
 import { NotesPage } from "./notes"
 import { PortraitsPage } from "./portraits"
 import { WelcomePage } from "./welcome"

@@ -4,7 +4,7 @@ export const SITES = [".wikipedia.org", ".zhihu.com", ".reddit.com", "other"] as
 export const LOADING_IMAGE = "./assets/loading.jpg"
 export const PORTRAIT_MISSING_IMAGE = "./assets/face.png"
 export const DB_CONFIG: IndexedDBProps = {
-    name: "DesqDB",
+    name: "MessDB",
     version: 2,
     objectStoresMeta: [
         {

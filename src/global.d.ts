@@ -16,13 +16,13 @@ export declare global {
         [type: string]: any
     }
 
-    interface Event {
-        arguments: any
-    }
+    // interface Event {
+    //     arguments: any
+    // }
 
-    interface EventTarget {
-        value: any
-    }
+    // interface EventTarget {
+    //     value: any
+    // }
 
     namespace JSX {
         interface IntrinsicElements {

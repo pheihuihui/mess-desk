@@ -15,6 +15,11 @@ enum DBMode {
     readwrite = "readwrite",
 }
 
+type _1 = IDBRequest<IDBCursorWithValue | null>["onsuccess"]
+type _2 = Exclude<_1, null>
+type _3 = Parameters<_2>
+type _Event = _3[0]
+
 function validateStoreName(db: IDBDatabase, storeName: string) {
     return db.objectStoreNames.contains(storeName)
 }
@@ -156,14 +161,14 @@ function DBOperations(dbName: string, version: number, currentStore: string) {
             })
         })
 
-    const openCursor = (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => {
+    const openCursor = (cursorCallback: (event: _Event) => void, keyRange?: IDBKeyRange) => {
         return new Promise<void>((resolve, reject) => {
             openDatabase(dbName, version).then((db) => {
                 validateBeforeTransaction(db, currentStore, reject)
                 const { store } = createReadonlyTransaction(db, currentStore, resolve, reject)
                 const request = store.openCursor(keyRange)
 
-                request.onsuccess = (event: Event) => {
+                request.onsuccess = (event) => {
                     cursorCallback(event)
                     resolve()
                 }
@@ -266,12 +271,6 @@ interface ObjectStoreSchema {
     options: { unique: boolean; [key: string]: any }
 }
 
-interface useIndexedDB {
-    dbName: string
-    version: number
-    objectStore: string
-}
-
 const indexeddbConfiguration: { version: number; name: string } = {
     version: 1,
     name: "",
@@ -291,7 +290,10 @@ export function _useIndexedDB<T>(objectStore: string): {
     getAll: () => Promise<T[]>
     update: (value: T & TIndexedId, key?: any) => Promise<T & TIndexedId>
     deleteRecord: (key: Key) => Promise<any>
-    openCursor: (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => Promise<void>
+    openCursor: (
+        cursorCallback: (event: _Event & { currentTarget: { result?: IDBCursorWithValue & { value?: T & TIndexedId } } | null }) => void,
+        keyRange?: IDBKeyRange,
+    ) => Promise<void>
     getByIndex: (indexName: string, key: number | string) => Promise<T & TIndexedId>
     clear: () => Promise<any>
 } {

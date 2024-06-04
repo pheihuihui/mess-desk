@@ -14,8 +14,7 @@ export const PortraitBoard: FC<PortraitBoardProps> = (props) => {
     const [personsArr, setPersonsArr] = useState<number[]>([])
     useEffect(() => {
         person_db.openCursor((event) => {
-            // @ts-ignore
-            let cursor = event.currentTarget.result
+            let cursor = event.currentTarget?.result
             if (cursor) {
                 if (cursor.value) {
                     setPersonsArr((prev) => [...prev, cursor.value.id])

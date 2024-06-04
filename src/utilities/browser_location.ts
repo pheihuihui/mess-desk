@@ -62,6 +62,7 @@ if (typeof history !== "undefined" && typeof window[patchKey] === "undefined") {
         history[type] = function () {
             const result = original.apply(this, arguments)
             const event = new Event(type)
+            // @ts-ignore
             event.arguments = arguments
             dispatchEvent(event)
             return result

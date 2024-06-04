@@ -16,8 +16,7 @@ export const ImageGridView: FC<ImageGridViewProps> = (props) => {
             setImages({})
             let count = 0
             db.openCursor((event) => {
-                // @ts-ignore
-                let cursor = event.currentTarget.result
+                let cursor = event.currentTarget?.result
                 if (cursor) {
                     if (cursor.value && cursor.value.title.includes(keyword)) {
                         setImages((prev) => ({ ...prev, [cursor.value.id]: cursor.value.base64_compressed }))

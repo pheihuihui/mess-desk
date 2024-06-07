@@ -7,7 +7,7 @@ import { useRoute } from "../../router"
 import { SimpleDialog } from "../utilities/SimpleDialog"
 import { ImageGridView } from "../image_gallery/ImageGridView"
 import { Dropdown } from "../utilities/Dropdown"
-import { Circle } from "../utilities/Circle"
+import { Circle, Rect } from "../utilities/CircleAndRect"
 import { PersonDate } from "../utilities/Date"
 
 interface DetailedPortraitProps {
@@ -144,7 +144,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             <div className="image-editor-column-left">
                 <div className="image-editor-portrait">
                     <img ref={imgRef} src={LOADING_IMAGE} />
-                    <Circle
+                    <Rect
                         onMoveAndResize={(x, y, d) => {
                             if (!(x == 100 && y == 100 && d == 200)) {
                                 setHeadX(x)

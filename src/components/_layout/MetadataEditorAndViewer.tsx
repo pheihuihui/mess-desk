@@ -18,6 +18,21 @@ interface TimeRangeProps {
     onSave: (data: [string, string]) => void
 }
 
+interface TagWrapperProps {
+    data?: string[]
+    onSave: (data: string[]) => void
+}
+
+interface CompressedImageProps {
+    data?: string
+    onSave: (data: string) => void
+}
+
+interface PersonFaceProps {
+    data?: string
+    onSave: (data: string) => void
+}
+
 const Title: FC<TitleProps> = (props) => {
     const [title, setTitle] = useState<string>(props.data ?? "")
     const [preTitle, setPreTitle] = useState<string>(props.data ?? "")
@@ -201,6 +216,141 @@ const TimeRange: FC<TimeRangeProps> = (props) => {
             <h3>
                 {displayDate(from)} - {displayDate(to)}
             </h3>
+        </div>
+    )
+    return isEditing ? Editor : Viewer
+}
+
+const TagWrapper: FC<TagWrapperProps> = (props) => {
+    const [tags, setTags] = useState<string[]>(props.data ?? [])
+    const [preTags, setPreTags] = useState<string[]>(props.data ?? [])
+    const [isEditing, setIsEditing] = useState(false)
+
+    const Editor = (
+        <div className="tag-wrapper-editor">
+            <div className="tag-wrapper-editor-buttons">
+                <button
+                    onClick={() => {
+                        setTags(preTags)
+                        setIsEditing(false)
+                    }}
+                >
+                    <IconCollection.CancelIcon />
+                </button>
+                <button
+                    onClick={() => {
+                        setIsEditing(false)
+                        props.onSave(tags)
+                    }}
+                >
+                    <IconCollection.CheckIcon />
+                </button>
+            </div>
+            <div className="tag-wrapper-editor-inputs">
+                <input
+                    type="text"
+                    autoComplete="off"
+                    name="tag"
+                    placeholder="Add tag..."
+                    onKeyDown={(e) => {
+                        if (e.key == "Enter") {
+                            e.preventDefault()
+                            setTags((prev) => [...prev, e.currentTarget.value])
+                            e.currentTarget.value = ""
+                        }
+                    }}
+                />
+                <div className="tag-wrapper-editor-tags">
+                    {tags.map((tag, index) => (
+                        <div key={index} className="tag-wrapper-editor-tag">
+                            <span>{tag}</span>
+                            <button
+                                onClick={() => {
+                                    setTags((prev) => prev.filter((_, i) => i !== index))
+                                }}
+                            >
+                                <IconCollection.CancelIcon />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+    const Viewer = (
+        <div className="tag-wrapper-viewer">
+            <div className="tag-wrapper-viewer-buttons">
+                <button
+                    onClick={() => {
+                        setPreTags(tags)
+                        setIsEditing(true)
+                    }}
+                >
+                    <IconCollection.PenIcon />
+                </button>
+            </div>
+            <div className="tag-wrapper-viewer-tags">
+                {tags.map((tag, index) => (
+                    <div key={index} className="tag-wrapper-viewer-tag">
+                        <span>{tag}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+    return isEditing ? Editor : Viewer
+}
+
+const CompressedImage: FC<CompressedImageProps> = (props) => {
+    const [image, setImage] = useState<string>(props.data ?? "")
+    const [preImage, setPreImage] = useState<string>(props.data ?? "")
+    const [isEditing, setIsEditing] = useState(false)
+
+    const Editor = (
+        <div className="compressed-image-editor">
+            <div className="compressed-image-editor-buttons">
+                <button
+                    onClick={() => {
+                        setImage(preImage)
+                        setIsEditing(false)
+                    }}
+                >
+                    <IconCollection.CancelIcon />
+                </button>
+                <button
+                    onClick={() => {
+                        setIsEditing(false)
+                        props.onSave(image)
+                    }}
+                >
+                    <IconCollection.CheckIcon />
+                </button>
+            </div>
+            <input
+                type="text"
+                autoComplete="off"
+                name="image"
+                placeholder="Image URL..."
+                defaultValue={image}
+                onChange={(e) => {
+                    setImage(e.currentTarget.value)
+                }}
+            />
+        </div>
+    )
+    const Viewer = (
+        <div className="compressed-image-viewer">
+            <div className="compressed-image-viewer-buttons">
+                <button
+                    onClick={() => {
+                        setPreImage(image)
+                        setIsEditing(true)
+                    }}
+                >
+                    <IconCollection.PenIcon />
+                </button>
+            </div>
+            <img src={image} alt="Image" />
         </div>
     )
     return isEditing ? Editor : Viewer

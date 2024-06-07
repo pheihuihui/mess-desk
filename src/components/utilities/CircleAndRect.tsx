@@ -1,6 +1,8 @@
-import React, { FC, useContext, useEffect, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 
-interface CircleProps {
+type Shape = "circle" | "rect"
+
+interface CircleOrRectProps {
     onMoveAndResize: (x: number, y: number, r: number) => void
     hidden?: boolean
     headX?: number
@@ -8,7 +10,7 @@ interface CircleProps {
     headD?: number
 }
 
-export const Circle: FC<CircleProps> = (props) => {
+const CircleOrRect: (shape: Shape) => FC<CircleOrRectProps> = (shape) => (props) => {
     const [initialX, setInitialX] = useState(0)
     const [initialY, setInitialY] = useState(0)
     const [dragging, setDragging] = useState(false)
@@ -71,6 +73,9 @@ export const Circle: FC<CircleProps> = (props) => {
         }
     }, [dragging, d, props])
 
-    const DIV = <div ref={divRef} className="circle" style={{ left: `${x}px`, top: `${y}px`, width: `${d}px`, height: `${d}px` }} />
+    const DIV = <div ref={divRef} className={shape} style={{ left: `${x}px`, top: `${y}px`, width: `${d}px`, height: `${d}px` }} />
     return props.hidden ? null : DIV
 }
+
+export const Circle = CircleOrRect("circle")
+export const Rect = CircleOrRect("rect")

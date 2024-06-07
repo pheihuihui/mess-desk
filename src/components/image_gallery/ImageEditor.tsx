@@ -5,7 +5,7 @@ import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { TagInputWithDefaultProps } from "../tag/_index"
-import { Circle } from "../utilities/Circle"
+import { Circle } from "../utilities/CircleAndRect"
 
 export const ImageEditor: FC = () => {
     const [imageId, setImageId] = useState(-1)

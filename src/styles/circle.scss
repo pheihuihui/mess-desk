@@ -11,3 +11,16 @@
         cursor: move;
     }
 }
+
+.rect {
+    background: transparent;
+    border: 3px solid rgb(112, 97, 210);
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: 100px;
+    height: 100px;
+    &:hover {
+        cursor: move;
+    }
+}

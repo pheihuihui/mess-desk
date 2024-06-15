@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from "react"
 import { IconCollection } from "../utilities/Icons"
 import { PersonDate } from "../utilities/Date"
+import { TagInputWithDefaultProps } from "../tag/_index"
 
 interface TitleProps {
     data?: string
@@ -20,7 +21,7 @@ interface TimeRangeProps {
 
 interface TagWrapperProps {
     data?: string[]
-    onSave: (data: string[]) => void
+    onChange: (data: string[]) => void
 }
 
 interface CompressedImageProps {
@@ -37,6 +38,11 @@ const Title: FC<TitleProps> = (props) => {
     const [title, setTitle] = useState<string>(props.data ?? "")
     const [preTitle, setPreTitle] = useState<string>(props.data ?? "")
     const [isEditing, setIsEditing] = useState(false)
+
+    useEffect(() => {
+        setTitle(props.data ?? "")
+    }, [props])
+
     const Editor = (
         <div className="title-editor">
             <div className="title-editor-buttons">
@@ -93,6 +99,11 @@ const Description: FC<DescriptionProps> = (props) => {
     const [description, setDescription] = useState<string>(props.data ?? "")
     const [preDescription, setPreDescription] = useState<string>(props.data ?? "")
     const [isEditing, setIsEditing] = useState(false)
+
+    useEffect(() => {
+        setDescription(props.data ?? "")
+    }, [props])
+
     const Editor = (
         <div className="description-editor">
             <div className="description-editor-buttons">
@@ -222,83 +233,24 @@ const TimeRange: FC<TimeRangeProps> = (props) => {
 }
 
 const TagWrapper: FC<TagWrapperProps> = (props) => {
-    const [tags, setTags] = useState<string[]>(props.data ?? [])
-    const [preTags, setPreTags] = useState<string[]>(props.data ?? [])
-    const [isEditing, setIsEditing] = useState(false)
+    const [initialTags, setInitialTags] = useState<string[]>(props.data ?? [])
 
-    const Editor = (
-        <div className="tag-wrapper-editor">
-            <div className="tag-wrapper-editor-buttons">
-                <button
-                    onClick={() => {
-                        setTags(preTags)
-                        setIsEditing(false)
-                    }}
-                >
-                    <IconCollection.CancelIcon />
-                </button>
-                <button
-                    onClick={() => {
-                        setIsEditing(false)
-                        props.onSave(tags)
-                    }}
-                >
-                    <IconCollection.CheckIcon />
-                </button>
-            </div>
-            <div className="tag-wrapper-editor-inputs">
-                <input
-                    type="text"
-                    autoComplete="off"
-                    name="tag"
-                    placeholder="Add tag..."
-                    onKeyDown={(e) => {
-                        if (e.key == "Enter") {
-                            e.preventDefault()
-                            setTags((prev) => [...prev, e.currentTarget.value])
-                            e.currentTarget.value = ""
-                        }
-                    }}
-                />
-                <div className="tag-wrapper-editor-tags">
-                    {tags.map((tag, index) => (
-                        <div key={index} className="tag-wrapper-editor-tag">
-                            <span>{tag}</span>
-                            <button
-                                onClick={() => {
-                                    setTags((prev) => prev.filter((_, i) => i !== index))
-                                }}
-                            >
-                                <IconCollection.CancelIcon />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+    useEffect(() => {
+        setInitialTags(props.data ?? [])
+    }, [props])
+
+    return (
+        <TagInputWithDefaultProps
+            id="tagging"
+            tags={initialTags.map((t) => {
+                return { id: t, text: t }
+            })}
+            onTagsUpdated={(arr) => {
+                let strs = arr.map((x) => x.id)
+                props.onChange(strs)
+            }}
+        />
     )
-    const Viewer = (
-        <div className="tag-wrapper-viewer">
-            <div className="tag-wrapper-viewer-buttons">
-                <button
-                    onClick={() => {
-                        setPreTags(tags)
-                        setIsEditing(true)
-                    }}
-                >
-                    <IconCollection.PenIcon />
-                </button>
-            </div>
-            <div className="tag-wrapper-viewer-tags">
-                {tags.map((tag, index) => (
-                    <div key={index} className="tag-wrapper-viewer-tag">
-                        <span>{tag}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-    return isEditing ? Editor : Viewer
 }
 
 const CompressedImage: FC<CompressedImageProps> = (props) => {
@@ -360,4 +312,6 @@ export const MetadataEditorAndViewerParts = {
     Title: Title,
     Description: Description,
     TimeRange: TimeRange,
+    TagWrapper: TagWrapper,
+    CompressedImage: CompressedImage,
 } satisfies Record<string, FC<any>>

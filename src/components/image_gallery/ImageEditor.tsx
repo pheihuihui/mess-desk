@@ -6,6 +6,7 @@ import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { TagInputWithDefaultProps } from "../tag/_index"
 import { Circle } from "../utilities/CircleAndRect"
+import { MetadataEditorAndViewerParts } from "../_layout/MetadataEditorAndViewer"
 
 export const ImageEditor: FC = () => {
     const [imageId, setImageId] = useState(-1)
@@ -186,46 +187,17 @@ export const ImageEditor: FC = () => {
                         hidden={true}
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(backgroundImage)
+                            console.log(tags)
                         }}
                     >
                         Test
                     </button>
                 </div>
                 <div className="input-group">
-                    <input
-                        defaultValue={title}
-                        type="text"
-                        required={true}
-                        autoComplete="off"
-                        className="input-group-title"
-                        name="title"
-                        placeholder="Image title here..."
-                        onChange={(e) => {
-                            setTitle(e.currentTarget.value)
-                        }}
-                    />
-                    <textarea
-                        defaultValue={description}
-                        autoComplete="off"
-                        className="input-group-description"
-                        name="description"
-                        placeholder="Image description here..."
-                        rows={5}
-                        onChange={(e) => {
-                            let val = e.currentTarget.value
-                            setDescription(val)
-                        }}
-                    />
-                    <TagInputWithDefaultProps
-                        id="image-tagging"
-                        tags={initialTags.map((t) => {
-                            return { id: t, text: t }
-                        })}
-                        onTagsUpdated={(arr) => {
-                            setTags(arr.map((t) => t.id))
-                        }}
-                    />
+                    <MetadataEditorAndViewerParts.Title data={title} onSave={setTitle} />
+                    <MetadataEditorAndViewerParts.Description data={description} onSave={setDescription} />
+                    <MetadataEditorAndViewerParts.TagWrapper data={initialTags} onChange={setTags} />
+                    {/* <MetadataEditorAndViewerParts.CompressedImage data={image64Compressed} onSave={setImage64Compressed} /> */}
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>

@@ -62,3 +62,14 @@ body {
     backdrop-filter: blur(60px);
     background-color: rgba($color: white, $alpha: 0.8);
 }
+
+.notification {
+    position: absolute;
+    z-index: 99;
+    height: auto;
+    width: 50%;
+    background-color: yellowgreen;
+    margin-top: 5%;
+    padding: 1rem;
+    border-radius: 1rem;
+}

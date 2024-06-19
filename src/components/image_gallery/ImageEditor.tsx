@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useRef, useState } from "react"
 import { _blobToBase64, hashBlob } from "../../utilities/utilities"
 import { useBackgroundImage, useIndexedDb, useLocalStorage, useLocalTags } from "../../utilities/hooks"
 import { LOADING_IMAGE } from "../../utilities/constants"
@@ -7,6 +7,7 @@ import { useRoute } from "../../router"
 import { TagInputWithDefaultProps } from "../tag/_index"
 import { Circle } from "../utilities/CircleAndRect"
 import { MetadataEditorAndViewerParts } from "../_layout/MetadataEditorAndViewer"
+import { NotificationContext } from "../utilities/Notification"
 
 export const ImageEditor: FC = () => {
     const [imageId, setImageId] = useState(-1)
@@ -23,6 +24,7 @@ export const ImageEditor: FC = () => {
     const [initialTags, setInitialTags] = useState<string[]>([])
     const localTagging = useLocalTags()
     const [backgroundImage, setBackgroundId] = useBackgroundImage()
+    const notification = useContext(NotificationContext)
 
     async function setImageDetails(id: number) {
         let item = await db.getByID(id)
@@ -187,7 +189,11 @@ export const ImageEditor: FC = () => {
                         hidden={true}
                         className="image-editor-exit-button text-button"
                         onClick={(_) => {
-                            console.log(tags)
+                            let str = Date.now().toString()
+                            if (notification.setMessage) {
+                                console.log("zzz")
+                                notification.setMessage(str)
+                            }
                         }}
                     >
                         Test

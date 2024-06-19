@@ -1,12 +1,17 @@
-import React, { FC, PropsWithChildren } from "react"
+import React, { FC, PropsWithChildren, useState } from "react"
 import { BodyWrapper } from "./BodyWrapper"
 import { BottomNavBar } from "./BottomNavigation"
+import { NotificationContext, Notification } from "../utilities/Notification"
 
 export const DashboardLayout: FC<PropsWithChildren> = (props) => {
+    const [notification, setNotification] = useState("loaded")
     return (
         <BodyWrapper>
             <div className="wrapper-div">
-                <div className="wrapper-div-inner">{props.children}</div>
+                <NotificationContext.Provider value={{ message: notification, setMessage: setNotification }}>
+                    <Notification />
+                    <div className="wrapper-div-inner">{props.children}</div>
+                </NotificationContext.Provider>
                 <BottomNavBar />
             </div>
         </BodyWrapper>

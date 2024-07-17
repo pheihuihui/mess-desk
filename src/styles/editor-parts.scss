@@ -209,3 +209,15 @@
         transition: 0.3s;
     }
 }
+
+.compressed-image-viewer {
+    &-buttons {
+        display: none;
+    }
+
+    img {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+    }
+}

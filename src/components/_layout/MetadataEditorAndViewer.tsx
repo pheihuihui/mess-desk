@@ -258,6 +258,10 @@ const CompressedImage: FC<CompressedImageProps> = (props) => {
     const [preImage, setPreImage] = useState<string>(props.data ?? "")
     const [isEditing, setIsEditing] = useState(false)
 
+    useEffect(() => {
+        setImage(props.data ?? "")
+    }, [props])
+
     const Editor = (
         <div className="compressed-image-editor">
             <div className="compressed-image-editor-buttons">

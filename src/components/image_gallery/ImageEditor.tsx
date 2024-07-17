@@ -95,6 +95,14 @@ export const ImageEditor: FC = () => {
         }
     }
 
+    function saveCompressedImage() {
+        let canv = canvasRef.current
+        if (canv) {
+            let dt = canv.toDataURL("image/png")
+            setImage64Compressed(dt)
+        }
+    }
+
     async function saveImage(title: string, description: string, tags: string[]) {
         let base64 = image64
         let hash = await base64tohash(base64)
@@ -138,6 +146,7 @@ export const ImageEditor: FC = () => {
                         className="image-editor-compress-button text-button"
                         onClick={(_) => {
                             compressImage()
+                            saveCompressedImage()
                         }}
                     >
                         Compress
@@ -203,7 +212,7 @@ export const ImageEditor: FC = () => {
                     <MetadataEditorAndViewerParts.Title data={title} onSave={setTitle} />
                     <MetadataEditorAndViewerParts.Description data={description} onSave={setDescription} />
                     <MetadataEditorAndViewerParts.TagWrapper data={initialTags} onChange={setTags} />
-                    {/* <MetadataEditorAndViewerParts.CompressedImage data={image64Compressed} onSave={setImage64Compressed} /> */}
+                    <MetadataEditorAndViewerParts.CompressedImage data={image64Compressed} onSave={setImage64Compressed} />
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>

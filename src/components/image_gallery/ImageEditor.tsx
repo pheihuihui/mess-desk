@@ -5,7 +5,7 @@ import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { TagInputWithDefaultProps } from "../tag/_index"
-import { Circle } from "../utilities/CircleAndRect"
+import { Circle, Rect } from "../utilities/CircleAndRect"
 import { MetadataEditorAndViewerParts } from "../_layout/MetadataEditorAndViewer"
 import { NotificationContext } from "../utilities/Notification"
 
@@ -17,6 +17,7 @@ export const ImageEditor: FC = () => {
     const [description, setDescription] = useState("")
     const [image64, setImage64] = useState(LOADING_IMAGE)
     const [image64Compressed, setImage64Compressed] = useState(LOADING_IMAGE)
+    const [preImage64Compressed, setPreImage64Compressed] = useState(image64Compressed)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
     const db = useIndexedDb("STORE_IMAGE")
@@ -25,6 +26,10 @@ export const ImageEditor: FC = () => {
     const localTagging = useLocalTags()
     const [backgroundImage, setBackgroundId] = useBackgroundImage()
     const notification = useContext(NotificationContext)
+    const [showRect, setShowRect] = useState(false)
+    const [rectX, setRectX] = useState(100)
+    const [rectY, setRectY] = useState(100)
+    const [rectD, setRectD] = useState(200)
 
     async function setImageDetails(id: number) {
         let item = await db.getByID(id)
@@ -36,6 +41,33 @@ export const ImageEditor: FC = () => {
             setInitialTags(item.tags)
         }
     }
+
+    useEffect(() => {
+        let canvas = canvasRef.current
+        if (canvas && imgRef.current) {
+            let _w = imgRef.current.naturalWidth
+            let _h = imgRef.current.naturalHeight
+            let _dw = 0
+            let _dh = 0
+            let scale = 1
+            if (_w > _h) {
+                scale = _w / 800
+                _dh = ((800 - _h / scale) / 2) * scale
+            } else {
+                scale = _h / 800
+                _dw = ((800 - _w / scale) / 2) * scale
+            }
+            let ctx = canvas.getContext("2d")
+            if (ctx) {
+                canvas.width = 100
+                canvas.height = 100
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                ctx.drawImage(imgRef.current, rectX * scale - _dw, rectY * scale - _dh, rectD * scale, rectD * scale, 0, 0, canvas.width, canvas.height)
+                let data = canvas.toDataURL("image/png")
+                setImage64Compressed(data)
+            }
+        }
+    }, [rectX, rectY, rectD])
 
     useEffect(() => {
         let _id = param?.id
@@ -139,6 +171,19 @@ export const ImageEditor: FC = () => {
         <div className="image-editor acrylic">
             <div className="image-editor-column-left">
                 <img ref={imgRef} src={image64} className="image-editor-preview" />
+                <Rect
+                    onMoveAndResize={(x, y, d) => {
+                        if (!(x == 100 && y == 100 && d == 200)) {
+                            setRectX(x)
+                            setRectY(y)
+                            setRectD(d)
+                        }
+                    }}
+                    hidden={!showRect}
+                    headX={rectX}
+                    headY={rectY}
+                    headD={rectD}
+                />
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
@@ -212,7 +257,18 @@ export const ImageEditor: FC = () => {
                     <MetadataEditorAndViewerParts.Title data={title} onSave={setTitle} />
                     <MetadataEditorAndViewerParts.Description data={description} onSave={setDescription} />
                     <MetadataEditorAndViewerParts.TagWrapper data={initialTags} onChange={setTags} />
-                    <MetadataEditorAndViewerParts.CompressedImage data={image64Compressed} onSave={setImage64Compressed} />
+                    <MetadataEditorAndViewerParts.CompressedImage
+                        data={image64Compressed}
+                        onSave={() => {}}
+                        onStartEdit={() => {
+                            setPreImage64Compressed(image64Compressed)
+                            setShowRect(true)
+                        }}
+                        onCancelEdit={() => {
+                            setImage64Compressed(preImage64Compressed)
+                            setShowRect(false)
+                        }}
+                    />
                 </div>
                 <canvas ref={canvasRef} className="image-editor-preview-canvas" />
             </div>

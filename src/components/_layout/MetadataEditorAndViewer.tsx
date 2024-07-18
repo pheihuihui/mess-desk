@@ -27,6 +27,8 @@ interface TagWrapperProps {
 interface CompressedImageProps {
     data?: string
     onSave: (data: string) => void
+    onStartEdit: () => void
+    onCancelEdit: () => void
 }
 
 interface PersonFaceProps {
@@ -262,54 +264,35 @@ const CompressedImage: FC<CompressedImageProps> = (props) => {
         setImage(props.data ?? "")
     }, [props])
 
-    const Editor = (
-        <div className="compressed-image-editor">
-            <div className="compressed-image-editor-buttons">
+    const Viewer = (
+        <div className="compressed-image-viewer">
+            <img src={image} alt="Image" />
+            <div className="compressed-image-viewer-buttons">
                 <button
                     onClick={() => {
-                        setImage(preImage)
-                        setIsEditing(false)
+                        props.onStartEdit()
                     }}
                 >
-                    <IconCollection.CancelIcon />
+                    <IconCollection.PenIcon />
                 </button>
                 <button
                     onClick={() => {
-                        setIsEditing(false)
                         props.onSave(image)
                     }}
                 >
                     <IconCollection.CheckIcon />
                 </button>
-            </div>
-            <input
-                type="text"
-                autoComplete="off"
-                name="image"
-                placeholder="Image URL..."
-                defaultValue={image}
-                onChange={(e) => {
-                    setImage(e.currentTarget.value)
-                }}
-            />
-        </div>
-    )
-    const Viewer = (
-        <div className="compressed-image-viewer">
-            <div className="compressed-image-viewer-buttons">
                 <button
                     onClick={() => {
-                        setPreImage(image)
-                        setIsEditing(true)
+                        props.onCancelEdit()
                     }}
                 >
-                    <IconCollection.PenIcon />
+                    <IconCollection.CancelIcon />
                 </button>
             </div>
-            <img src={image} alt="Image" />
         </div>
     )
-    return isEditing ? Editor : Viewer
+    return Viewer
 }
 
 export const MetadataEditorAndViewerParts = {

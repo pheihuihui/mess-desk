@@ -232,9 +232,14 @@
         border-radius: 5px;
         background-color: transparent;
         cursor: pointer;
+        visibility: hidden;
         svg {
             height: 80%;
             width: 80%;
         }
+    }
+
+    &:hover button {
+        visibility: visible;
     }
 }

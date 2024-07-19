@@ -257,8 +257,6 @@ const TagWrapper: FC<TagWrapperProps> = (props) => {
 
 const CompressedImage: FC<CompressedImageProps> = (props) => {
     const [image, setImage] = useState<string>(props.data ?? "")
-    const [preImage, setPreImage] = useState<string>(props.data ?? "")
-    const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
         setImage(props.data ?? "")

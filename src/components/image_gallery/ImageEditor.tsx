@@ -4,8 +4,7 @@ import { useBackgroundImage, useIndexedDb, useLocalStorage, useLocalTags } from 
 import { LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
-import { TagInputWithDefaultProps } from "../tag/_index"
-import { Circle, Rect } from "../utilities/CircleAndRect"
+import { Rect } from "../utilities/CircleAndRect"
 import { MetadataEditorAndViewerParts } from "../_layout/MetadataEditorAndViewer"
 import { NotificationContext } from "../utilities/Notification"
 
@@ -78,13 +77,13 @@ export const ImageEditor: FC = () => {
         }
     }, [location])
 
-    useEffect(() => {
-        if (canvasRef.current) {
-            let canv = canvasRef.current
-            let dt = canv.toDataURL("image/png")
-            setImage64Compressed(dt)
-        }
-    }, [canvasRef])
+    // useEffect(() => {
+    //     if (canvasRef.current) {
+    //         let canv = canvasRef.current
+    //         let dt = canv.toDataURL("image/png")
+    //         setImage64Compressed(dt)
+    //     }
+    // }, [canvasRef])
 
     async function base64tohash(base: string) {
         let tmp = await fetch(base)
@@ -170,20 +169,22 @@ export const ImageEditor: FC = () => {
     return (
         <div className="image-editor acrylic">
             <div className="image-editor-column-left">
-                <img ref={imgRef} src={image64} className="image-editor-preview" />
-                <Rect
-                    onMoveAndResize={(x, y, d) => {
-                        if (!(x == 100 && y == 100 && d == 200)) {
-                            setRectX(x)
-                            setRectY(y)
-                            setRectD(d)
-                        }
-                    }}
-                    hidden={!showRect}
-                    headX={rectX}
-                    headY={rectY}
-                    headD={rectD}
-                />
+                <div className="image-editor-large-view">
+                    <img ref={imgRef} src={image64} />
+                    <Rect
+                        onMoveAndResize={(x, y, d) => {
+                            if (!(x == 100 && y == 100 && d == 200)) {
+                                setRectX(x)
+                                setRectY(y)
+                                setRectD(d)
+                            }
+                        }}
+                        hidden={!showRect}
+                        headX={rectX}
+                        headY={rectY}
+                        headD={rectD}
+                    />
+                </div>
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">

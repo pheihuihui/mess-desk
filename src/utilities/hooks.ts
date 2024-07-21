@@ -184,6 +184,7 @@ interface IndexedDbProps {
         tags: string[]
         deleted: boolean
         headPosition: [number, number, number]
+        storedFace: string
     }
 }
 

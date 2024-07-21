@@ -31,6 +31,13 @@ interface CompressedImageProps {
     onCancelEdit: () => void
 }
 
+interface HeadImageProps {
+    data?: string
+    onSave: (data: string) => void
+    onStartEdit: () => void
+    onCancelEdit: () => void
+}
+
 interface PersonFaceProps {
     data?: string
     onSave: (data: string) => void
@@ -293,10 +300,49 @@ const CompressedImage: FC<CompressedImageProps> = (props) => {
     return Viewer
 }
 
+const HeadImage: FC<HeadImageProps> = (props) => {
+    const [image, setImage] = useState<string>(props.data ?? "")
+
+    useEffect(() => {
+        setImage(props.data ?? "")
+    }, [props])
+
+    const Viewer = (
+        <div className="portrait-image-viewer">
+            <img src={image} alt="Head Image" />
+            <div className="portrait-image-viewer-buttons">
+                <button
+                    onClick={() => {
+                        props.onStartEdit()
+                    }}
+                >
+                    <IconCollection.PenIcon />
+                </button>
+                <button
+                    onClick={() => {
+                        props.onSave(image)
+                    }}
+                >
+                    <IconCollection.CheckIcon />
+                </button>
+                <button
+                    onClick={() => {
+                        props.onCancelEdit()
+                    }}
+                >
+                    <IconCollection.CancelIcon />
+                </button>
+            </div>
+        </div>
+    )
+    return Viewer
+}
+
 export const MetadataEditorAndViewerParts = {
     Title: Title,
     Description: Description,
     TimeRange: TimeRange,
     TagWrapper: TagWrapper,
     CompressedImage: CompressedImage,
+    HeadImage: HeadImage,
 } satisfies Record<string, FC<any>>

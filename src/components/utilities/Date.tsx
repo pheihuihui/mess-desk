@@ -49,7 +49,6 @@ export const PersonDate: FC<PersonDateProps> = (props) => {
                 disabled={unknown || notYet}
                 autoComplete="off"
                 className="person-date-input"
-                id="date-input"
                 placeholder={props.placeholder}
                 onChange={(e) => {
                     setDate(e.currentTarget.value)

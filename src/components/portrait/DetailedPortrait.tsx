@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { _blobToBase64 } from "../../utilities/utilities"
 import { useIndexedDb } from "../../utilities/hooks"
-import { LOADING_IMAGE } from "../../utilities/constants"
+import { LOADING_FACE, LOADING_IMAGE } from "../../utilities/constants"
 import { useHashLocation } from "../../utilities/hash_location"
 import { useRoute } from "../../router"
 import { SimpleDialog } from "../utilities/SimpleDialog"
@@ -9,6 +9,7 @@ import { ImageGridView } from "../image_gallery/ImageGridView"
 import { Dropdown } from "../utilities/Dropdown"
 import { Circle, Rect } from "../utilities/CircleAndRect"
 import { PersonDate } from "../utilities/Date"
+import { MetadataEditorAndViewerParts } from "../_layout/MetadataEditorAndViewer"
 
 interface DetailedPortraitProps {
     personID?: number
@@ -20,7 +21,9 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
     const [_, param] = useRoute("/:id")
     const [name, setName] = useState("")
     const [selectedImageId, setSelectedImageId] = useState(-1)
-    const [face, setFace] = useState("")
+    const [face, setFace] = useState(LOADING_FACE)
+    const [storedFace, setStoredFace] = useState(LOADING_FACE)
+    const [preFace, setPreFace] = useState(LOADING_FACE)
     const [description, setDescription] = useState("")
     const faceCanvasRef = useRef<HTMLCanvasElement>(null)
     const imgRef = useRef<HTMLImageElement>(null)
@@ -32,10 +35,11 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
     const [headX, setHeadX] = useState(100)
     const [headY, setHeadY] = useState(100)
     const [headD, setHeadD] = useState(200)
-    const [hiddenCircle, setHiddenCircle] = useState(true)
+    const [showCircle, setShowCircle] = useState(false)
     const allPersonTypes = ["real", "avatar", "fictional"] as const
     type PersonType = (typeof allPersonTypes)[number]
     const [personType, setPersonType] = useState<PersonType>(allPersonTypes[0])
+    const headSize = 200
 
     function setPersonDetails(id: number) {
         db_person.getByID(id).then((person) => {
@@ -49,6 +53,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                 setHeadX(person.headPosition[0] ?? 100)
                 setHeadY(person.headPosition[1] ?? 100)
                 setHeadD(person.headPosition[2] ?? 200)
+                setStoredFace(person.storedFace)
             }
         })
     }
@@ -70,8 +75,8 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             }
             let ctx = canvas.getContext("2d")
             if (ctx) {
-                canvas.width = 100
-                canvas.height = 100
+                canvas.width = headSize
+                canvas.height = headSize
                 ctx.clearRect(0, 0, canvas.width, canvas.height)
                 ctx.drawImage(imgRef.current, headX * scale - _dw, headY * scale - _dh, headD * scale, headD * scale, 0, 0, canvas.width, canvas.height)
                 let data = canvas.toDataURL("image/png")
@@ -111,9 +116,10 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             death: diedOn,
             type: personType,
             deleted: false,
+            storedFace: storedFace,
         }
 
-        if (hiddenCircle == false && face != "") {
+        if (showCircle == false && face != "") {
             person = Object.assign(person, { face: face })
         }
         if (personId > 0) {
@@ -144,7 +150,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             <div className="image-editor-column-left">
                 <div className="image-editor-portrait">
                     <img ref={imgRef} src={LOADING_IMAGE} />
-                    <Rect
+                    <Circle
                         onMoveAndResize={(x, y, d) => {
                             if (!(x == 100 && y == 100 && d == 200)) {
                                 setHeadX(x)
@@ -152,7 +158,7 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                                 setHeadD(d)
                             }
                         }}
-                        hidden={hiddenCircle}
+                        hidden={!showCircle}
                         headX={headX}
                         headY={headY}
                         headD={headD}
@@ -161,14 +167,6 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
             </div>
             <div className="image-editor-column-right">
                 <div className="image-editor-column-right-button-group">
-                    <button
-                        className="image-editor-compress-button text-button"
-                        onClick={(_) => {
-                            setHiddenCircle(!hiddenCircle)
-                        }}
-                    >
-                        {hiddenCircle ? "Set Avatar" : "Finish Setting Avatar"}
-                    </button>
                     <button
                         className="image-editor-paste-button text-button"
                         onClick={(_) => {
@@ -228,6 +226,21 @@ export const DetailedPortrait: FC<DetailedPortraitProps> = (props) => {
                         options={Array.from(allPersonTypes)}
                         onSelected={(x) => {
                             setPersonType(x as PersonType)
+                        }}
+                    />
+                    <MetadataEditorAndViewerParts.HeadImage
+                        data={storedFace}
+                        onSave={() => {
+                            setStoredFace(face)
+                            setShowCircle(false)
+                        }}
+                        onStartEdit={() => {
+                            setPreFace(storedFace)
+                            setShowCircle(true)
+                        }}
+                        onCancelEdit={() => {
+                            setStoredFace(preFace)
+                            setShowCircle(false)
                         }}
                     />
                 </div>

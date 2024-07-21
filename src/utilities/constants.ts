@@ -2,7 +2,7 @@ import { IndexedDBProps } from "./db"
 
 export const SITES = [".wikipedia.org", ".zhihu.com", ".reddit.com", "other"] as const
 export const LOADING_IMAGE = "./assets/loading.jpg"
-export const PORTRAIT_MISSING_IMAGE = "./assets/face.png"
+export const LOADING_FACE = "./assets/face.png"
 export const DB_CONFIG: IndexedDBProps = {
     name: "MessDB",
     version: 2,

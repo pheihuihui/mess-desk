@@ -260,7 +260,7 @@ export const ImageEditor: FC = () => {
                     <MetadataEditorAndViewerParts.TagWrapper data={initialTags} onChange={setTags} />
                     <MetadataEditorAndViewerParts.CompressedImage
                         data={image64Compressed}
-                        onSave={() => {}}
+                        onSave={(_) => {}}
                         onStartEdit={() => {
                             setPreImage64Compressed(image64Compressed)
                             setShowRect(true)

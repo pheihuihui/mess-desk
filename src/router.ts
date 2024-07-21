@@ -7,7 +7,6 @@ import {
     ReactElement,
     MouseEventHandler,
     useLayoutEffect,
-    forwardRef,
     createContext,
     useContext,
     useRef,
@@ -16,6 +15,7 @@ import {
     isValidElement,
     createElement,
     PropsWithChildren,
+    RefObject,
 } from "react"
 
 import {
@@ -191,16 +191,17 @@ export const Route: <T extends DefaultParams | undefined = undefined, R extends 
     return createElement(ParamsCtx.Provider, { value: params, children })
 }
 
-export const Link: <H extends BaseLocationHook = BrowserLocationHook>(props: LinkProps<H>, context?: any) => ReturnType<FC> = forwardRef<
-    HTMLAnchorElement,
-    LinkProps
->((props, ref) => {
+export const Link: <H extends BaseLocationHook = BrowserLocationHook>(
+    props: LinkProps<H> & { anchorRef: RefObject<HTMLAnchorElement | null> },
+    context?: any,
+) => ReturnType<FC> = (props) => {
     const router = useRouter()
     const [path, navigate] = useLocationFromRouter(router)
 
-    const { to, href: _href = to, onClick: _onClick, asChild, children, replace, state, ...restProps } = props
+    const { to, href: _href = to, onClick: _onClick, asChild, children, ...restProps } = props
+    const ref = props.anchorRef
 
-    const onClick = useEvent((event) => {
+    const onClick: MouseEventHandler<HTMLAnchorElement> | MouseEventHandler = useEvent((event) => {
         if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || event.button !== 0) return
 
         _onClick?.(event)
@@ -216,26 +217,33 @@ export const Link: <H extends BaseLocationHook = BrowserLocationHook>(props: Lin
         ? // @ts-ignore
           cloneElement(children, { onClick, href })
         : createElement("a", {
-              ...restProps,
+              ...(restProps as HTMLLinkAttributes & RefAttributes<HTMLAnchorElement>),
               onClick,
               href,
               children,
               ref,
           })
-})
+}
 
-const flattenChildren: (children: ReactElement | ReactElement[]) => ReactElement[] = (children) =>
-    Array.isArray(children) ? children.flatMap((c) => flattenChildren(c && c.type === Fragment ? c.props.children : c)) : [children]
+type _ReactElement = ReactElement<
+    PropsWithChildren<{
+        path: Path
+        nest?: boolean
+        match?: Match
+    }>
+>
+
+const flattenChildren: (children: _ReactElement | _ReactElement[]) => _ReactElement[] = (children) =>
+    Array.isArray(children) ? children.flatMap((c) => flattenChildren(c.type === Fragment ? (c.props?.children as _ReactElement) : c)) : [children]
 
 export const Switch: FC<SwitchProps> = ({ children, location }) => {
     const router = useRouter()
     const [originalLocation] = useLocationFromRouter(router)
 
-    for (const element of flattenChildren(children as ReactElement)) {
-        let match = matchRoute(router.parser, element.props.path, location || originalLocation, element.props.nest)
+    for (const element of flattenChildren(children as _ReactElement)) {
+        let match = matchRoute(router.parser, element.props?.path, location || originalLocation, element.props?.nest)
 
         if (isValidElement(element) && match[0]) {
-            // @ts-ignore
             return cloneElement(element, { match })
         }
     }

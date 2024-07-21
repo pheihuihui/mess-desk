@@ -4,7 +4,7 @@ import { BottomNavBar } from "./BottomNavigation"
 import { NotificationContext, Notification } from "../utilities/Notification"
 
 export const DashboardLayout: FC<PropsWithChildren> = (props) => {
-    const [notification, setNotification] = useState("loaded")
+    const [notification, setNotification] = useState(React.version)
     return (
         <BodyWrapper>
             <div className="wrapper-div">

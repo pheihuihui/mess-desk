@@ -64,7 +64,7 @@ function replaceReferences(media: T_Media, base: string, asset: string) {
             }
             // Replace the reference with an encoded version of the resource.
             try {
-                let tmp = media[path].encoding == "base64" ? media[path].data : Buffer.from(media[path].data).toString("base64")
+                let tmp = media[path].encoding == "base64" ? media[path].data : btoa(media[path].data)
                 const embeddedAsset = `'data:${media[path].type};base64,${tmp}'`
                 asset = `${asset.substring(0, i)}${embeddedAsset}${asset.substring(i + reference.length)}`
             } catch (e) {
@@ -83,7 +83,7 @@ function convertAssetToDataURI(asset: T_Asset) {
         case "base64":
             return `data:${asset.type};base64,${asset.data}`
         default:
-            return `data:${asset.type};base64,${Buffer.from(asset.data).toString("base64")}`
+            return `data:${asset.type};base64,${btoa(asset.data)}`
     }
 }
 

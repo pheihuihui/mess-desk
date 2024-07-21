@@ -1,14 +1,18 @@
-import React, { PropsWithChildren, forwardRef } from "react"
+import React, { FC, PropsWithChildren, RefObject } from "react"
 
-export const SimpleDialog = forwardRef<HTMLDialogElement, PropsWithChildren>((props, ref) => {
+interface SimpleDialogProps {
+    ref: RefObject<HTMLDialogElement | null>
+}
+
+export const SimpleDialog: FC<PropsWithChildren<SimpleDialogProps>> = (props) => {
     return (
-        <dialog ref={ref} className="simple-dialog">
+        <dialog ref={props.ref} className="simple-dialog">
             <div className="simple-dialog-div">{props.children}</div>
             <button
                 className="simple-dialog-button"
                 onClick={() => {
-                    if (ref && typeof ref == "object") {
-                        ref.current?.close()
+                    if (props.ref && typeof props.ref == "object") {
+                        props.ref.current?.close()
                     }
                 }}
             >
@@ -16,4 +20,4 @@ export const SimpleDialog = forwardRef<HTMLDialogElement, PropsWithChildren>((pr
             </button>
         </dialog>
     )
-})
+}

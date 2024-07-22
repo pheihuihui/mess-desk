@@ -6,7 +6,6 @@ import { WelcomePage } from "./welcome"
 import { ImagePage } from "./image"
 import { PodsPage } from "./pods"
 import { SettingsPage } from "./settings"
-import { EditorPage } from "./editor"
 import { ArchivePage } from "./archives"
 
 interface TabProps {
@@ -24,11 +23,7 @@ export const tabs: TabProps = {
         text: "Notes",
         path: "/notes",
         page: <NotesPage />,
-    },
-    editor: {
-        text: "Editor",
-        path: "/editor",
-        page: <EditorPage />,
+        nest: true,
     },
     portraits: {
         text: "Portraits",
@@ -36,16 +31,16 @@ export const tabs: TabProps = {
         page: <PortraitsPage />,
         nest: true,
     },
+    pods: {
+        text: "Pods",
+        path: "/pods",
+        page: <PodsPage />,
+    },
     home: {
         text: "",
         path: "/home",
         page: <WelcomePage />,
         icon: <IconCollection.HomeIcon />,
-    },
-    pods: {
-        text: "Pods",
-        path: "/pods",
-        page: <PodsPage />,
     },
     images: {
         text: "Image Editor",

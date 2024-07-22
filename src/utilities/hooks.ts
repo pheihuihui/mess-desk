@@ -172,6 +172,7 @@ interface IndexedDbProps {
         content: string
         tags: string[]
         deleted: boolean
+        relatedPersons: number[]
     }
     STORE_PERSON: {
         name: string

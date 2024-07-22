@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import { useIndexedDb } from "../../utilities/hooks"
-import { LOADING_IMAGE } from "../../utilities/constants"
+import { LOADING_IMAGE, SCRIPTS, STYLES } from "../../utilities/constants"
 import { MarkdownEditor } from "./MarkdownEditor"
 
 interface MarkdownReaderProps {
@@ -77,6 +77,7 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
                     title: "title",
                     content: txt,
                     tags: [],
+                    relatedPersons: [],
                     deleted: false,
                 })
             }}
@@ -84,11 +85,21 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     )
 
     return (
-        <div className="markdown-reader">
-            {mode == "editor" ? editor : titleColumn}
-            <div className="markdown-reader-rendered">
-                <div className="markdown-body" ref={elemRef} dangerouslySetInnerHTML={{ __html: innerHtml }} />
+        <>
+            <script async src={SCRIPTS.katex} />
+            <script async type="module">
+                {`import init, { markdown_to_html } from "${SCRIPTS.markdown}"
+                    init().then(() => {
+                    window.markdownToHtml = markdown_to_html
+                })`}
+            </script>
+            <link rel="stylesheet" href={STYLES.katex} />
+            <div className="markdown-reader">
+                {mode == "editor" ? editor : titleColumn}
+                <div className="markdown-reader-rendered">
+                    <div className="markdown-body" ref={elemRef} dangerouslySetInnerHTML={{ __html: innerHtml }} />
+                </div>
             </div>
-        </div>
+        </>
     )
 }

@@ -5,13 +5,11 @@
         <title>MessDesk Web App</title>
         <link rel="icon" type="image/ico" href="./favicon.ico" />
         <link rel="stylesheet" href="./client.css" />
-        <link rel="stylesheet" href="./katex.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
     </head>
 
     <body>
         <script src="./client.js" async></script>
-        <script src="./katex.js" async></script>
         <script type="module" async>
             import init, { markdown_to_html } from "./pkg/markdown_reader.js"
             init().then(() => {

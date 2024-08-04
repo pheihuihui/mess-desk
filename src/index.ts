@@ -8,6 +8,4 @@ let div = document.getElementById("rootdiv") as HTMLDivElement
 initDB(DB_CONFIG)
 
 const root = createRoot(div)
-setTimeout(() => {
-    root.render(_app)
-}, 500)
+root.render(_app)

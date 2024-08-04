@@ -11,6 +11,7 @@ if (fs.existsSync(dir_client)) {
 fs.mkdirSync(dir_client, { recursive: true })
 fs.copyFileSync("./resources/favicon.ico", `${dir_client}/favicon.ico`)
 fs.copyFileSync("./resources/index.html", `${dir_client}/index.html`)
+fs.copyFileSync("./resources/markdown.js", `${dir_client}/markdown.js`)
 
 const styles = sass.compile("./src/styles/_index.scss")
 fs.writeFileSync(`${dir_client}/client.css`, styles.css)

@@ -29,9 +29,12 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     }, [])
 
     useEffect(() => {
+        if (!window.markdownToHtml) {
+            return
+        }
         let html = window.markdownToHtml(src)
         setInnerHtml(html)
-    }, [src, mode])
+    }, [src, mode, window.markdownToHtml])
 
     useEffect(() => {
         if (elemRef.current) {
@@ -86,13 +89,8 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
 
     return (
         <>
+            <script async type="module" src={SCRIPTS.markdown} />
             <script async src={SCRIPTS.katex} />
-            <script async type="module">
-                {`import init, { markdown_to_html } from "${SCRIPTS.markdown}"
-                    init().then(() => {
-                    window.markdownToHtml = markdown_to_html
-                })`}
-            </script>
             <link rel="stylesheet" href={STYLES.katex} />
             <div className="markdown-reader">
                 {mode == "editor" ? editor : titleColumn}

@@ -5,7 +5,7 @@ export const LOADING_IMAGE = "./assets/loading.jpg"
 export const LOADING_FACE = "./assets/face.png"
 export const SCRIPTS = {
     katex: "./katex.js",
-    markdown: "./pkg/markdown_reader.js",
+    markdown: "./markdown.js",
 }
 export const STYLES = {
     katex: "./katex.css",

@@ -41,6 +41,7 @@ export const tabs: TabProps = {
         path: "/home",
         page: <WelcomePage />,
         icon: <IconCollection.HomeIcon />,
+        nest: true,
     },
     images: {
         text: "Image Editor",

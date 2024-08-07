@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import { useIndexedDb } from "../../utilities/hooks"
-import { useRoute } from "../../router"
+import { Link, useRoute } from "../../router"
 import { MarkdownReader } from "./MarkdownReader"
 import { IconCollection } from "../utilities/Icons"
 import { navigate } from "../../utilities/hash_location"
@@ -15,9 +15,10 @@ interface NoteListItemProps {
 
 const NoteListItem: FC<NoteListItemProps> = (props) => {
     return (
-        <div className="note-list-item" onClick={() => navigate(`/home/${props.id}`)}>
+        <div className="note-list-item">
             <IconCollection.Note />
-            {props.title}
+            {/* @ts-ignore */}
+            <Link href={`/${props.id}`}>{props.title}</Link>
         </div>
     )
 }
@@ -46,9 +47,9 @@ const _NoteList: FC<NoteListProps> = (props) => {
 
     return (
         <div className="portrait-board acrylic">
-            <NoteListItem id={"new"} title="New Item" tags={[]} persons={[]} />
+            <NoteListItem key={0} id="new" title="New Item" tags={[]} persons={[]} />
             {notes.map((note, i) => (
-                <NoteListItem key={i} id={note.id} title={note.title} tags={note.tags} persons={[]} />
+                <NoteListItem key={i + 1} id={note.id} title={note.title} tags={note.tags} persons={[]} />
             ))}
         </div>
     )
@@ -56,5 +57,5 @@ const _NoteList: FC<NoteListProps> = (props) => {
 
 export const NoteList: FC = () => {
     const [_, param] = useRoute("/:id")
-    return param?.id ? <MarkdownReader id={parseInt(param.id)} /> : <_NoteList />
+    return param?.id ? <MarkdownReader id={param.id} /> : <_NoteList />
 }

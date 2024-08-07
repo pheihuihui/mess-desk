@@ -2,9 +2,10 @@ import React, { FC, useEffect, useRef, useState } from "react"
 import { useIndexedDb } from "../../utilities/hooks"
 import { LOADING_IMAGE, SCRIPTS, STYLES } from "../../utilities/constants"
 import { MarkdownEditor } from "./MarkdownEditor"
+import { navigate } from "../../utilities/hash_location"
 
 interface MarkdownReaderProps {
-    id: number
+    id: number | string
 }
 
 export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
@@ -14,6 +15,7 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
     const elemRef = useRef<HTMLDivElement>(null)
     const [mode, setMode] = useState<"editor" | "reader">("editor")
     const image_db = useIndexedDb("STORE_IMAGE")
+    const [frozen, setFrozen] = React.useState(false)
     const image_p = (
         <p>
             <img className="store-image" src={LOADING_IMAGE} store-id="2" />
@@ -22,7 +24,12 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
 
     useEffect(() => {
         const fetchSrc = async () => {
-            let item = await md_db.getByID(props.id)
+            if (props.id == "new") {
+                setSrc("")
+                return
+            }
+            let id = parseInt(props.id as string)
+            let item = await md_db.getByID(id)
             setSrc(item.content)
         }
         fetchSrc()
@@ -73,16 +80,32 @@ export const MarkdownReader: FC<MarkdownReaderProps> = (props) => {
             onEdited={(txt) => {
                 setSrc(txt)
             }}
+            frozen={frozen}
             onSaved={(txt) => {
-                console.log(src)
-                md_db.update({
-                    id: props.id,
-                    title: "title",
-                    content: txt,
-                    tags: [],
-                    relatedPersons: [],
-                    deleted: false,
-                })
+                setFrozen(true)
+                if (props.id == "new") {
+                    md_db
+                        .add({
+                            title: "title",
+                            content: txt,
+                            tags: [],
+                            relatedPersons: [],
+                            deleted: false,
+                        })
+                        .then((id) => {
+                            navigate(`/home/${id}`)
+                        })
+                } else {
+                    let id = parseInt(props.id as string)
+                    md_db.update({
+                        id: id,
+                        title: "title",
+                        content: txt,
+                        tags: [],
+                        relatedPersons: [],
+                        deleted: false,
+                    })
+                }
             }}
         />
     )

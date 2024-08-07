@@ -1,16 +1,19 @@
 // https://github.com/phuocng/mirror-a-text-area/blob/main/03-line-numbers/index.html
 
-import React, { useLayoutEffect, useRef } from "react"
+import React, { useEffect, useLayoutEffect, useRef } from "react"
 import { FC } from "react"
+import { useRoute } from "../../router"
 
 interface MarkdownEditorProps {
     initialText?: string
     lines?: number
     onEdited?: (text: string) => void
     onSaved?: (text: string) => void
+    frozen?: boolean
 }
 
 export const MarkdownEditor: FC<MarkdownEditorProps> = (props) => {
+    const [frozen, setFrozen] = React.useState(false)
     const textRef = useRef<HTMLTextAreaElement>(null)
     const lineNumbersRef = useRef<HTMLDivElement>(null)
     const canvas = document.createElement("canvas")
@@ -133,10 +136,17 @@ export const MarkdownEditor: FC<MarkdownEditorProps> = (props) => {
         }
     }, [textRef.current, lineNumbersRef.current])
 
+    useEffect(() => {
+        if (props.frozen) {
+            setFrozen(true)
+        }
+    }, [props.frozen])
+
     return (
         <div className="markdown-reader-code">
             <div id="line-numbers" className="container-lines" ref={lineNumbersRef} />
             <textarea
+                readOnly={frozen}
                 ref={textRef}
                 defaultValue={props.initialText}
                 onChange={(e) => {
